@@ -1,0 +1,51 @@
+# POM_4x4 - ROS 2 (jazzy), mcap bags.
+#
+#   source /opt/ros/jazzy/setup.bash
+#   python3 -m bagfix run configs/pom_4x4.yaml /data/2026-07-09-16-39-34 --dry-run
+#
+# Point at the session folder (the one named after the recording); the `bag/`
+# sub-folder holding bag_0.mcap, bag_1.mcap ... is found automatically.
+# Topic entries are globs, so a different camera serial still matches.
+
+robot: pom_4x4
+
+output:
+  root: output       # relative paths are resolved against the workspace root
+  suffix: _fixed     # output goes to <root>/<session name><suffix>/bag/
+  storage: mcap
+  # max_bagfile_size: 0   # bytes per split file; unset = split like the source
+
+pipeline:
+  # The Visionary-B camera recorded an empty/wrong frame_id on all three topics.
+  - transform: frame_id
+    topics:
+      - /visionary_b_two/*/rgb
+      - /visionary_b_two/*/depth
+      - /visionary_b_two/*/camera_info
+    frame_id: robot_b_two_left_camera_optical_frame
+
+  # Calibration came out with negative focal lengths and a garbage R/P.
+  - transform: camera_info
+    topics:
+      - /visionary_b_two/*/camera_info
+    force_positive_focal: true
+    fix_principal_point: true
+    identity_rectification: true
+    rebuild_p: true
+    fallback_hfov_deg: 90.0     # only used if fx/fy are 0 and cannot be inferred
+
+  # Legacy: lidar header stamps lagged the receive time on very old recordings.
+  # Off by default - enable per bag in the `bags:` section below.
+  - transform: stamp_offset
+    enabled: false
+    topics:
+      - /robot/lidar/points
+      - /robot/lidar/imu
+    mode: auto                  # auto | fixed (offset_ns) | receive_time
+
+# Per-bag overrides, keyed by the bag directory name. Deep-merged over the rule
+# of the same name above.
+bags:
+  2026-07-08-12-00-05:
+    stamp_offset:
+      enabled: true

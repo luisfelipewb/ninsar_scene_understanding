@@ -1,0 +1,55 @@
+# Trektor - ROS 1 .bag files, converted to ROS 2 mcap before any fix is applied.
+#
+#   pip install rosbags
+#   source /opt/ros/jazzy/setup.bash
+#   python3 -m bagfix run configs/trektor.yaml /data/test_acqui --dry-run
+#
+# Point at the session folder, exactly as for POM_4x4: a .bag sitting directly
+# in it or in a `bag/` sub-folder is found automatically. The conversion lands
+# in <output.root>/<session>_ros2/bag/ (same layout as a recorded bag, so the
+# naming scheme is reused) and is cached, so repeated runs while tuning this
+# config do not reconvert. The fixed bag is <output.root>/<session>_fixed/bag/.
+#
+# PLACEHOLDER VALUES: the pipeline below is a skeleton. Run
+# `python3 -m bagfix inspect <converted bag>` on a real Trektor recording and
+# replace the topics, frames and extrinsics before using it.
+
+robot: trektor
+
+convert:
+  from: ros1
+  cache: true
+
+output:
+  root: output
+  suffix: _fixed     # output goes to <root>/<session name><suffix>/bag/
+  storage: mcap
+
+pipeline:
+  # ROS 1 frames often carry a leading slash, which ROS 2 rejects.
+  - transform: frame_id
+    topics:
+      - /camera/image_raw
+      - /camera/camera_info
+    frame_id: trektor_camera_optical_frame
+
+  - transform: camera_info
+    topics:
+      - /camera/camera_info
+    force_positive_focal: true
+    identity_rectification: false   # keep stereo rectification if it is valid
+    rebuild_p: false
+
+  - transform: tf_static
+    mode: patch                     # ROS 1 bags usually already have /tf_static
+    transforms:
+      - parent: base_link
+        child: trektor_camera_optical_frame
+        xyz: [0.0, 0.0, 0.0]
+        rpy: [0.0, 0.0, 0.0]
+
+  - transform: topic_filter
+    drop:
+      - /rosout
+      - /rosout_agg
+      - /diagnostics
