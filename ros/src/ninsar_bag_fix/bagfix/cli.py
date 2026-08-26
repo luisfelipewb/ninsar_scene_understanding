@@ -10,7 +10,20 @@ from pathlib import Path
 from . import bagio, config as config_mod, convert_ros1, pipeline
 from .transforms import REGISTRY
 
-WORKSPACE = Path(__file__).resolve().parent.parent
+def _workspace_root() -> Path:
+    """The colcon workspace root, where relative output paths are resolved.
+
+    Found by walking up from this file to the directory holding `src/`, so it
+    works both from the source tree and from an installed package. Falls back to
+    the current directory when neither applies.
+    """
+    for directory in Path(__file__).resolve().parents:
+        if (directory / "src").is_dir() and directory.name != "src":
+            return directory
+    return Path.cwd()
+
+
+WORKSPACE = _workspace_root()
 
 
 def main(argv=None) -> int:
@@ -43,6 +56,9 @@ def main(argv=None) -> int:
         return args.func(args)
     except (config_mod.ConfigError, convert_ros1.ConversionError, ValueError,
             FileExistsError, FileNotFoundError) as exc:
+        # Flush first: stdout is block-buffered when piped, so without this the
+        # error would surface above the context lines that led to it.
+        sys.stdout.flush()
         print(f"error: {exc}", file=sys.stderr)
         return 1
 

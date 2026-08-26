@@ -40,9 +40,10 @@ pipeline:
     identity_rectification: false   # keep stereo rectification if it is valid
     rebuild_p: false
 
+  # ROS 1 bags usually already carry /tf_static, so `edit` is the right list
+  # here; it errors if the pair turns out to be absent, before writing anything.
   - transform: tf_static
-    mode: patch                     # ROS 1 bags usually already have /tf_static
-    transforms:
+    edit:
       - parent: base_link
         child: trektor_camera_optical_frame
         xyz: [0.0, 0.0, 0.0]

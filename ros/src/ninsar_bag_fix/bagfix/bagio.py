@@ -11,6 +11,7 @@ from rosbag2_py import (
     ConverterOptions,
     SequentialReader,
     SequentialWriter,
+    StorageFilter,
     StorageOptions,
     TopicMetadata,
 )
@@ -57,7 +58,14 @@ def detect_storage_id(uri: str | Path) -> str:
     raise ValueError(f"cannot determine bag storage format for '{uri}'")
 
 
-def open_reader(uri: str | Path, storage_id: str | None = None) -> SequentialReader:
+def open_reader(uri: str | Path, storage_id: str | None = None,
+                topics: list[str] | None = None) -> SequentialReader:
+    """Open a bag for reading.
+
+    `topics` restricts the reader to those topics. The storage layer skips the
+    rest, so scanning one small topic (a preflight check on `/tf_static`, say)
+    costs an index lookup rather than a pass over every message in the bag.
+    """
     uri = str(resolve_bag(uri))
     storage_id = storage_id or detect_storage_id(uri)
     reader = SequentialReader()
@@ -65,6 +73,8 @@ def open_reader(uri: str | Path, storage_id: str | None = None) -> SequentialRea
         StorageOptions(uri=uri, storage_id=storage_id),
         ConverterOptions(SERIALIZATION_FORMAT, SERIALIZATION_FORMAT),
     )
+    if topics:
+        reader.set_filter(StorageFilter(topics=list(topics)))
     return reader
 
 

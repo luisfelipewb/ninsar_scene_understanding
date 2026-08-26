@@ -67,6 +67,17 @@ class Transform:
             return False
         return any(fnmatch.fnmatchcase(topic, p) for p in self.patterns)
 
+    def preflight(self, source, types: dict[str, str]) -> None:
+        """Check this rule against the bag before any output is written.
+
+        Called once, before the output directory is created, so raising here
+        costs nothing and leaves no half-written bag behind. `source` is the
+        resolved bag directory; open a filtered reader on it (see
+        `bagio.open_reader(topics=...)`) if the check needs message content.
+
+        Raise ValueError to abort the run.
+        """
+
     def prepare(self, topic: str, msg: Any, stamp: int) -> None:
         """Called for every selected message during the pre-pass, if needed."""
 

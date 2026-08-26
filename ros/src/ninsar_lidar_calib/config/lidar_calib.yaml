@@ -1,0 +1,54 @@
+# Lidar extrinsic calibration - POM_4x4.
+#
+# Everything under `ground:` and `corner:` is a live ROS parameter. Tune it
+# while a bag plays and watch the effect in RViz:
+#
+#   ros2 launch ninsar_lidar_calib calibrate.launch.py
+#   ros2 bag play /data/2026-07-09-16-39-34/bag
+#   ros2 param set /lidar_calib_node corner.roi_center [2.5, 0.0, 0.4]
+#   ros2 param set /lidar_calib_node corner.roi_size   [1.5, 1.5, 1.2]
+#
+# The node logs the current values and why scans are being rejected. When the
+# detections look right, save them and run the offline pass on the same values:
+#
+#   ros2 param dump /lidar_calib_node > my_calib.yaml
+#   ros2 run ninsar_lidar_calib detect_from_bag --bag /data/2026-07-09-16-39-34 \
+#       --ros-args --params-file my_calib.yaml
+#   ros2 run ninsar_lidar_calib solve detections.jsonl
+
+/**:
+  ros__parameters:
+    cloud_topic: /robot/lidar/points
+    world_frame: map
+    base_frame: robot_base_link
+    lidar_frame: ""              # empty = take it from the cloud header
+    detections_path: detections.jsonl
+
+    initial_extrinsic:
+      source: tf_static          # read base_link->lidar from the bag's /tf_static
+      xyz: [0.0, 0.0, 1.0]       # fallback when the bag has no such transform
+      rpy: [0.0, 0.0, 0.0]
+
+    ground:
+      enabled: true
+      z_range: [-2.0, 0.2]       # metres in base_link, where the ground is expected
+      distance_threshold: 0.03   # RANSAC inlier distance
+      eps_angle_deg: 25.0        # how far from the guessed normal RANSAC may go
+      min_inliers: 500
+      voxel_leaf: 0.02           # 0 disables downsampling
+
+    corner:
+      enabled: true
+      roi_center: [5.0, 0.0, 0.5]   # ROI box centre, in robot_base_link
+      roi_size: [10.0, 10.0, 3.5]     # ROI box extents
+      size_guess: 0.0               # cube side in metres; 0 disables the check
+      size_margin: 0.3              # generous - only used to reject bad fits
+      distance_threshold: 0.02
+      min_inliers: 200
+      orthogonality_tolerance_deg: 8.0
+      voxel_leaf: 0.02
+      # An upright cube's vertical faces are perpendicular to the ground, so a
+      # ground patch inside the ROI is a valid third "face" and gives the wrong
+      # corner. Drop the detected ground first.
+      exclude_ground: true
+      ground_margin: 0.08

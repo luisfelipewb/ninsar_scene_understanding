@@ -66,6 +66,14 @@ def run(
 
     _warn_unmatched_patterns(transforms, types)
 
+    # Check every rule against the bag before the output directory is touched,
+    # so a rule that cannot apply fails cheaply and leaves nothing behind.
+    for transform in transforms:
+        try:
+            transform.preflight(source, types)
+        except ValueError as exc:
+            raise ValueError(f"rule '{transform.rule_id}': {exc}") from exc
+
     # optional first pass, only for transforms that need bag-wide statistics
     preparers = [t for t in transforms if getattr(t, "needs_prepare", False)]
     if preparers:

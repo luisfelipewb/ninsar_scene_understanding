@@ -34,6 +34,19 @@ pipeline:
     rebuild_p: true
     fallback_hfov_deg: 90.0     # only used if fx/fy are 0 and cannot be inferred
 
+    # Correct the lidar extrinsic recorded in the bag. `edit` asserts the pair
+    # is already on /tf_static - use `add` for one that was never published,
+    # and `remove` to delete a stale frame.
+  - transform: tf_static
+    remove:
+      - parent: robot_base_link
+        child: robot_lidar_link
+    # edit:
+    #   - parent: robot_base_link
+    #     child: robot_lidar_link
+    #     xyz: [2.95, 0.0, 0.52]
+    #     rpy: [0.0, 0.645772, 0.0]
+
   # Legacy: lidar header stamps lagged the receive time on very old recordings.
   # Off by default - enable per bag in the `bags:` section below.
   - transform: stamp_offset
