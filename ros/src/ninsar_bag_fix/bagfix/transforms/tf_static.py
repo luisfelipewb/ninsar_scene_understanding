@@ -8,7 +8,8 @@ Three lists, applied in this order:
     add:     insert entries that are not.
 
 `edit` and `add` take the same entry shape - a complete pose, as `xyz` plus
-`rpy` or `quat` - and differ only in what they assert about the bag. That
+`rpy` (radians), `rpy_deg` (degrees) or `quat` - and differ only in what they
+assert about the bag. That
 assertion is checked in `preflight`, before any output is written, so naming a
 frame that is not there (or one that already is) fails without producing a
 half-repaired bag.
@@ -90,6 +91,13 @@ def _spec_pose(spec: dict) -> tuple[tuple[float, float, float], tuple[float, ...
         if norm == 0.0:
             raise ValueError("'quat' must not be zero")
         quat = tuple(v / norm for v in quat)
+    elif "rpy_deg" in spec:
+        if "rpy" in spec:
+            raise ValueError("give either 'rpy' (radians) or 'rpy_deg', not both")
+        rpy_deg = tuple(float(v) for v in spec["rpy_deg"])
+        if len(rpy_deg) != 3:
+            raise ValueError("'rpy_deg' needs 3 values")
+        quat = quaternion_from_rpy(*(math.radians(a) for a in rpy_deg))
     else:
         rpy = tuple(float(v) for v in spec.get("rpy", (0.0, 0.0, 0.0)))
         if len(rpy) != 3:
@@ -123,7 +131,8 @@ class TfStatic(Transform):
     topic:      /tf_static by default
     remove:     list of {parent, child} to delete; globs allowed, either key
                 may be omitted to mean "any"
-    edit:       list of {parent, child, xyz, rpy | quat} that must already exist
+    edit:       list of {parent, child, xyz, rpy | rpy_deg | quat} that must
+                already exist; `rpy` is radians, `rpy_deg` degrees
     add:        list of the same shape, that must not already exist
     drop_empty: delete a /tf_static message that removals emptied (default true)
     """

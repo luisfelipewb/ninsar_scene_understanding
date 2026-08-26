@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import math
 import sys
 from pathlib import Path
 
@@ -254,6 +255,38 @@ def test_tf_static_remove_edit_and_add_in_one_rule(tmp_path):
             imu.transform.translation.z) == pytest.approx((0.1, 0.2, 0.3))
 
 
+def test_tf_static_rpy_deg_is_read_as_degrees(tmp_path):
+    """`rpy_deg` means degrees; `rpy` stays radians."""
+    source = _tf_static_bag(tmp_path, [("base_link", "lidar")])
+    out = tmp_path / "out" / "bag"
+    pipeline.run(source, out, _tf_config(
+        tmp_path,
+        "    edit:\n"
+        "      - {parent: base_link, child: lidar, xyz: [0, 0, 0],"
+        " rpy_deg: [0, 90, 0]}\n",
+    ))
+
+    _, messages = _read_all(out)
+    msg = ser.deserialize_message(
+        next(d for t, d, _ in messages if t == "/tf_static"),
+        bagio.message_class(TF_MESSAGE))
+    rotation = msg.transforms[0].transform.rotation
+    half = math.sqrt(0.5)  # 90 deg about y
+    assert (rotation.x, rotation.y, rotation.z, rotation.w) == pytest.approx(
+        (0.0, half, 0.0, half))
+
+
+def test_tf_static_rpy_and_rpy_deg_together_is_refused(tmp_path):
+    source = _tf_static_bag(tmp_path, [("base_link", "lidar")])
+    with pytest.raises(ValueError, match="not both"):
+        pipeline.run(source, tmp_path / "out" / "bag", _tf_config(
+            tmp_path,
+            "    edit:\n"
+            "      - {parent: base_link, child: lidar, xyz: [0, 0, 0],"
+            " rpy: [0, 0, 0], rpy_deg: [0, 0, 0]}\n",
+        ))
+
+
 def test_tf_static_remove_accepts_globs_and_a_lone_child(tmp_path):
     found, _ = _run_tf_rule(
         tmp_path,
@@ -466,3 +499,98 @@ def test_bad_config_is_rejected(tmp_path):
     cfg_path.write_text("robot: t\npipeline:\n  - transform: frame_id\n    topics: ['/a']\n")
     with pytest.raises(ValueError, match="frame_id"):
         pipeline.build_transforms(config_mod.load(cfg_path))
+
+
+# ---- image_encoding ------------------------------------------------------
+
+
+def _depth_bag(tmp_path, encoding="mono16", width=8, height=4, step=None,
+               data_len=None, is_bigendian=False):
+    """A bag with one /cam/depth frame, laid out however the caller asks."""
+    source = tmp_path / "session" / "bag"
+    writer = bagio.open_writer(source)
+    writer.create_topic(bagio.make_topic_metadata("/cam/depth", IMAGE))
+    msg = bagio.message_class(IMAGE)()
+    msg.width, msg.height = width, height
+    msg.encoding = encoding
+    msg.is_bigendian = int(is_bigendian)
+    msg.step = width * 2 if step is None else step
+    msg.data = bytes(msg.height * msg.step if data_len is None else data_len)
+    writer.write("/cam/depth", ser.serialize_message(msg), 100 * NS)
+    writer.close()
+    return source
+
+
+def _encoding_config(tmp_path, rule_yaml):
+    cfg_path = tmp_path / "enc.yaml"
+    cfg_path.write_text(
+        "robot: t\npipeline:\n  - transform: image_encoding\n"
+        "    topics: ['/cam/*']\n" + rule_yaml)
+    return config_mod.load(cfg_path)
+
+
+def test_image_encoding_relabels_without_touching_pixels(tmp_path):
+    source = _depth_bag(tmp_path)
+    _, src_msgs = _read_all(source)
+    src = ser.deserialize_message(src_msgs[0][1], bagio.message_class(IMAGE))
+
+    out = tmp_path / "out" / "bag"
+    pipeline.run(source, out, _encoding_config(
+        tmp_path, "    from: mono16\n    to: 16UC1\n"))
+
+    _, messages = _read_all(out)
+    msg = ser.deserialize_message(messages[0][1], bagio.message_class(IMAGE))
+    assert msg.encoding == "16UC1"
+    # everything else survives untouched
+    assert (msg.width, msg.height, msg.step) == (src.width, src.height, src.step)
+    assert bytes(msg.data) == bytes(src.data)
+
+
+def test_image_encoding_refuses_a_size_mismatch(tmp_path):
+    """A relabel cannot reinterpret a buffer, so differing bytes/pixel is refused."""
+    with pytest.raises(ValueError, match="bytes/pixel"):
+        pipeline.run(_depth_bag(tmp_path), tmp_path / "out" / "bag",
+                     _encoding_config(tmp_path, "    from: mono16\n    to: 32FC1\n"))
+
+
+def test_image_encoding_refuses_an_inconsistent_step(tmp_path):
+    """step must match width * bytes/pixel of the target encoding."""
+    source = _depth_bag(tmp_path, step=8 * 3)   # a 3-byte/pixel stride
+    with pytest.raises(ValueError, match="step is"):
+        pipeline.run(source, tmp_path / "out" / "bag",
+                     _encoding_config(tmp_path, "    from: mono16\n    to: 16UC1\n"))
+
+
+def test_image_encoding_refuses_a_truncated_buffer(tmp_path):
+    source = _depth_bag(tmp_path, data_len=10)
+    with pytest.raises(ValueError, match="data is 10 bytes"):
+        pipeline.run(source, tmp_path / "out" / "bag",
+                     _encoding_config(tmp_path, "    from: mono16\n    to: 16UC1\n"))
+
+
+def test_image_encoding_refuses_the_wrong_source_encoding(tmp_path):
+    """The `from` guard catches a glob that picked up the wrong topic."""
+    source = _depth_bag(tmp_path, encoding="16UC1")
+    with pytest.raises(ValueError, match="already '16UC1'"):
+        pipeline.run(source, tmp_path / "out" / "bag",
+                     _encoding_config(tmp_path, "    from: mono16\n    to: 16UC1\n"))
+
+    source = _depth_bag(tmp_path / "b", encoding="16SC1")
+    with pytest.raises(ValueError, match="not the 'mono16'"):
+        pipeline.run(source, tmp_path / "out2" / "bag",
+                     _encoding_config(tmp_path, "    from: mono16\n    to: 16UC1\n"))
+
+
+def test_image_encoding_rejects_an_unknown_target(tmp_path):
+    with pytest.raises(ValueError, match="not a known image encoding"):
+        pipeline.run(_depth_bag(tmp_path), tmp_path / "out" / "bag",
+                     _encoding_config(tmp_path, "    to: not_an_encoding\n"))
+
+
+def test_image_encoding_nothing_written_when_preflight_fails(tmp_path):
+    """Preflight runs before the output directory exists."""
+    out = tmp_path / "out" / "bag"
+    with pytest.raises(ValueError):
+        pipeline.run(_depth_bag(tmp_path, data_len=10), out,
+                     _encoding_config(tmp_path, "    from: mono16\n    to: 16UC1\n"))
+    assert not out.exists()

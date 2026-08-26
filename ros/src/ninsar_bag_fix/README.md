@@ -114,6 +114,7 @@ bags:                                 # optional overrides, keyed by session nam
 |---|---|
 | `frame_id` | Sets `header.frame_id` on the selected topics. |
 | `camera_info` | Repairs `CameraInfo`: positive focal lengths, principal point defaulted to the image centre when degenerate, `R` := identity, `P` rebuilt from `K`. Each step is switchable. |
+| `image_encoding` | Rewrites `Image.encoding` (e.g. `mono16` -> `16UC1`) without touching the pixels. Refuses before writing if the buffer is not laid out the way the target encoding requires. See below. |
 | `tf_static` | Three lists — `remove`, `edit`, `add` — over the static transforms. See below. |
 | `topic_filter` | `drop` / `keep` globs and exact `rename` mappings. Purely topic-level, so the payloads are never touched. |
 | `stamp_offset` | Legacy lidar fix. `mode: auto` estimates `median(receive − header)` in a first pass; `fixed` uses `offset_ns`; `receive_time` overwrites the stamp. Disabled by default. |
@@ -133,7 +134,8 @@ frame is a single rule:
     - parent: base_link
       child: lidar
       xyz: [0.35, -0.08, 1.42]
-      rpy: [0.03, -0.06, 0.11]              # or `quat: [x, y, z, w]`
+      rpy: [0.03, -0.06, 0.11]              # radians; `rpy_deg:` takes degrees,
+                                            # or give `quat: [x, y, z, w]`
   add:                                      # must not already be in the bag
     - {parent: base_link, child: gnss, xyz: [0.1, 0.0, 0.9], rpy: [0, 0, 0]}
 ```
@@ -157,6 +159,44 @@ Other behaviour worth knowing:
   keeps it.
 - If the bag has no `/tf_static` at all, `add` synthesizes the topic with
   `transient_local` QoS.
+
+### Relabelling an image encoding
+
+The Visionary-B records depth as `mono16`, and `depth_image_proc` rejects it:
+
+```
+[ERROR] [PointCloudXyzrgbNode]: Depth image has unsupported encoding [mono16]
+```
+
+`mono16` and `16UC1` describe the same buffer — one channel, 16-bit unsigned —
+so the fix is a relabel, not a conversion:
+
+```yaml
+- transform: image_encoding
+  topics: ["/visionary_b_two/*/depth"]
+  from: mono16      # only rewrite frames currently in this encoding
+  to: 16UC1
+```
+
+**The label carries a unit.** `mono16` says nothing about what the values mean;
+`16UC1` is defined by the depth pipeline to be **millimetres** (`32FC1` is
+metres). Relabelling therefore asserts a unit the bytes cannot prove — if the
+sensor's raw values are not millimetres, every derived point is scaled by a
+constant and nothing about the bag looks wrong. Confirm the unit against
+something external before trusting the output.
+
+What the transform *can* check, it checks in `preflight` — before any output is
+written — by reading the first frame of each selected topic:
+
+- source and target must be the same bytes/pixel (a relabel cannot reinterpret
+  a buffer),
+- `step == width * bytes/pixel`,
+- `len(data) == height * step`,
+- the encoding actually present is the `from` you named. A bag already in the
+  target encoding fails rather than being relabelled twice.
+
+`is_bigendian` being set is reported as a warning, since consumers that assume
+host byte order will misread the image.
 
 ## How it works
 

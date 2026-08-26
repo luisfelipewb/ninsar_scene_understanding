@@ -301,6 +301,22 @@ private:
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
+
+  // `ros2 run ... calib_node params_file:=lidar_calib.yaml` is an easy slip:
+  // that is launch-argument syntax, so rcl drops it without a word and the node
+  // runs on its compiled defaults - a small ROI that looks like the config was
+  // ignored. Name the argument instead of starting up silently.
+  for (const std::string & argument : rclcpp::remove_ros_arguments(argc, argv)) {
+    if (argument.find(":=") != std::string::npos) {
+      RCLCPP_WARN(
+        rclcpp::get_logger("lidar_calib_node"),
+        "ignoring '%s': it is not a ROS argument, so nothing in it was applied. "
+        "Use '--ros-args --params-file <file>' here, or pass 'params_file:=<file>' "
+        "to 'ros2 launch ninsar_lidar_calib calibrate.launch.py'.",
+        argument.c_str());
+    }
+  }
+
   try {
     rclcpp::spin(std::make_shared<ninsar_lidar_calib::CalibNode>());
   } catch (const std::exception & exception) {

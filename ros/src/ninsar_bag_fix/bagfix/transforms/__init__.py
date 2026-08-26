@@ -142,4 +142,11 @@ def _as_list(value) -> list[str]:
 
 
 # Import the concrete transforms so importing this package populates REGISTRY.
-from . import camera_info, frame_id, stamp_offset, tf_static, topic_filter  # noqa: E402,F401
+from . import (  # noqa: E402,F401
+    camera_info,
+    frame_id,
+    image_encoding,
+    stamp_offset,
+    tf_static,
+    topic_filter,
+)
