@@ -115,6 +115,7 @@ bags:                                 # optional overrides, keyed by session nam
 | `frame_id` | Sets `header.frame_id` on the selected topics. |
 | `camera_info` | Repairs `CameraInfo`: positive focal lengths, principal point defaulted to the image centre when degenerate, `R` := identity, `P` rebuilt from `K`. Each step is switchable. |
 | `image_encoding` | Rewrites `Image.encoding` (e.g. `mono16` -> `16UC1`) without touching the pixels. Refuses before writing if the buffer is not laid out the way the target encoding requires. See below. |
+| `image_channel_swap` | Exchanges the red and blue channels of an image and relabels it (e.g. `bgr8` -> `rgb8`). Unlike `image_encoding`, this one *does* rewrite the pixels. See below. |
 | `tf_static` | Three lists — `remove`, `edit`, `add` — over the static transforms. See below. |
 | `topic_filter` | `drop` / `keep` globs and exact `rename` mappings. Purely topic-level, so the payloads are never touched. |
 | `stamp_offset` | Legacy lidar fix. `mode: auto` estimates `median(receive − header)` in a first pass; `fixed` uses `offset_ns`; `receive_time` overwrites the stamp. Disabled by default. |
@@ -197,6 +198,43 @@ written — by reading the first frame of each selected topic:
 
 `is_bigendian` being set is reported as a warning, since consumers that assume
 host byte order will misread the image.
+
+### Swapping the colour channels
+
+The Visionary-B colour stream is recorded as `bgr8`, and the bytes really are
+B, G, R — so everything that trusts the header renders red and blue the wrong
+way round. `bgr8` and `rgb8` are both three bytes per pixel, so `image_encoding`
+would accept the rule and produce a bag that is still wrong, just relabelled.
+Reordering the channels is a different transform:
+
+```yaml
+- transform: image_channel_swap
+  topics: ["/visionary_b_two/*/rgb"]
+  from: bgr8
+  to: rgb8
+```
+
+**Pick the transform against the image, not the header.** The two cases look
+identical from the metadata and want opposite fixes:
+
+| the pixels are… | the header says | use |
+|---|---|---|
+| already R, G, B | `bgr8` | `image_encoding` — relabel, pixels untouched |
+| really B, G, R | `bgr8` | `image_channel_swap` — reorder, then relabel |
+
+Choosing wrong gives a bag that looks repaired and is not, so confirm against
+something in the scene whose colour you know before trusting the output.
+
+Supported pairs are `bgr8 <-> rgb8` and `bgra8 <-> rgba8`; the swap exchanges
+channel 0 and channel 2 and leaves any alpha byte where it is. Packed formats
+like `yuv422` and bayer patterns have no channel to exchange and are refused
+rather than mangled.
+
+The swap is **its own inverse**, so a second run would silently undo the first.
+That is why `from:` is required here (it is optional for `image_encoding`), and
+why `preflight` refuses a topic that is already in the target encoding — before
+any output is written. It checks the same layout invariants as the relabel:
+`step == width * bytes/pixel` and `len(data) == height * step`.
 
 ## How it works
 

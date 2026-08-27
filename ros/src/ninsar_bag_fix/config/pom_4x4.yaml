@@ -45,6 +45,17 @@ pipeline:
     from: mono16
     to: 16UC1
 
+  # The colour stream is recorded as bgr8 and the bytes really are B, G, R, so
+  # everything downstream renders red and blue swapped. Unlike the depth rule
+  # above, this one *rewrites the pixels* - it exchanges the red and blue
+  # channels - and then relabels to match. It is its own inverse, so it must not
+  # be run twice; preflight refuses a topic that is already rgb8.
+  - transform: image_channel_swap
+    topics:
+      - /visionary_b_two/*/rgb
+    from: bgr8
+    to: rgb8
+
     # Correct the lidar extrinsic recorded in the bag. `edit` asserts the pair
     # is already on /tf_static - use `add` for one that was never published,
     # and `remove` to delete a stale frame.

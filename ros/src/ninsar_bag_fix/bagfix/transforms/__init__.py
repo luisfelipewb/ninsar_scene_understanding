@@ -145,6 +145,7 @@ def _as_list(value) -> list[str]:
 from . import (  # noqa: E402,F401
     camera_info,
     frame_id,
+    image_channel_swap,
     image_encoding,
     stamp_offset,
     tf_static,

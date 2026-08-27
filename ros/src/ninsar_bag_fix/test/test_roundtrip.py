@@ -594,3 +594,101 @@ def test_image_encoding_nothing_written_when_preflight_fails(tmp_path):
         pipeline.run(_depth_bag(tmp_path, data_len=10), out,
                      _encoding_config(tmp_path, "    from: mono16\n    to: 16UC1\n"))
     assert not out.exists()
+
+
+# ---- image_channel_swap --------------------------------------------------
+
+
+def _rgb_bag(tmp_path, encoding="bgr8", width=8, height=4, pixel=(1, 2, 3),
+             step=None, data_len=None):
+    """A bag with one /cam/rgb frame of a repeated, known pixel."""
+    source = tmp_path / "session" / "bag"
+    writer = bagio.open_writer(source)
+    writer.create_topic(bagio.make_topic_metadata("/cam/rgb", IMAGE))
+    msg = bagio.message_class(IMAGE)()
+    msg.width, msg.height = width, height
+    msg.encoding = encoding
+    msg.step = width * len(pixel) if step is None else step
+    body = bytes(pixel) * (width * height)
+    msg.data = body if data_len is None else bytes(data_len)
+    writer.write("/cam/rgb", ser.serialize_message(msg), 100 * NS)
+    writer.close()
+    return source
+
+
+def _swap_config(tmp_path, rule_yaml):
+    cfg_path = tmp_path / "swap.yaml"
+    cfg_path.write_text(
+        "robot: t\npipeline:\n  - transform: image_channel_swap\n"
+        "    topics: ['/cam/*']\n" + rule_yaml)
+    return config_mod.load(cfg_path)
+
+
+def test_channel_swap_exchanges_red_and_blue(tmp_path):
+    source = _rgb_bag(tmp_path)
+    _, src_msgs = _read_all(source)
+    src = ser.deserialize_message(src_msgs[0][1], bagio.message_class(IMAGE))
+
+    out = tmp_path / "out" / "bag"
+    pipeline.run(source, out, _swap_config(
+        tmp_path, "    from: bgr8\n    to: rgb8\n"))
+
+    _, messages = _read_all(out)
+    msg = ser.deserialize_message(messages[0][1], bagio.message_class(IMAGE))
+    assert msg.encoding == "rgb8"
+    assert bytes(msg.data) == bytes([3, 2, 1]) * (msg.width * msg.height)
+    # the geometry is untouched, only the channel order changed
+    assert (msg.width, msg.height, msg.step) == (src.width, src.height, src.step)
+    assert len(msg.data) == len(src.data)
+
+
+def test_channel_swap_keeps_alpha_in_place(tmp_path):
+    source = _rgb_bag(tmp_path, encoding="rgba8", pixel=(1, 2, 3, 4))
+    out = tmp_path / "out" / "bag"
+    pipeline.run(source, out, _swap_config(
+        tmp_path, "    from: rgba8\n    to: bgra8\n"))
+
+    _, messages = _read_all(out)
+    msg = ser.deserialize_message(messages[0][1], bagio.message_class(IMAGE))
+    assert msg.encoding == "bgra8"
+    assert bytes(msg.data) == bytes([3, 2, 1, 4]) * (msg.width * msg.height)
+
+
+def test_channel_swap_refuses_a_bag_already_swapped(tmp_path):
+    """The swap is its own inverse, so a second run must not silently undo it."""
+    source = _rgb_bag(tmp_path, encoding="rgb8")
+    with pytest.raises(ValueError, match="already 'rgb8'"):
+        pipeline.run(source, tmp_path / "out" / "bag",
+                     _swap_config(tmp_path, "    from: bgr8\n    to: rgb8\n"))
+
+
+def test_channel_swap_refuses_the_wrong_source_encoding(tmp_path):
+    source = _rgb_bag(tmp_path, encoding="bgra8", pixel=(1, 2, 3, 4))
+    with pytest.raises(ValueError, match="not the 'bgr8'"):
+        pipeline.run(source, tmp_path / "out" / "bag",
+                     _swap_config(tmp_path, "    from: bgr8\n    to: rgb8\n"))
+
+
+def test_channel_swap_rejects_an_unsupported_pair(tmp_path):
+    """A relabel is not a swap, and a packed format has no channel to exchange."""
+    with pytest.raises(ValueError, match="not a channel swap"):
+        pipeline.run(_rgb_bag(tmp_path), tmp_path / "out" / "bag",
+                     _swap_config(tmp_path, "    from: bgr8\n    to: rgb16\n"))
+    with pytest.raises(ValueError, match="needs both a 'from' and a 'to'"):
+        pipeline.run(_rgb_bag(tmp_path / "b"), tmp_path / "out2" / "bag",
+                     _swap_config(tmp_path, "    to: rgb8\n"))
+
+
+def test_channel_swap_refuses_an_inconsistent_step(tmp_path):
+    source = _rgb_bag(tmp_path, step=8 * 2)
+    with pytest.raises(ValueError, match="step is"):
+        pipeline.run(source, tmp_path / "out" / "bag",
+                     _swap_config(tmp_path, "    from: bgr8\n    to: rgb8\n"))
+
+
+def test_channel_swap_nothing_written_when_preflight_fails(tmp_path):
+    out = tmp_path / "out" / "bag"
+    with pytest.raises(ValueError, match="data is 10 bytes"):
+        pipeline.run(_rgb_bag(tmp_path, data_len=10), out,
+                     _swap_config(tmp_path, "    from: bgr8\n    to: rgb8\n"))
+    assert not out.exists()
