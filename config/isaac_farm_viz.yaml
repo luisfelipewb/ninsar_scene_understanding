@@ -1,0 +1,34 @@
+# hydra_visualizer renderer config for tools/make_isaac_farm_dsg.py graphs: tools/farm_viz.yaml
+# with the FARM root hidden (it stays in the graph) and no navigation partition.
+#   ros2 launch hydra_visualizer static_visualizer.launch.yaml \
+#     scene_graph:=$PWD/isaac_farm_dsg.json visualizer_config_path:=$PWD/tools/isaac_farm_viz.yaml
+# Node colors come from each node's `color` attribute (default NodeColorAdapter).
+---
+renderer:
+  layer_z_step: 8.0           # metres between layer "floors"
+  collapse_layers: false
+  layers:
+    1:  # DETECTIONS: crops, buildings, obstacles (on the ground)
+      visualize: true
+      z_offset_scale: 0.0
+      nodes: {scale: 0.6, alpha: 1.0, use_sphere: true}
+      bounding_boxes: {draw: true, scale: 0.03, edge_scale: 0.02, alpha: 0.9}
+      edges: {scale: 0.05, alpha: 0.8, use_color: true,     # next_in_row, near
+              interlayer_scale: 0.03, interlayer_alpha: 0.4, interlayer_use_source: false}
+    2:  # ROWS
+      visualize: true
+      z_offset_scale: 1.0
+      nodes: {scale: 1.0, alpha: 0.9, use_sphere: false}
+      text: {draw: true, adapter: {type: NameTextAdapter}, height: 0.8, scale: 0.8}
+      edges: {scale: 0.08, alpha: 0.6, use_color: false,    # adjacent_row
+              interlayer_scale: 0.02, interlayer_alpha: 0.25, interlayer_use_source: true}
+    3:  # PARCELS: boundary drawn on the ground, node floating above it
+      visualize: true
+      z_offset_scale: 2.0
+      nodes: {scale: 1.2, alpha: 0.9, use_sphere: false}
+      text: {draw: true, adapter: {type: NameTextAdapter}, height: 1.5, scale: 1.2}
+      bounding_boxes: {draw: true, collapse: true, scale: 0.15, edge_scale: 0.02, alpha: 0.8, edge_break_ratio: 0.2}
+      edges: {scale: 0.15, alpha: 0.8, use_color: false,    # adjacent_parcel
+              interlayer_scale: 0.04, interlayer_alpha: 0.4, interlayer_use_source: true}
+    4:  # FARM: kept as the graph root, not drawn; edges to a hidden node are skipped too
+      visualize: false

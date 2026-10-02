@@ -1,0 +1,17 @@
+# voxel_query: box/class queries on the live Voxeland map (docs/VOXELAND_GUIDE.md, "Querying the map").
+# Set query.* with `ros2 param set`, then call /voxel_query/query (std_srvs/Trigger).
+voxel_query:
+  ros__parameters:
+    cloud_topic: /bonxai_point_cloud_centers
+    distributions_service: /voxeland/get_class_distributions
+    snapshot_timeout_s: 5.0       # wait this long for a fresh map; then reuse the last snapshot
+    service_timeout_s: 10.0       # per get_class_distributions call
+    fetch_chunk: 5000             # voxels per call; the server inserts clouds between calls
+
+    query:
+      center: [0.0, 0.0, 0.0]     # world frame [m]
+      dimensions: [0.0, 0.0, 0.0] # full side lengths [m]; all zero = whole map
+      yaw: 0.0                    # rotation about z [rad], as spark_dsg's RAABB boxes
+      classes: [""]               # top-class filter, server class names; [""] = any class
+      min_prob: 0.0               # keep voxels with max p over classes (all if none) >= this
+      max_voxels: 200000          # fetch cap; the summary says when it was hit

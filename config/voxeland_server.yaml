@@ -1,0 +1,10 @@
+# Voxeland server for the Isaac Sim tour bag. Same parameters as upstream's
+# voxeland/launch/voxeland_server.launch.xml, with the values this setup needs.
+voxeland_server:
+  ros__parameters:
+    frame_id: world               # fixed map frame of the bag
+    resolution: 0.10              # voxel size [m]
+    sensor_model.max_range: 10.0  # points beyond this only carve free space
+    use_height_map: true
+    semantics_as_instances: false # dense semantics: per-voxel class distributions, no object instances
+    latch: false                  # publish the map only when someone subscribes

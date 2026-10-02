@@ -1,0 +1,15 @@
+diff --git a/voxeland/voxeland/include/voxeland_server.hpp b/voxeland/voxeland/include/voxeland_server.hpp
+index 9e57592..fa78e4b 100644
+--- a/voxeland/voxeland/include/voxeland_server.hpp
++++ b/voxeland/voxeland/include/voxeland_server.hpp
+@@ -72,7 +72,9 @@ namespace voxeland_server
+ 
+         bool modeHas(DataMode mode)
+         {
+-            return static_cast<int>(currentMode & mode) != 0;
++            // all bits of 'mode' must be set: SemanticsInstances is Semantics | Instances, so a
++            // plain "any bit" test would report instances for every semantic mode
++            return (currentMode & mode) == mode;
+         }
+ 
+         SemanticsROSWrapper semantics_ros_wrapper;

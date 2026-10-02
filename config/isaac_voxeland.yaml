@@ -1,0 +1,22 @@
+# semantic_cloud_adapter for the Isaac Sim tour bag (front ZED camera).
+# Contract with the Voxeland server: docs/CLOUD_IN_SPEC.md
+semantic_cloud_adapter:
+  ros__parameters:
+    points_topic: /sensor_rig/front_camera/points          # depth_image_proc output (organized)
+    labels_image_topic: /sensor_rig/front_camera/semantic_segmentation   # 32SC1 label ids
+    labels_json_topic: /sensor_rig/front_camera/semantic_labels          # {"3": {"class": "ground"}, ...}
+    confidence_topic: ""          # ground truth: no per-pixel confidence
+    output_topic: cloud_in
+
+    # Classes mapped into the voxel map, in this order; "unknown" is appended last.
+    # Fixed for the whole run: the server reads the category list from the first cloud only.
+    categories: [ground, tree, grapevine, lemon, cabbage, fence, building, obstacle]
+    # Fallback id -> class table (index = id) until the JSON arrives. The tour bag's ids are stable.
+    label_names: [BACKGROUND, UNLABELLED, obstacle, ground, fence, building, tree, grapevine, lemon, cabbage]
+
+    world_frame: world
+    output_frame: zed_x_front     # ZED body frame (FLU); "" keeps the optical frame of the cloud
+    min_range: 0.1
+    max_range: 10.0
+    drop_far_points: false        # keep far points: the server uses them for free-space carving
+    pixel_stride: 1
