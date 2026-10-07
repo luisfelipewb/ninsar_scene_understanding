@@ -269,7 +269,7 @@ The server scans `--imagery DIR` for two forms of imagery.
 | 3 | Guided workflow, validation UI | step panel, issue list with zoom-to, outlines, derived tree                           | every rule in GeoJSON spec §5 shows up in the UI on a crafted bad file |
 | 4 | Generators                 | rows, plants, posts, with preview and replace                                             | a 40-row parcel with plants in under a minute of user time |
 | 5 | Precision and imagery      | local overlays, typed coordinates, offset row, measure, cut hole, undo/redo, autosave     | an `enu` overlay rendered from the farm lines up with its features; typed x/y match `farm_geojson.Frame` |
-| 6 | Importer (separate plan)   | `scripts/geojson_to_dsg.py` on top of `farm_geojson.derive()`                             | |
+| 6 | Importer                   | `scripts/geojson_to_dsg.py` and `scripts/farm_dsg.py` on top of `farm_geojson.check()` / `FarmIndex` | `mini_farm.geojson` builds a graph that passes `farm_dsg.py verify`; `test_geojson_to_dsg.py` passes |
 
 ## 9. Verification
 

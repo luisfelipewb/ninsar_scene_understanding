@@ -164,7 +164,9 @@ Navigation:
 | `row_strip_m`   | 0.5     | §6 row strip  |
 | `row_end_m`     | 1.5     | §6 row strip  |
 
-These are importer parameters and are stored in the graph metadata `thresholds`.
+These are importer parameters and are stored in the graph metadata `thresholds`. The
+importer's navigation and spatial thresholds are listed in DSG §8. All defaults are in
+`config/farm_schema.yaml`.
 
 ## 6. Derived on import
 
@@ -183,7 +185,7 @@ These are importer parameters and are stored in the graph metadata `thresholds`.
 | `position`               | Point: the point. LineString: midpoint along the line. Polygon: centroid. z = half the box height |
 | `bounding_box`           | Point: class default box, axis-aligned. LineString and Polygon: minimum rotated rectangle of the geometry. z: class default height (§4.3) |
 | `geometry` metadata      | the feature geometry converted to `map` ENU                                                  |
-| navigation               | road → `road` waypoints every `road_step_m`. Lanes, headlands, entrances and yard waypoints follow DSG §5.5. Waypoint ids are regenerated on every import and are not stable |
+| navigation               | road → `road` waypoints at most `road_step_m` apart, keeping the road's vertices and shared where roads cross or meet. Lanes, headlands, entrances, access and blocked edges follow DSG §5.5 and §8. Waypoint ids are regenerated on every import: the same file gives the same ids, but any edit may renumber them |
 
 ## 7. Example
 

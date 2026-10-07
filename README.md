@@ -8,7 +8,7 @@ setup lives here.
 |---|---|
 | `launch/isaac_voxeland.launch.xml` | Voxeland on the Isaac Sim tour bag (below); `.yaml` mirror |
 | `ninsar_mapping/` | runtime nodes (`ros2 run ninsar_mapping ...`): `semantic_cloud_adapter`, `voxel_query`, `tf_to_pose_cov` |
-| `scripts/` | offline tools, run with the venv's python: `make_farm_dsg.py`, `make_isaac_farm_dsg.py`, `view_map.py`, `farm_geojson.py` (farm GeoJSON validate/tree) |
+| `scripts/` | offline tools, run with the venv's python: `make_farm_dsg.py`, `make_isaac_farm_dsg.py`, `view_map.py`, `farm_geojson.py` (farm GeoJSON validate/tree), `geojson_to_dsg.py` (farm GeoJSON → scene graph), `farm_dsg.py` (scene graph spec helpers, `verify`) |
 | `config/` | node parameters (`isaac_voxeland.yaml`, `voxeland_server.yaml`), scene graph viz configs, `isaac_assets.json` (input of `make_isaac_farm_dsg.py`), `farm_schema.yaml` (farm GeoJSON catalog) |
 | `rviz/` | rviz config for the Voxeland launch |
 | `docs/` | [HYDRA_GUIDE.md](docs/HYDRA_GUIDE.md), [VOXELAND_GUIDE.md](docs/VOXELAND_GUIDE.md), [CLOUD_IN_SPEC.md](docs/CLOUD_IN_SPEC.md), [FARM_DSG_SPEC.md](docs/FARM_DSG_SPEC.md), [FARM_GEOJSON_SPEC.md](docs/FARM_GEOJSON_SPEC.md), [FARM_EDITOR.md](docs/FARM_EDITOR.md) |

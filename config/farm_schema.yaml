@@ -22,6 +22,54 @@ thresholds:
   access_m: 15.0        # G16
   row_strip_m: 0.5      # row strip half-width when a parcel's row spacing is unknown
   row_end_m: 1.5        # row strip reach beyond each row end (end anchors)
+  # DSG importer (scripts/geojson_to_dsg.py, DSG spec §8)
+  road_step_m: 5.0      # max spacing of road waypoints
+  junction_m: 0.5       # road waypoints closer than this are merged
+  lane_step_m: 4.0      # max spacing of lane waypoints
+  entrance_m: 15.0      # extra headland -> road entrances; warning on the forced one
+  near_m: 1.0           # "near": max gap between object footprints
+  adjacent_area_m: 12.0 # "adjacent_area": max gap between area boundaries
+  clearance_m: 0.5      # navigation edge blocked by an object footprint closer than this
+  flat_height_m: 0.1    # box height of the farm, areas and overlays
+
+# semantic label id per object class and crop (DSG spec §5.1). Ids shared with the Isaac
+# perception labels (isaac_voxeland.yaml label_names) keep their value; 0 BACKGROUND,
+# 1 UNLABELLED and 3 ground are reserved. Never renumber or reuse an id.
+label_ids:
+  unknown: 2
+  fence: 4
+  building: 5
+  tree: 6
+  grapevine: 7
+  lemon: 8
+  cabbage: 9
+  weed: 10
+  shrub: 11
+  post: 12
+  end_anchor: 13
+  trellis_wire: 14
+  drip_line: 15
+  soil_sensor: 16
+  insect_trap: 17
+  weather_station: 18
+  valve: 19
+  sprinkler: 20
+  shed: 21
+  silo: 22
+  tank: 23
+  wall: 24
+  gate: 25
+  dock: 26
+  refill_point: 27
+  bin_drop: 28
+  parking: 29
+  bin: 30
+  crate: 31
+  trailer: 32
+  hose: 33
+  rock: 34
+  pole: 35
+  debris: 36
 
 # keys that must not appear in feature properties (§4.1): lifecycle + derived
 reserved: [uid, source, status, modified, confidence, last_observed, geometry, parent,

@@ -59,6 +59,12 @@ class Schema:
             self.type_list.append(spec)
             for kind in kinds:
                 self.types[(spec["layer"], spec["category"], kind)] = spec
+        self.label_ids = dict(raw.get("label_ids", {}))
+        classes = {k for t in self.type_list if t["layer"] == "object" for k in t["kinds"]}
+        missing = sorted(classes - set(self.label_ids))
+        dup = [i for i, c in Counter(self.label_ids.values()).items() if c > 1]
+        if missing or dup:
+            raise ValueError(f"{path}: label_ids missing for {missing}, duplicated ids {dup}")
 
     def type_of(self, props):
         return self.types.get((props.get("layer"), props.get("category"), props.get("kind")))
@@ -71,7 +77,7 @@ class Schema:
     def to_json(self):
         return {"version": self.version, "crops": self.crops, "thresholds": self.thresholds,
                 "reserved": sorted(self.reserved), "default_size_m": self.default_size_m,
-                "types": self.type_list, "workflow": self.workflow}
+                "label_ids": self.label_ids, "types": self.type_list, "workflow": self.workflow}
 
 
 _DEFAULT_SCHEMA = None
@@ -401,6 +407,7 @@ class FarmIndex:
         self.derived = {fid: {} for fid in self.nodes}
         self._zones = {}
         self.strips = {}
+        self.spacing = {}  # area id -> row spacing used for its strips (file value or median)
         by_layer = defaultdict(list)
         for n in self.nodes.values():
             by_layer[n.layer].append(n)
@@ -460,6 +467,7 @@ class FarmIndex:
                 gaps = np.diff([offsets[r.id] for r in ordered])
                 spacing = float(np.median(gaps)) if len(gaps) else None
             half = spacing / 2 if spacing and spacing > 0 else th["row_strip_m"]
+            self.spacing[aid] = 2 * half
             for r in group:
                 self.strips[r.id] = _extend(r.geom, th["row_end_m"]).buffer(half, cap_style="flat")
             if aid in self.nodes and self.nodes[aid].kind == "parcel":

@@ -1,9 +1,12 @@
 # Farm scene graph specification
 
-Draft v0, 2026-10-07. Structure of the farm scene graph (`spark_dsg::DynamicSceneGraph`)
-used by `scripts/make_farm_dsg.py`, `scripts/make_isaac_farm_dsg.py` and the planned
-GeoJSON importer. The input file format is [FARM_GEOJSON_SPEC.md](FARM_GEOJSON_SPEC.md);
-the tool that writes it is [FARM_EDITOR.md](FARM_EDITOR.md).
+Draft v0.1 (`spec_version` "0.1"), 2026-10-07. Structure of the farm scene graph
+(`spark_dsg::DynamicSceneGraph`) built by `scripts/geojson_to_dsg.py` from a GeoJSON prior,
+and by `scripts/make_farm_dsg.py` and `scripts/make_isaac_farm_dsg.py` (see Appendix B).
+`scripts/farm_dsg.py` holds the layers, the query helpers (§8) and a checker for the rules
+of this spec (`farm_dsg.py verify GRAPH.json`). The input file format is
+[FARM_GEOJSON_SPEC.md](FARM_GEOJSON_SPEC.md); the tool that writes it is
+[FARM_EDITOR.md](FARM_EDITOR.md).
 
 ## 1. Scope
 
@@ -106,7 +109,9 @@ excludes waypoints in a `no_entry` area, and planners may add a cost for waypoin
 ### 5.1 OBJECTS (layer 1)
 
 `semantic_label` gives the class through the layer's labelspace. Label ids are defined
-in config, not in this spec.
+in `config/farm_schema.yaml` (`label_ids`), not in this spec. Classes shared with the
+perception labels (`config/isaac_voxeland.yaml`) keep the perception id; ids are never
+renumbered or reused.
 
 | Category      | Prefix | Classes                                                          | Tree parent         | Notes                                    |
 |---------------|--------|------------------------------------------------------------------|---------------------|------------------------------------------|
@@ -159,7 +164,15 @@ One node. Attributes: `name`, `area_m2`. Geometry: Polygon (farm boundary).
 | `yard`     | open ground in a yard                         |
 
 Lane waypoints carry `parcel` (area uid) and `lane_index` (the lane between rows *i*−1
-and *i* has index *i*).
+and *i* has index *i*; lanes 0 and *n* run outside the outer rows, half a row spacing
+away). The two ends of a lane are `headland` waypoints with the same `parcel` and
+`lane_index`, plus `side` (`start`: the side where the rows start). A lane spans its
+rows extended by half the parcel's `headland_m` (else `row_end_m`) and is clipped to the
+parcel. Road waypoints carry `road` (the GeoJSON road id) and `width_m`. Lanes assume
+straight rows.
+
+`yard` waypoints are not generated yet; objects in a yard are reached from road
+waypoints (`access`).
 
 ### 5.6 AGENTS (layer 1 / `a`)
 
@@ -198,7 +211,8 @@ Lifecycle:
 | looked for and not found                    | `prior`     | `missing`   | unchanged  |
 | found but not in the prior                  | `perceived` | `confirmed` | false      |
 
-Robots never delete prior nodes; a node they cannot find is marked `missing`. The
+Imported nodes get `confidence: 1.0`; perception lowers it. Robots never delete prior
+nodes; a node they cannot find is marked `missing`. The
 GeoJSON file remains the record of the prior.
 
 ## 7. Frames and units
@@ -208,7 +222,9 @@ GeoJSON file remains the record of the prior.
 - Angles: radians in `bounding_box`, degrees in `*_deg` metadata. Both are
   counter-clockwise from east (+x).
 - Graph metadata: `spec_version`, `site`, `origin` (`lat`, `lon`, `alt`), `frame`,
-  `units`, `labelspaces`.
+  `units`, `labelspaces` (per layer, `{id: name}`), `thresholds` (§8) and `prior`
+  (`file`, `sha256`, `farm_geojson` profile version, `schema_version`) for a graph built
+  from GeoJSON.
 
 ## 8. Edges
 
@@ -223,21 +239,48 @@ undirected; "from → to" below gives the meaning.
 | `next_in_row`    | spatial    | crop → next crop                | 1                  | consecutive plants in the same row           |
 | `adjacent_row`   | spatial    | row → next row                  | 2                  | consecutive rows in the same parcel          |
 | `adjacent_area`  | spatial    | area ↔ area                     | 3                  | boundary gap below a threshold; `gap_m`      |
-| `near`           | spatial    | object ↔ object                 | 1                  | box gap below a threshold                    |
-| `access`         | navigation | object ↔ waypoint               | 1 ↔ 1/`n`          | waypoint from which the object is reached    |
+| `near`           | spatial    | object ↔ object                 | 1                  | footprint gap below `near_m`; not between two crop / row_support objects of the same row |
+| `access`         | navigation | object ↔ waypoint               | 1 ↔ 1/`n`          | waypoint from which the object is reached (below) |
 | `lane`           | navigation | waypoint ↔ waypoint             | 1/`n`              | consecutive lane waypoints                   |
 | `headland`       | navigation | waypoint ↔ waypoint             | 1/`n`              | joins the lane ends on one parcel side       |
 | `road`           | navigation | waypoint ↔ waypoint             | 1/`n`              | consecutive road waypoints                   |
-| `entrance`       | navigation | waypoint ↔ waypoint             | 1/`n`              | headland → road                              |
+| `entrance`       | navigation | waypoint ↔ waypoint             | 1/`n`              | headland → road (below)                      |
 | `at`             | agent      | agent ↔ waypoint                | 1/`a` ↔ 1/`n`      | nearest waypoint to the agent's latest pose  |
 
-Navigation edges may carry `blocked: true` and `blocked_by` (a list of object uids).
+- `access`: an object in a row links to the nearest waypoint of each lane beside its row.
+  Any other object links to the nearest road or headland waypoint (or lane waypoint of its
+  own parcel) within `access_m`. A service point always gets one, even farther away.
+  Waypoints in a `no_entry` area are never `access` targets.
+- `entrance`: each parcel links its nearest unblocked (headland, road) waypoint pair,
+  whatever the distance, so that it stays reachable. Every other headland waypoint within
+  `entrance_m` of a road waypoint is linked to the nearest one.
+
+Navigation edges may carry `blocked: true` and `blocked_by` (a list of uids). An edge is
+blocked when its straight segment passes within `clearance_m` of the footprint of an
+object of category obstacle, movable, vegetation, equipment or structure (except `gate`).
+An `entrance` is also blocked by a `water_body` area or a `no_entry` overlay it crosses.
 Routing skips blocked edges and `no_entry` waypoints (§4) by default.
 
-Thresholds (`near`, `adjacent_area`, `T3` tolerance) are builder parameters, stored in
-the graph metadata as `thresholds`.
+Thresholds are builder parameters, stored in the graph metadata as `thresholds`. Defaults
+are in `config/farm_schema.yaml`:
+
+| Threshold         | Default | Used by                                         |
+|-------------------|---------|-------------------------------------------------|
+| `contain_tol_m`   | 0.10    | T3, waypoints in a restricted area (§4)         |
+| `near_m`          | 1.0     | `near`                                          |
+| `adjacent_area_m` | 12.0    | `adjacent_area`                                 |
+| `access_m`        | 15.0    | `access`                                        |
+| `entrance_m`      | 15.0    | `entrance`                                      |
+| `road_step_m`     | 5.0     | road waypoint spacing (max)                     |
+| `junction_m`      | 0.5     | road waypoints closer than this are one waypoint |
+| `lane_step_m`     | 4.0     | lane waypoint spacing (max)                     |
+| `clearance_m`     | 0.5     | blocked edges                                   |
+| `flat_height_m`   | 0.1     | box height of the farm, areas and overlays      |
 
 ### Query conventions
+
+`scripts/farm_dsg.py` implements these (`parent`, `lineage`, `overlays`, `members`,
+`route`).
 
 - `parent(n)`: the `contains` neighbour of `n` in a higher layer.
 - `lineage(n)`: `parent` applied repeatedly up to the farm.
@@ -261,6 +304,9 @@ The Isaac asset scan acts as the prior (`source: prior`).
 Rows and parcels are derived from the plant positions.
 
 ## Appendix B. Changes from the current scripts
+
+`geojson_to_dsg.py` follows this spec. `make_farm_dsg.py` and `make_isaac_farm_dsg.py`
+still use the old names below; they are to be moved onto `farm_dsg.py`.
 
 | Current                      | This spec                                           |
 |------------------------------|-----------------------------------------------------|
