@@ -189,16 +189,23 @@ panel changes the class later, for example from `shed` to `building`.
 
 ## 5. Generators
 
-The generators work in ENU on the server. The user sees a preview and commits it.
+A generator opens as a dialog over the map and works on the selection. With no fitting
+selection it asks for a click on the target. While the dialog is open, vertex editing is
+paused and the target is fitted beside the dialog. Every parameter change asks the server
+for a new preview, drawn as dashed orange shapes, with a one-line summary. *Apply* commits
+it; Esc or *Cancel* discards it.
 
-| Generator | Inputs                                                                                                 | Output                                   |
-|-----------|--------------------------------------------------------------------------------------------------------|------------------------------------------|
-| rows      | parcel; heading (click a parcel edge, or type `heading_deg`); `row_spacing_m`; `headland_m`; first-row offset from the parcel edge; crop; variety; optional row count | parallel row axes clipped to the parcel shrunk by `headland_m`. Rows shorter than a minimum length are dropped. The rows run in the heading direction. `row_spacing_m` and `headland_m` are written to the parcel |
-| plants    | selected rows or a parcel; `plant_spacing_m`; start offset; end margin                                 | one crop Point every `plant_spacing_m` along each axis. `plant_spacing_m` is written to the row |
-| posts     | selected rows; `post_spacing_m`; end anchors yes/no; anchor offset beyond the row end                  | `post` Points along the axis and `end_anchor` Points at both ends |
+| Generator | Target | Inputs | Output |
+|-----------|--------|--------|--------|
+| rows | a parcel (or a selected row's parcel) | crop; variety; direction: along the longest edge, along an edge clicked on the map (shown in cyan), or a typed `heading_deg`; reverse; `row_spacing_m`; `headland_m`; first-row offset from the parcel side (default: half a spacing); max rows | parallel row axes clipped to the parcel and trimmed by `headland_m` at both ends. Rows shorter than 1 m are dropped. `row_spacing_m` and `headland_m` are written to the parcel |
+| plants | selected rows and/or parcels (a parcel stands for its rows) | `plant_spacing_m`; start offset; end margin | one crop Point of the row's crop every `plant_spacing_m` along each axis. `plant_spacing_m` is written to each row |
+| posts | same as plants | `post_spacing_m`; end anchors yes/no; anchor offset beyond the row end | `post` Points at both row ends and evenly between, at most `post_spacing_m` apart, plus `end_anchor` Points |
 
-If a parcel already has rows, or a row already has plants, the generator asks whether to
-replace them. Replaced ids are deleted, not reused (GeoJSON spec §4.1).
+- When the target already has rows (or plants, or posts), the dialog offers to replace
+  them. This option is on by default. Replacing rows also removes the plants and row
+  supports on them. Removed ids are not reused (GeoJSON spec §4.1).
+- The server rejects spacings that are not positive and parameters that would create
+  more than 200,000 features. The error is shown in the dialog.
 
 ## 6. Server API
 
@@ -210,9 +217,9 @@ replace them. Replaced ids are deleted, not reused (GeoJSON spec §4.1).
 | `PUT /api/farm`              | FeatureCollection → `{saved: true, issues}`                         |
 | `POST /api/autosave`         | FeatureCollection → `{ok}`                                          |
 | `POST /api/validate`         | FeatureCollection → `{issues, derived}`                             |
-| `POST /api/generate/rows`    | `{fc, parcel_id, params}` → `{features}`                            |
-| `POST /api/generate/plants`  | `{fc, row_ids, params}` → `{features}`                              |
-| `POST /api/generate/posts`   | `{fc, row_ids, params}` → `{features}`                              |
+| `POST /api/generate/rows`    | `{fc, parcel_id, params}` → `{features, updates, existing, stats}`  |
+| `POST /api/generate/plants`  | `{fc, target_ids, params}` → `{features, updates, existing, stats}` |
+| `POST /api/generate/posts`   | `{fc, target_ids, params}` → `{features, updates, existing, stats}` |
 | `GET /api/imagery`           | → list of overlays found in `--imagery`                             |
 | `GET /imagery/<path>`        | image or tile file                                                  |
 

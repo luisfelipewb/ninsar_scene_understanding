@@ -162,6 +162,7 @@ Navigation:
 | `overlap_tol_m` | 0.05    | G8, G13       |
 | `access_m`      | 15.0    | G16           |
 | `row_strip_m`   | 0.5     | §6 row strip  |
+| `row_end_m`     | 1.5     | §6 row strip  |
 
 These are importer parameters and are stored in the graph metadata `thresholds`.
 
@@ -169,7 +170,7 @@ These are importer parameters and are stored in the graph metadata `thresholds`.
 
 | Value                    | Rule                                                                                         |
 |--------------------------|----------------------------------------------------------------------------------------------|
-| row strip                | row axis buffered by half the row spacing: the parcel's `row_spacing_m`, or else the median distance between adjacent row axes, or else `row_strip_m` as the half-width (a parcel with one row). Where strips touch, the nearest axis wins |
+| row strip                | row axis extended by `row_end_m` at both ends (so end anchors belong to the row), then buffered with flat ends by half the row spacing: the parcel's `row_spacing_m`, or else the median distance between adjacent row axes, or else `row_strip_m` as the half-width (a parcel with one row). Where strips touch, the nearest axis wins |
 | tree parent (`contains`) | T4: the lowest tree node whose footprint contains the whole geometry: row strip, then area, then farm |
 | overlay membership       | O3: the highest tree nodes entirely inside the overlay polygon. Waypoints inside a `restricted_area` are linked directly |
 | row `row_index`          | rows of a parcel sorted by offset along the parcel normal (heading + 90°), from 0             |

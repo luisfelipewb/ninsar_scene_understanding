@@ -84,18 +84,18 @@ def create_app(path, imagery=None, schema=None):
     def post_validate():
         return jsonify(report(body_fc()))
 
-    generators = {"rows": (fg.make_rows, "parcel_id"), "plants": (fg.make_plants, "row_ids"),
-                  "posts": (fg.make_posts, "row_ids")}
+    generators = {"rows": fg.make_rows, "plants": fg.make_plants, "posts": fg.make_posts}
 
     @app.post("/api/generate/<what>")
     def post_generate(what):
+        """rows: {fc, parcel_id, params}; plants/posts: {fc, target_ids (rows or parcels), params}."""
         if what not in generators:
             abort(404)
-        fn, target = generators[what]
         body = request.get_json(force=True)
         fc = fg.normalize(body["fc"])
+        target = body.get("parcel_id") if what == "rows" else body.get("target_ids", body.get("row_ids"))
         try:
-            return jsonify(fn(fc, body[target], body.get("params", {}), schema))
+            return jsonify(generators[what](fc, target, body.get("params", {}), schema))
         except (KeyError, ValueError, TypeError) as e:
             return jsonify({"error": f"{type(e).__name__}: {e}"}), 400
 

@@ -21,6 +21,7 @@ thresholds:
   overlap_tol_m: 0.05   # G8, G13
   access_m: 15.0        # G16
   row_strip_m: 0.5      # row strip half-width when a parcel's row spacing is unknown
+  row_end_m: 1.5        # row strip reach beyond each row end (end anchors)
 
 # keys that must not appear in feature properties (§4.1): lifecycle + derived
 reserved: [uid, source, status, modified, confidence, last_observed, geometry, parent,

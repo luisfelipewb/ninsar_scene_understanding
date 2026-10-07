@@ -372,6 +372,15 @@ def parse_nodes(fc, schema, frame, issues=None):
 
 # --- derived structure (§6) -------------------------------------------------------------
 
+def _extend(line, d):
+    """LineString lengthened by `d` metres at both ends, along its end segments."""
+    c = np.asarray(line.coords, dtype=float)
+    u0, u1 = c[0] - c[1], c[-1] - c[-2]
+    c[0] += u0 / np.linalg.norm(u0) * d
+    c[-1] += u1 / np.linalg.norm(u1) * d
+    return LineString(c)
+
+
 def _circular_mean_mod180(degs):
     a = np.radians(np.asarray(degs) * 2.0)
     return round(math.degrees(math.atan2(np.sin(a).mean(), np.cos(a).mean()) / 2.0) % 180.0, 2) % 180.0
@@ -452,7 +461,7 @@ class FarmIndex:
                 spacing = float(np.median(gaps)) if len(gaps) else None
             half = spacing / 2 if spacing and spacing > 0 else th["row_strip_m"]
             for r in group:
-                self.strips[r.id] = r.geom.buffer(half)
+                self.strips[r.id] = _extend(r.geom, th["row_end_m"]).buffer(half, cap_style="flat")
             if aid in self.nodes and self.nodes[aid].kind == "parcel":
                 d[aid].update(heading_deg=heading, n_rows=len(group),
                               crops=sorted({r.kind for r in group}))
@@ -758,49 +767,135 @@ def _feature(geom, frame, **props):
     return {"type": "Feature", "properties": props, "geometry": to_geojson(geom, frame)}
 
 
+MAX_GENERATED = 200_000  # features per generator call
+
+
+def _positive(params, key, default=None):
+    v = params.get(key, default)
+    if not _is_number(v) or v <= 0:
+        raise ValueError(f"'{key}' must be a positive number of metres")
+    return float(v)
+
+
+def _non_negative(params, key, default=0.0):
+    v = params.get(key)
+    v = default if v is None or v == "" else v
+    if not _is_number(v) or v < 0:
+        raise ValueError(f"'{key}' must be zero or more metres")
+    return float(v)
+
+
+def _row_supports(idx, row_ids, kinds=None):
+    """Crop and row-support objects on the given rows (what a replace removes)."""
+    return [k for rid in row_ids for k in idx.derived[rid].get("children", [])
+            if idx.nodes[k].category in ("crop", "row_support") and (kinds is None or idx.nodes[k].kind in kinds)]
+
+
+def _target_rows(idx, ids):
+    """Row ids for a mix of row and parcel ids (a parcel stands for its rows, in row order)."""
+    rows = []
+    for fid in ids:
+        n = idx.nodes.get(fid)
+        if n is None:
+            raise KeyError(f"unknown or invalid feature {fid}")
+        if n.layer == "row":
+            rows.append(fid)
+        elif n.layer == "area":
+            kids = [k for k in idx.derived[fid].get("children", []) if idx.nodes[k].layer == "row"]
+            rows += sorted(kids, key=lambda k: idx.derived[k]["row_index"])
+        else:
+            raise ValueError(f"{fid} is a {n.kind}, not a row or parcel")
+    return list(dict.fromkeys(rows))
+
+
 def make_rows(fc, parcel_id, params, schema=None):
-    """Row features (no ids yet) for a parcel. Returns {features, updates, existing}."""
+    """Row features (no ids yet) for a parcel.
+
+    params: crop, row_spacing_m, headland_m, first_offset_m, count, min_length_m, variety, and
+    the heading as heading_deg, or edge (exterior edge index; default the longest), plus
+    reverse (run the other way). Returns {features, updates, existing, stats}; `existing`
+    is what a replace removes: the parcel's rows and the plants and supports on them.
+    """
     idx = FarmIndex(fc, schema)
-    parcel = idx.nodes[parcel_id]
+    parcel = idx.nodes.get(parcel_id)
+    if parcel is None or parcel.layer != "area":
+        raise KeyError(f"{parcel_id} is not a valid area")
     p = params
-    heading = p["heading_deg"] if p.get("heading_deg") is not None else edge_heading(parcel.geom, p.get("edge"))
-    lines = generate_rows(parcel.geom, heading, p["row_spacing_m"], p.get("headland_m", 0.0),
-                          p.get("first_offset_m"), p.get("count"), p.get("min_length_m", 1.0))
+    if p.get("crop") not in idx.schema.crops:
+        raise ValueError(f"unknown crop {p.get('crop')!r}")
+    spacing = _positive(p, "row_spacing_m")
+    headland = _non_negative(p, "headland_m")
+    first = None if p.get("first_offset_m") in (None, "") else _non_negative(p, "first_offset_m")
+    count = None if p.get("count") in (None, "") else int(p["count"])
+    width = np.ptp(np.asarray(parcel.geom.exterior.coords), axis=0).max()
+    if width / spacing > 20_000:
+        raise ValueError(f"row spacing {spacing} m gives too many rows for this parcel")
+    if p.get("heading_deg") not in (None, ""):
+        heading = float(p["heading_deg"])
+    else:
+        heading = edge_heading(parcel.geom, p.get("edge"))
+    if p.get("reverse"):
+        heading = (heading + 180.0) % 360.0
+    lines = generate_rows(parcel.geom, heading, spacing, headland, first, count, p.get("min_length_m", 1.0))
     props = {"layer": "row", "kind": p["crop"]}
     if p.get("variety"):
         props["variety"] = p["variety"]
     feats = [_feature(g, idx.frame, **props) for g in lines]
-    existing = [k for k in idx.derived[parcel_id].get("children", []) if idx.nodes[k].layer == "row"]
-    update = {"row_spacing_m": p["row_spacing_m"], "headland_m": p.get("headland_m", 0.0)}
-    return {"features": feats, "updates": {parcel_id: update}, "existing": existing}
+    old_rows = [k for k in idx.derived[parcel_id].get("children", []) if idx.nodes[k].layer == "row"]
+    lengths = [g.length for g in lines]
+    stats = {"count": len(lines), "heading_deg": round(heading, 2),
+             "length_min_m": round(min(lengths), 2) if lengths else 0,
+             "length_max_m": round(max(lengths), 2) if lengths else 0,
+             "existing_rows": len(old_rows)}
+    existing = old_rows + _row_supports(idx, old_rows)
+    stats["existing_objects"] = len(existing) - len(old_rows)
+    update = {"row_spacing_m": spacing, "headland_m": headland}
+    return {"features": feats, "updates": {parcel_id: update}, "existing": existing, "stats": stats}
 
 
-def make_plants(fc, row_ids, params, schema=None):
-    """Crop features (no ids yet) along rows. Returns {features, updates, existing}."""
+def make_plants(fc, target_ids, params, schema=None):
+    """Crop features (no ids yet) along rows, or along all rows of the given parcels.
+
+    params: plant_spacing_m, start_offset_m, end_margin_m. Returns {features, updates,
+    existing, stats}; `existing` holds the plants already on those rows.
+    """
     idx = FarmIndex(fc, schema)
-    feats, updates, existing = [], {}, []
-    for rid in row_ids:
+    rows = _target_rows(idx, target_ids)
+    spacing = _positive(params, "plant_spacing_m")
+    start, margin = _non_negative(params, "start_offset_m"), _non_negative(params, "end_margin_m")
+    if sum(idx.nodes[r].geom.length for r in rows) / spacing > MAX_GENERATED:
+        raise ValueError(f"plant spacing {spacing} m gives more than {MAX_GENERATED} plants")
+    feats, updates = [], {}
+    for rid in rows:
         row = idx.nodes[rid]
-        for g in generate_plants(row.geom, params["plant_spacing_m"], params.get("start_offset_m", 0.0),
-                                 params.get("end_margin_m", 0.0)):
+        for g in generate_plants(row.geom, spacing, start, margin):
             feats.append(_feature(g, idx.frame, layer="object", category="crop", kind=row.kind))
-        updates[rid] = {"plant_spacing_m": params["plant_spacing_m"]}
-        existing += [k for k in idx.derived[rid].get("children", []) if idx.nodes[k].category == "crop"]
-    return {"features": feats, "updates": updates, "existing": existing}
+        updates[rid] = {"plant_spacing_m": spacing}
+    existing = _row_supports(idx, rows, {k for k in idx.schema.crops})
+    stats = {"count": len(feats), "rows": len(rows), "existing_objects": len(existing)}
+    return {"features": feats, "updates": updates, "existing": existing, "stats": stats}
 
 
-def make_posts(fc, row_ids, params, schema=None):
-    """Post and end-anchor features (no ids yet) along rows. Returns {features, updates, existing}."""
+def make_posts(fc, target_ids, params, schema=None):
+    """Post and end-anchor features (no ids yet) along rows, or along all rows of parcels.
+
+    params: post_spacing_m, end_anchors (bool), anchor_offset_m. Returns {features,
+    updates, existing, stats}; `existing` holds the posts and anchors already on those rows.
+    """
     idx = FarmIndex(fc, schema)
-    feats, existing = [], []
-    for rid in row_ids:
-        posts, anchors = generate_posts(idx.nodes[rid].geom, params["post_spacing_m"],
-                                        params.get("end_anchors", True), params.get("anchor_offset_m", 1.0))
+    rows = _target_rows(idx, target_ids)
+    spacing = _positive(params, "post_spacing_m")
+    offset = _non_negative(params, "anchor_offset_m", 1.0)
+    if sum(idx.nodes[r].geom.length for r in rows) / spacing > MAX_GENERATED:
+        raise ValueError(f"post spacing {spacing} m gives more than {MAX_GENERATED} posts")
+    feats = []
+    for rid in rows:
+        posts, anchors = generate_posts(idx.nodes[rid].geom, spacing, bool(params.get("end_anchors", True)), offset)
         for kind, pts in (("post", posts), ("end_anchor", anchors)):
             feats += [_feature(g, idx.frame, layer="object", category="row_support", kind=kind) for g in pts]
-        existing += [k for k in idx.derived[rid].get("children", [])
-                     if idx.nodes[k].kind in ("post", "end_anchor")]
-    return {"features": feats, "updates": {}, "existing": existing}
+    existing = _row_supports(idx, rows, {"post", "end_anchor"})
+    stats = {"count": len(feats), "rows": len(rows), "existing_objects": len(existing)}
+    return {"features": feats, "updates": {}, "existing": existing, "stats": stats}
 
 
 # --- CLI --------------------------------------------------------------------------------

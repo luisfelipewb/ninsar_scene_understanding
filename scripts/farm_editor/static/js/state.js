@@ -49,15 +49,17 @@ export function labelOf(f) {
 
 // --- ids (same rule as farm_geojson.new_id) --------------------------------------------
 
-export function newId(prefix) {
+export function newId(prefix) { return newIds(prefix, 1)[0]; }
+
+export function newIds(prefix, count) {
   let used = 0;
   for (const f of state.fc.features) {
     const m = ID_RE.exec(f.id || '');
     if (m && m[1] === prefix) used = Math.max(used, Number(m[2]) + 1);
   }
   const n = Math.max(state.fc.next_id[prefix] || 0, used);
-  state.fc.next_id[prefix] = n + 1;
-  return `${prefix}${n}`;
+  state.fc.next_id[prefix] = n + count;
+  return Array.from({ length: count }, (_, i) => `${prefix}${n + i}`);
 }
 
 // --- collection -----------------------------------------------------------------------

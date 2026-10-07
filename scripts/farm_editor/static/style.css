@@ -28,6 +28,7 @@ body { display: flex; flex-direction: column; background: var(--bg); color: var(
 #filepath { overflow: hidden; text-overflow: ellipsis; max-width: 40vw; }
 
 main { flex: 1; display: flex; min-height: 0; }
+#map-wrap { flex: 1; min-width: 0; position: relative; display: flex; }
 #map { flex: 1; min-width: 0; }
 #map.picking, #map.picking .leaflet-interactive { cursor: crosshair; }
 aside { background: var(--panel); overflow-y: auto; }
@@ -136,3 +137,16 @@ button.small { padding: 1px 6px; font-size: 12px; }
 .tree-overlay { margin: 4px 0 4px 8px; }
 .tree-members { color: var(--muted); margin-left: 12px; }
 .tree-ids a { color: var(--accent); }
+
+/* generator dialog */
+.tool-panel {
+  position: absolute; top: 10px; left: 56px; z-index: 1000; width: 320px; max-height: calc(100% - 20px); overflow-y: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+.tool-target { margin-bottom: 6px; display: flex; gap: 6px; align-items: center; }
+.tool-target button { margin-left: auto; }
+.tool-panel .field.check input { justify-self: start; width: auto; }
+.tool-replace { display: flex; gap: 6px; align-items: flex-start; margin: 8px 0 4px; color: var(--warn); }
+.tool-summary { margin-top: 6px; min-height: 18px; }
+.tool-summary b { color: var(--text); }

@@ -11,6 +11,9 @@ let control;
 let editing = null;        // {id, layer, handle?, onEdit?}
 let drawCallback = null;
 let pickCallback = null;
+let clickHook = null;      // gets the latlng of every map click (generator edge picking)
+let preview = null;        // L.LayerGroup with generator previews
+let editingSuspended = false;  // no vertex editing while a generator dialog is open
 
 const SNAP = { snappable: true, snapDistance: 12, allowSelfIntersection: false };
 const GEOM_RANK = { Polygon: 0, MultiPolygon: 0, LineString: 1, MultiLineString: 1, Point: 2, MultiPoint: 2 };
@@ -76,6 +79,7 @@ function makeLayer(f) {
   layer.on('click', (e) => {
     if (drawCallback) return;  // let the click reach the map: Geoman places vertices on map clicks
     L.DomEvent.stopPropagation(e);
+    if (clickHook) { clickHook(e.latlng); return; }
     const id = layer.featureId;
     if (pickCallback) { const cb = pickCallback; setPick(null); cb(id); return; }
     emit('featureClick', { id, shift: e.originalEvent.shiftKey });
@@ -192,8 +196,14 @@ on('selection', () => {
   stopEditing();
   for (const id of new Set([...previous, ...state.selection])) restyle(id);
   previous = new Set(state.selection);
-  if (state.selection.size === 1 && !drawCallback) startEditing([...state.selection][0]);
+  if (state.selection.size === 1 && !drawCallback && !editingSuspended) startEditing([...state.selection][0]);
 });
+
+export function suspendEditing(suspend) {
+  editingSuspended = suspend;
+  if (suspend) stopEditing();
+  else if (state.selection.size === 1) startEditing([...state.selection][0]);
+}
 
 on('changed', ({ added = [], updated = [], removed = [], renamed = {}, source }) => {
   removed.forEach(removeLayer);
@@ -251,19 +261,58 @@ export function setPick(callback, message = 'Click a feature on the map (Esc to 
   emit('mode', callback ? message : '');
 }
 
-export const isBusy = () => !!drawCallback || !!pickCallback;
+export const isBusy = () => !!drawCallback || !!pickCallback || !!clickHook;
+
+export function setClickHook(callback) {
+  clickHook = callback;
+  map.getContainer().classList.toggle('picking', !!callback);
+}
+
+// --- generator preview ------------------------------------------------------------------
+
+const PREVIEW = '#ff6d00';
+
+export function setPreview(features = [], highlight = null) {
+  preview ||= L.layerGroup().addTo(map);
+  preview.clearLayers();
+  const opts = { renderer, interactive: false, pmIgnore: true, snapIgnore: true };
+  preview.addLayer(L.geoJSON({ type: 'FeatureCollection', features }, {
+    ...opts,
+    style: () => ({ ...opts, color: PREVIEW, weight: 2, dashArray: '6 4' }),
+    pointToLayer: (_, ll) => L.circleMarker(ll, { ...opts, radius: 3, color: PREVIEW, weight: 1.5, fill: false }),
+  }));
+  if (highlight) preview.addLayer(L.polyline(highlight, { ...opts, color: '#00e5ff', weight: 6, opacity: 0.8 }));
+}
+
+export function clearPreview() { preview?.clearLayers(); }
+
+// index of the exterior edge of a polygon feature nearest to `latlng`, in screen space
+export function nearestEdge(f, latlng) {
+  const ring = f.geometry.coordinates[0].map((c) => map.latLngToLayerPoint([c[1], c[0]]));
+  const p = map.latLngToLayerPoint(latlng);
+  let best = 0;
+  let bestDist = Infinity;
+  for (let i = 0; i < ring.length - 1; i += 1) {
+    const d = L.LineUtil.pointToSegmentDistance(p, ring[i], ring[i + 1]);
+    if (d < bestDist) { bestDist = d; best = i; }
+  }
+  const c = f.geometry.coordinates[0];
+  return { index: best, latlngs: [[c[best][1], c[best][0]], [c[best + 1][1], c[best + 1][0]]] };
+}
 export const getMap = () => map;
 
 // --- view ---------------------------------------------------------------------------------
 
-export function zoomTo(ids) {
+export function zoomTo(ids, { leftPanel = false } = {}) {
   const bounds = L.latLngBounds([]);
   for (const id of ids) {
     const layer = layers.get(id);
     if (!layer) continue;
     bounds.extend(layer.getBounds ? layer.getBounds() : layer.getLatLng());
   }
-  if (bounds.isValid()) map.fitBounds(bounds.pad(0.3), { maxZoom: 21 });
+  if (!bounds.isValid()) return;
+  if (leftPanel) map.fitBounds(bounds.pad(0.05), { maxZoom: 21, paddingTopLeft: [390, 30], paddingBottomRight: [30, 30] });
+  else map.fitBounds(bounds.pad(0.3), { maxZoom: 21 });
 }
 
 export function fitAll() {
@@ -301,9 +350,12 @@ export function initMap(el) {
     drawCallback = null;
     emit('mode', '');
     emit('drawEnd');
-    if (state.selection.size === 1) startEditing([...state.selection][0]);  // the shape just drawn
+    if (state.selection.size === 1 && !editingSuspended) startEditing([...state.selection][0]);  // the shape just drawn
   });
-  map.on('click', () => { if (!isBusy()) emit('mapClick'); });
+  map.on('click', (e) => {
+    if (clickHook) clickHook(e.latlng);
+    else if (!isBusy()) emit('mapClick');
+  });
   map.on('overlayadd', reorder);
   map.on('mousemove', (e) => emit('cursor', e.latlng));
   return map;

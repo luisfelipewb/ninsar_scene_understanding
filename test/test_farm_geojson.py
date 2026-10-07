@@ -333,10 +333,9 @@ def test_generate_plants_and_posts():
 
 def test_make_rows_and_plants_features_validate(farm):
     out = fg.make_rows(farm, "A1", {"edge": 0, "row_spacing_m": 2.0, "headland_m": 1.0, "crop": "cabbage"})
-    assert len(out["existing"]) == 10 and out["updates"] == {"A1": {"row_spacing_m": 2.0, "headland_m": 1.0}}
-    d = fg.derive(farm)
-    farm["features"] = [f for f in farm["features"]
-                        if f["id"] not in out["existing"] and d[f["id"]].get("parent") not in out["existing"]]
+    assert out["stats"]["existing_rows"] == 10 and out["stats"]["existing_objects"] == 90
+    assert len(out["existing"]) == 100 and out["updates"] == {"A1": {"row_spacing_m": 2.0, "headland_m": 1.0}}
+    farm["features"] = [f for f in farm["features"] if f["id"] not in out["existing"]]
     for f in out["features"]:
         f["id"] = fg.new_id(farm, "r")
         farm["features"].append(f)
@@ -374,3 +373,53 @@ def test_workflow_buttons_name_existing_types():
             for key, value in b.get("props", {}).items():
                 attr = next(a for a in t["attributes"] if a["name"] == key)
                 assert attr["type"] != "enum" or value in attr["values"], b
+
+
+def test_make_rows_reverse_and_typed_heading(farm):
+    base = {"row_spacing_m": 4.0, "headland_m": 2.0, "crop": "cabbage"}
+    fwd = fg.make_rows(farm, "A1", {**base, "heading_deg": 90})
+    rev = fg.make_rows(farm, "A1", {**base, "heading_deg": 90, "reverse": True})
+    assert fwd["stats"]["heading_deg"] == 90 and rev["stats"]["heading_deg"] == 270
+    a, b = fwd["features"][0]["geometry"]["coordinates"], rev["features"][-1]["geometry"]["coordinates"]
+    assert a[0] == pytest.approx(b[-1], abs=1e-7) and a[-1] == pytest.approx(b[0], abs=1e-7)
+    assert fwd["stats"]["length_min_m"] == pytest.approx(16.0, abs=0.01)
+
+
+def test_plants_and_posts_accept_a_parcel(farm):
+    plants = fg.make_plants(farm, ["A0"], {"plant_spacing_m": 4.0})
+    assert plants["stats"] == {"count": 8 * 9, "rows": 8, "existing_objects": 8 * 17}
+    assert set(plants["updates"]) == {f"r{i}" for i in range(8)}
+    posts = fg.make_posts(farm, ["A0"], {"post_spacing_m": 8.0, "end_anchors": False})
+    assert posts["stats"] == {"count": 8 * 5, "rows": 8, "existing_objects": 8 * (8 + 2)}  # 8 posts + 2 anchors
+    assert {f["properties"]["kind"] for f in posts["features"]} == {"post"}
+
+
+@pytest.mark.parametrize("call", [
+    lambda fc: fg.make_rows(fc, "A1", {"row_spacing_m": 0, "crop": "cabbage"}),
+    lambda fc: fg.make_rows(fc, "A1", {"row_spacing_m": 0.0001, "crop": "cabbage"}),
+    lambda fc: fg.make_rows(fc, "A1", {"row_spacing_m": 2, "crop": "banana"}),
+    lambda fc: fg.make_rows(fc, "A1", {"row_spacing_m": 2, "headland_m": -1, "crop": "cabbage"}),
+    lambda fc: fg.make_plants(fc, ["r0"], {"plant_spacing_m": -1}),
+    lambda fc: fg.make_plants(fc, ["A0"], {"plant_spacing_m": 0.0001}),
+    lambda fc: fg.make_plants(fc, ["e1"], {"plant_spacing_m": 1}),
+])
+def test_generators_reject_bad_parameters(farm, call):
+    with pytest.raises((ValueError, KeyError)):
+        call(farm)
+
+
+def test_end_anchors_belong_to_their_row_at_tight_spacing(farm):
+    rows = fg.make_rows(farm, "A1", {"heading_deg": 90, "row_spacing_m": 2.0, "headland_m": 2.0, "crop": "cabbage"})
+    farm["features"] = [f for f in farm["features"] if f["id"] not in rows["existing"]]
+    for f in rows["features"]:
+        f["id"] = fg.new_id(farm, "r")
+        farm["features"].append(f)
+    by_id(farm, "A1")["properties"].update(rows["updates"]["A1"])
+    posts = fg.make_posts(farm, ["A1"], {"post_spacing_m": 5.0, "anchor_offset_m": 1.0})
+    for f in posts["features"]:
+        f["id"] = fg.new_id(farm, "i")
+        farm["features"].append(f)
+    assert rules(farm) == set()
+    d = fg.derive(farm)
+    anchors = [f["id"] for f in posts["features"] if f["properties"]["kind"] == "end_anchor"]
+    assert all(d[a]["parent"].startswith("r") for a in anchors)

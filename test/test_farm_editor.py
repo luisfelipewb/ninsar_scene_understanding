@@ -94,7 +94,7 @@ def test_generate_rows_and_errors(client):
     fc = client.get("/api/farm").get_json()["fc"]
     res = client.post("/api/generate/rows", json={"fc": fc, "parcel_id": "A1", "params": {
         "heading_deg": 90, "row_spacing_m": 4.0, "headland_m": 2.0, "crop": "cabbage"}}).get_json()
-    assert len(res["features"]) == 10 and len(res["existing"]) == 10
+    assert len(res["features"]) == 10 and res["stats"]["existing_rows"] == 10 and len(res["existing"]) == 100
     bad = client.post("/api/generate/rows", json={"fc": fc, "parcel_id": "A99", "params": {}})
     assert bad.status_code == 400 and "error" in bad.get_json()
     assert client.post("/api/generate/nothing", json={}).status_code == 404

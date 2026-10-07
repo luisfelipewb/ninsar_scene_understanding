@@ -2,12 +2,13 @@
 // keyboard shortcuts and autosave.
 import { api } from './api.js';
 import { fitAll, getMap, goTo, initMap, isBusy, setPick, startDraw, stopDraw } from './map.js';
+import { closeTool, isToolOpen, openPlants, openPosts, openRows } from './generators.js';
 import { deleteSelection, initPanels, showTab } from './panels.js';
 import {
   addFeatures, byId, entryFor, ID_RE, markSaved, newId, on, roundGeometry, select, setCollection,
   setReport, state, typeOf,
 } from './state.js';
-import { initWorkflow, setActionEnabled } from './workflow.js';
+import { initWorkflow } from './workflow.js';
 
 const $ = (id) => document.getElementById(id);
 const SIMPLESTYLE = ['stroke', 'stroke-width', 'stroke-opacity', 'fill', 'fill-opacity',
@@ -31,6 +32,7 @@ function newFeature(entry, kind, geometry, preset = {}) {
 }
 
 on('preset', ({ button, entry, geometry, kind }) => {
+  closeTool();
   setPick(null);
   const color = state.schema.crops[kind]?.color || entry.color;
   startDraw(geometry, { continueDrawing: !!button.continue, color }, (drawn) => {
@@ -101,9 +103,9 @@ function exportFile() {
 const ACTIONS = {
   validate, export: exportFile, save,
   tree: async () => { if (state.derivedStale) await validate(); showTab('tree'); },
-  generate_rows: () => status('Row generation comes with milestone 4', 'warn'),
-  generate_plants: () => status('Plant generation comes with milestone 4', 'warn'),
-  generate_posts: () => status('Post generation comes with milestone 4', 'warn'),
+  generate_rows: openRows,
+  generate_plants: openPlants,
+  generate_posts: openPosts,
 };
 on('action', (name) => ACTIONS[name]?.());
 
@@ -184,7 +186,8 @@ function onKey(e) {
   if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); save(); return; }
   if (typing) return;
   if (e.key === 'Escape') {
-    if (isBusy()) { stopDraw(); setPick(null); } else select([]);
+    if (isToolOpen()) closeTool();
+    else if (isBusy()) { stopDraw(); setPick(null); } else select([]);
   } else if (e.key === 'Delete' || e.key === 'Backspace') {
     e.preventDefault();
     deleteSelection();
@@ -213,7 +216,6 @@ async function boot() {
   initMap($('map'));
   initWorkflow();
   initPanels();
-  ['generate_rows', 'generate_plants', 'generate_posts'].forEach((a) => setActionEnabled(a, false, 'milestone 4'));
 
   on('dirty', updateDirty);
   try { state.live = localStorage.getItem('farmEditor.live') === '1'; } catch { /* storage blocked */ }
@@ -267,7 +269,7 @@ async function boot() {
   if (!state.fc.features.some((f) => f.properties?.layer === 'farm')) {
     document.querySelector('#workflow details')?.setAttribute('open', '');
   }
-  window.farmEditor = { state, byId, entryFor, map: getMap() };  // for debugging in the console
+  window.farmEditor = { state, byId, entryFor, select, map: getMap() };  // for debugging in the console
 }
 
 boot().catch((e) => status(`Startup failed: ${e.message}`, 'error'));
