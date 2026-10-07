@@ -4,7 +4,7 @@ import { api } from './api.js';
 import { h } from './dom.js';
 import { clearPreview, nearestEdge, setClickHook, setPick, setPreview, suspendEditing, zoomTo } from './map.js';
 import {
-  addFeatures, byId, emit, labelOf, newIds, removeFeatures, select, state, updateFeatures,
+  addFeatures, byId, emit, group, labelOf, newIds, removeFeatures, select, state, updateFeatures,
 } from './state.js';
 
 let tool = null;  // {kind, el, targets, fields, result, timer, edge}
@@ -85,7 +85,9 @@ async function runPreview() {
   if (!tool) return;
   const t = tool;
   const body = { fc: state.fc, params: { ...params(), ...t.extraParams?.() } };
-  if (t.kind === 'rows') body.parcel_id = t.targets[0].id; else body.target_ids = t.targets.map((f) => f.id);
+  if (t.kind === 'rows') body.parcel_id = t.targets[0].id;
+  else if (t.kind === 'offset') body.row_id = t.targets[0].id;
+  else body.target_ids = t.targets.map((f) => f.id);
   t.summary.textContent = 'Computing…';
   t.apply.disabled = true;
   try {
@@ -116,14 +118,16 @@ async function applyResult() {
   }
   const { features, updates, existing } = t.result;
   const replace = existing.length && t.replaceInput.checked;
-  if (replace) removeFeatures(existing.filter((id) => byId(id)));
-  const prefix = { rows: 'r', plants: 'c', posts: 'i' }[t.kind];
-  const ids = newIds(prefix, features.length);
-  features.forEach((f, i) => { f.id = ids[i]; });
-  addFeatures(features);
-  const changes = Object.entries(updates).filter(([id]) => byId(id))
-    .map(([id, props]) => [id, { properties: { ...byId(id).properties, ...props } }]);
-  if (changes.length) updateFeatures(changes, 'props');
+  group(() => {  // one undo step
+    if (replace) removeFeatures(existing.filter((id) => byId(id)));
+    const prefix = { rows: 'r', plants: 'c', posts: 'i', offset: 'r' }[t.kind];
+    const ids = newIds(prefix, features.length);
+    features.forEach((f, i) => { f.id = ids[i]; });
+    addFeatures(features);
+    const changes = Object.entries(updates).filter(([id]) => byId(id))
+      .map(([id, props]) => [id, { properties: { ...byId(id).properties, ...props } }]);
+    if (changes.length) updateFeatures(changes, 'props');
+  });
   const keep = t.targets.map((f) => f.id).filter((id) => byId(id));
   closeTool();
   select(keep);
@@ -231,3 +235,21 @@ async function openAlongRows(kind) {
 
 export const openPlants = () => openAlongRows('plants');
 export const openPosts = () => openAlongRows('posts');
+
+export async function openOffset() {
+  closeTool();
+  let row = [...state.selection].map(byId).find(isRow);
+  if (!row) row = await pickTarget('the row to copy', isRow, 'a row');
+  const parcel = byId(state.derived[row.id]?.parent);
+  const fields = [
+    { key: 'distance_m', label: 'distance', unit: 'm', value: parcel?.properties.row_spacing_m ?? 2.5,
+      placeholder: '+ left, − right of the row direction' },
+    { key: 'count', label: 'copies', type: 'number', min: 1, value: 1 },
+  ];
+  openPanel('offset', 'Offset row', [row], fields, {
+    restart: () => { closeTool(); state.selection.clear(); openOffset(); },
+    describe: (s) => [h('b', {}, `${s.count} ${s.count === 1 ? 'copy' : 'copies'}`), ` spanning ${s.span_m} m (positive: left of the row direction)`],
+    describeExisting: () => '',
+    doneMessage: (n) => `Added ${n} parallel row${n === 1 ? '' : 's'}`,
+  });
+}

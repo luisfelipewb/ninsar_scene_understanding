@@ -1,9 +1,10 @@
 // Right-hand panels: properties of the selection (form built from the catalog) and the
 // issue list from the last validation.
 import { h } from './dom.js';
+import { frameOf, headingDeg } from './geo.js';
 import { setPick, zoomTo } from './map.js';
 import {
-  byId, COMMON_KEYS, emit, labelOf, newId, on, removeFeatures, select, state, typeOf, updateFeatures,
+  byId, COMMON_KEYS, emit, labelOf, newId, on, removeFeatures, select, state, typeOf, updateFeature, updateFeatures,
 } from './state.js';
 import { renderTree } from './tree.js';
 
@@ -95,6 +96,65 @@ function derivedBlock(f, t) {
     rows.length ? rows : h('p', { class: 'muted' }, 'nothing derived'));
 }
 
+// --- coordinates: typed positions in the local frame (x/y, metres) or in lon/lat ------------
+
+let coordMode = 'enu';
+try { coordMode = localStorage.getItem('farmEditor.coords') || 'enu'; } catch { /* storage blocked */ }
+
+function vertices(g) {
+  if (g.type === 'Point') return [[g.coordinates], (v) => ({ type: 'Point', coordinates: v[0] })];
+  if (g.type === 'LineString') return [g.coordinates, (v) => ({ type: 'LineString', coordinates: v })];
+  if (g.type === 'Polygon') {
+    return [g.coordinates[0].slice(0, -1),
+      (v) => ({ type: 'Polygon', coordinates: [[...v, v[0]], ...g.coordinates.slice(1)] })];
+  }
+  return [null, null];
+}
+
+function coordsBlock(f) {
+  const frame = frameOf(state.fc);
+  const mode = frame ? coordMode : 'lonlat';
+  const [verts, write] = vertices(f.geometry);
+  if (!verts) return null;
+  const head = h('h4', {}, 'Coordinates ', frame ? h('select', {
+    class: 'small-select',
+    onchange: (e) => {
+      coordMode = e.target.value;
+      try { localStorage.setItem('farmEditor.coords', coordMode); } catch { /* storage blocked */ }
+      renderProps();
+    },
+  }, h('option', { value: 'enu', selected: mode === 'enu' }, 'x / y (m)'), h('option', { value: 'lonlat', selected: mode === 'lonlat' }, 'lon / lat'))
+    : h('span', { class: 'muted' }, '(x/y once the farm boundary sets the origin)'));
+  const out = h('div', { class: 'coords' }, head);
+  if (f.geometry.type === 'LineString' && frame) {
+    const a = frame.enu(verts[0]); const b = frame.enu(verts[verts.length - 1]);
+    let len = 0;
+    for (let i = 1; i < verts.length; i += 1) { const p = frame.enu(verts[i - 1]); const q = frame.enu(verts[i]); len += Math.hypot(q[0] - p[0], q[1] - p[1]); }
+    out.append(h('p', { class: 'muted' }, `length ${len.toFixed(3)} m, heading ${headingDeg(b[0] - a[0], b[1] - a[1]).toFixed(2)}°`));
+  }
+  if (verts.length > 60) {
+    out.append(h('p', { class: 'muted' }, `${verts.length} vertices: edit them on the map.`));
+    return out;
+  }
+  const shown = (c) => (mode === 'enu' ? frame.enu(c).map((v) => v.toFixed(3)) : [c[0].toFixed(8), c[1].toFixed(8)]);
+  verts.forEach((c, i) => {
+    const [u, v] = shown(c);
+    const iu = h('input', { type: 'number', step: 'any', value: u, title: mode === 'enu' ? 'x (east), m' : 'longitude' });
+    const iv = h('input', { type: 'number', step: 'any', value: v, title: mode === 'enu' ? 'y (north), m' : 'latitude' });
+    const onchange = () => {
+      const pair = [Number(iu.value), Number(iv.value)];
+      if (!pair.every(Number.isFinite)) return;
+      const next = verts.map((x) => [...x]);
+      next[i] = mode === 'enu' ? frame.wgs84(pair) : pair;
+      updateFeature(f.id, { geometry: write(next) });
+    };
+    iu.onchange = onchange;
+    iv.onchange = onchange;
+    out.append(h('div', { class: 'coord-row' }, h('span', { class: 'muted' }, verts.length > 1 ? String(i) : ''), iu, iv));
+  });
+  return out;
+}
+
 function customBlock(f, t) {
   const known = new Set([...COMMON_KEYS, ...(t?.attributes || []).map((a) => a.name)]);
   const keys = Object.keys(f.properties || {}).filter((k) => !known.has(k));
@@ -177,6 +237,8 @@ function renderProps() {
     }
   }
   if (single) {
+    const coords = coordsBlock(f);
+    if (coords) el.append(coords);
     if (t) el.append(derivedBlock(f, t));
     el.append(customBlock(f, t));
     const mine = state.issues.filter((i) => i.id === f.id);
@@ -244,7 +306,7 @@ export function initPanels() {
   on('report', () => { renderProps(); renderReport(); });
   on('loaded', () => { renderProps(); renderReport(); });
   on('changed', ({ source }) => {
-    if (!source) renderProps();  // map/props edits keep the form (and its focus) as it is
+    if (source !== 'props') renderProps();  // a property edit keeps the form (and its focus) as it is
     emit('stale');
   });
   on('stale', () => {

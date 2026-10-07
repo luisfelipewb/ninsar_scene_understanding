@@ -98,3 +98,53 @@ def test_generate_rows_and_errors(client):
     bad = client.post("/api/generate/rows", json={"fc": fc, "parcel_id": "A99", "params": {}})
     assert bad.status_code == 400 and "error" in bad.get_json()
     assert client.post("/api/generate/nothing", json={}).status_code == 404
+
+
+@pytest.fixture
+def imagery_dir(tmp_path):
+    from PIL import Image
+    d = tmp_path / "imagery"
+    d.mkdir()
+    Image.new("RGB", (40, 30), (90, 140, 60)).save(d / "isaac.png")
+    (d / "isaac.json").write_text(json.dumps({
+        "label": "Isaac top-down", "frame": "enu", "origin": {"lat": 46.3374, "lon": 3.434, "alt": 250.0},
+        "corners": {"topleft": [-100, 60], "topright": [100, 60], "bottomleft": [-100, -60]}}))
+    Image.new("RGB", (8, 8)).save(d / "drone.jpg")
+    (d / "drone.json").write_text(json.dumps({"corners": {"topleft": [3.433, 46.338], "topright": [3.435, 46.338],
+                                                          "bottomleft": [3.433, 46.337]}}))
+    Image.new("RGB", (8, 8)).save(d / "broken.png")
+    (d / "broken.json").write_text("{not json")
+    Image.new("RGB", (8, 8)).save(d / "no_sidecar.png")
+    (d / "ortho" / "18" / "1").mkdir(parents=True)
+    (d / "ortho" / "tiles.json").write_text(json.dumps({"label": "Orthomosaic", "min_zoom": 15, "max_zoom": 21}))
+    Image.new("RGB", (256, 256)).save(d / "ortho" / "18" / "1" / "2.png")
+    return d
+
+
+def test_imagery_scan_and_serving(farm_path, imagery_dir):
+    client = create_app(farm_path, str(imagery_dir)).test_client()
+    items = {i["id"]: i for i in client.get("/api/imagery").get_json()}
+    assert set(items) == {"isaac.png", "drone.jpg", "broken.png", "ortho"}
+    isaac = items["isaac.png"]
+    frame = fg.Frame(46.3374, 3.434, 250.0)
+    tl = frame.enu([[isaac["corners"]["topleft"][1], isaac["corners"]["topleft"][0]]])[0]
+    assert tl == pytest.approx([-100, 60], abs=1e-3) and isaac["label"] == "Isaac top-down"
+    assert items["drone.jpg"]["corners"]["topright"] == [46.338, 3.435]
+    assert "error" in items["broken.png"]
+    assert items["ortho"]["url"] == "/imagery/ortho/{z}/{x}/{y}.png" and items["ortho"]["max_zoom"] == 21
+    assert client.get("/imagery/isaac.png").status_code == 200
+    assert client.get("/imagery/ortho/18/1/2.png").status_code == 200
+    assert client.get("/imagery/../farm.geojson").status_code == 404
+
+
+def test_imagery_without_folder(client):
+    assert client.get("/api/imagery").get_json() == []
+    assert client.get("/imagery/x.png").status_code == 404
+
+
+def test_generate_offset_rows(client):
+    fc = client.get("/api/farm").get_json()["fc"]
+    res = client.post("/api/generate/offset", json={"fc": fc, "row_id": "r7", "params": {"distance_m": 2.5, "count": 3}}).get_json()
+    assert res["stats"] == {"count": 3, "span_m": 7.5}
+    assert {f["properties"]["kind"] for f in res["features"]} == {"grapevine"}
+    assert client.post("/api/generate/offset", json={"fc": fc, "row_id": "A0", "params": {"distance_m": 1}}).status_code == 400

@@ -150,3 +150,15 @@ button.small { padding: 1px 6px; font-size: 12px; }
 .tool-replace { display: flex; gap: 6px; align-items: flex-start; margin: 8px 0 4px; color: var(--warn); }
 .tool-summary { margin-top: 6px; min-height: 18px; }
 .tool-summary b { color: var(--text); }
+
+/* imagery and measuring */
+.swatch.img { background: linear-gradient(135deg, #7aa 0 50%, #cb8 50% 100%); }
+.opacity-control { background: #fff; padding: 3px 8px; font-size: 12px; }
+.opacity-control input { vertical-align: middle; width: 110px; }
+.measure-tip { font-weight: 600; font-variant-numeric: tabular-nums; }
+.coords h4 { display: flex; align-items: center; gap: 6px; }
+.small-select { font-size: 11px; padding: 0 4px; text-transform: none; letter-spacing: 0; }
+.coord-row { display: grid; grid-template-columns: 22px 1fr 1fr; gap: 4px; margin: 2px 0; }
+.coord-row input { width: 100%; min-width: 0; font-variant-numeric: tabular-nums; }
+.coords p { margin: 2px 0 4px; }
+.measure-tip { background: rgba(255, 255, 255, 0.92); border: 1px solid #00a3b5; border-radius: 4px; padding: 1px 6px; white-space: nowrap; transform: translate(-50%, -130%); width: max-content !important; }

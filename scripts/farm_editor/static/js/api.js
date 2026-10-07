@@ -14,6 +14,7 @@ async function call(method, url, body) {
 export const api = {
   schema: () => call('GET', '/api/schema'),
   farm: () => call('GET', '/api/farm'),
+  imagery: () => call('GET', '/api/imagery'),
   autosaved: () => call('GET', '/api/autosave'),
   save: (fc) => call('PUT', '/api/farm', fc),
   autosave: (fc) => call('POST', '/api/autosave', fc),

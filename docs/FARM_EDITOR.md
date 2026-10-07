@@ -41,11 +41,15 @@ src/ninsar_mapping/
     serve.py                    Flask app + CLI
     static/index.html, style.css
     static/js/api.js            fetch wrappers for §6
-    static/js/state.js          collection, ids, selection, change events
-    static/js/map.js            Leaflet map, layer groups, styling, Geoman draw/edit
-    static/js/panels.js         properties form, issue list, derived tree
+    static/js/state.js          collection, ids, selection, change events, undo/redo
+    static/js/geo.js            local ENU frame (same formulas as farm_geojson.Frame)
+    static/js/map.js            Leaflet map, layer groups, styling, Geoman draw/edit, imagery, measure
+    static/js/panels.js         properties form, coordinates, issue list
+    static/js/tree.js           derived tree view
+    static/js/generators.js     row / plant / post / offset dialogs
     static/js/workflow.js       step panel and presets
-    static/js/app.js            boot, top bar, presets, undo/redo, autosave, import/export
+    static/js/dom.js            DOM helper
+    static/js/app.js            boot, top bar, presets, autosave, import/export, keyboard
     static/vendor/              Leaflet 1.9, leaflet-geoman-free, Leaflet.ImageOverlay.Rotated
   test/test_farm_geojson.py
   test/data/mini_farm.geojson
@@ -116,7 +120,7 @@ can be revisited in any order; the numbering is a guide, not a lock.
 |--------------------------|--------------------------------------------------------------------------------------------------|
 | 1 Farm boundary          | *Draw farm boundary* → farm (disabled once one exists)                                          |
 | 2 Restricted zones       | *Add no-entry zone*, *Add caution zone* → `restricted_area` with `restriction` preset            |
-| 3 Areas                  | *Add parcel*, *Add yard*, *Add water body*, *Add vegetation area*; *Cut hole*                    |
+| 3 Areas                  | *Add parcel*, *Add yard*, *Add water body*, *Add vegetation area*, *Cut hole in selected area*   |
 | 4 Rows                   | *Generate rows…* (needs a selected parcel), *Draw single row*, *Offset row…*                     |
 | 5 Plants & row supports  | *Fill rows with plants…*, *Add plant*, *Add posts…*, *Draw trellis wire*, *Draw drip line*       |
 | 6 Structures & equipment | *Draw building*, *Draw shed/silo/tank* (footprint polygons), *Draw fence/wall*, *Add gate*, *Add equipment*, *Add service point*, *Add obstacle*, *Add tree/shrub*, *Add movable* |
@@ -131,20 +135,27 @@ panel changes the class later, for example from `shed` to `building`.
 
 ### 4.2 Map
 
-- Base layers: Esri World Imagery, OpenStreetMap, and local overlays (§7), with an opacity
-  slider for overlays.
-- One toggleable layer group per layer/category, styled with the catalog color. Points are
-  drawn on the canvas renderer so that 10k plants stay responsive. Plants are hidden below
-  a zoom threshold.
-- Editing (Geoman): move vertices, drag, delete, snap to vertices and edges (so adjacent
-  areas share a boundary without overlapping), and cut holes.
+- Base layers: Esri World Imagery, OpenStreetMap, or none (offline). Local overlays (§7)
+  draw above the base layer and below every feature, with one opacity slider.
+- One toggleable layer group per catalog type, styled with the catalog color. Everything is
+  drawn on one canvas renderer, so 10k plants stay responsive.
+- Editing (Geoman):
+  - A selected polygon or line shows its vertices for dragging, snapping to other
+    vertices and edges (so adjacent areas share a boundary without overlapping).
+  - A selected point gets a drag handle.
+  - *Cut hole in selected area* draws an interior ring, for example a pond inside a
+    parcel.
 - Precision:
+  - The local frame is fixed when the farm boundary is drawn (`origin` = its centroid).
+    `geo.js` uses the same ellipsoid formulas as `farm_geojson.Frame`.
   - The cursor readout shows ENU x/y and lat/lon.
-  - A measure tool shows distance and heading.
-  - For a selected point or vertex, the user can type lat/lon or ENU x/y.
-  - *Offset row…* copies a row at a typed perpendicular distance.
-- Selection: click to select, shift-click or a box to multi-select. Clicking a feature in
-  the issue list or the tree zooms to it.
+  - *Measure* shows the distance and heading between two clicks.
+  - The properties panel lists the vertices of the selected feature (up to 60). They are
+    editable as x/y metres or lon/lat; lines also show their length and heading.
+  - *Offset row…* copies a row at a typed perpendicular distance (positive is to the left
+    of the row direction).
+- Selection: click to select, shift-click to add. Clicking a feature in the issue list or
+  the tree selects it and zooms to it.
 
 ### 4.3 Properties panel
 
@@ -184,8 +195,11 @@ panel changes the class later, for example from `shed` to `building`.
   ones are reassigned.
 - *Export* downloads the current collection. *Save* writes the working file through the
   server.
-- Undo/redo keeps a snapshot stack of the collection, up to 50 entries. A warning appears
-  when the page is closed with unsaved changes.
+- Undo/redo (↶ ↷, Ctrl+Z, Ctrl+Shift+Z or Ctrl+Y) keeps the last 200 steps.
+  - Each step records the inverse of its changes, not a copy of the farm.
+  - A generator's *Apply*, including the features it replaces, is one step.
+  - Undo never hands ids back: `next_id` only grows.
+- A warning appears when the page is closed with unsaved changes.
 
 ## 5. Generators
 
@@ -240,7 +254,8 @@ The server scans `--imagery DIR` for two forms of imagery.
 
   `frame` is `wgs84` (corners as `[lon, lat]`) or `enu` (corners as `[x, y]` in metres
   around `origin`). An Isaac top-down render uses `enu`. The three corners allow rotation
-  (`Leaflet.ImageOverlay.Rotated`).
+  (`Leaflet.ImageOverlay.Rotated`). The optional `opacity` defaults to 0.8. A sidecar that
+  cannot be read is reported in the status bar, not ignored silently.
 - **XYZ tile directory**: `name/{z}/{x}/{y}.png` (for example from `gdal2tiles.py`) with
   `name/tiles.json` holding `{"label", "min_zoom", "max_zoom"}`. Use this for large drone
   orthomosaics.
@@ -253,7 +268,7 @@ The server scans `--imagery DIR` for two forms of imagery.
 | 2 | Editor skeleton            | `serve.py`, map with base layers, presets for every type, properties form, save/load/import/export | a farm drawn by hand round-trips through save and reload |
 | 3 | Guided workflow, validation UI | step panel, issue list with zoom-to, outlines, derived tree                           | every rule in GeoJSON spec §5 shows up in the UI on a crafted bad file |
 | 4 | Generators                 | rows, plants, posts, with preview and replace                                             | a 40-row parcel with plants in under a minute of user time |
-| 5 | Precision and imagery      | local overlays, typed coordinates, offset row, measure, snapping, undo/redo, autosave     | the Isaac check below passes |
+| 5 | Precision and imagery      | local overlays, typed coordinates, offset row, measure, cut hole, undo/redo, autosave     | an `enu` overlay rendered from the farm lines up with its features; typed x/y match `farm_geojson.Frame` |
 | 6 | Importer (separate plan)   | `scripts/geojson_to_dsg.py` on top of `farm_geojson.derive()`                             | |
 
 ## 9. Verification
@@ -270,9 +285,22 @@ The server scans `--imagery DIR` for two forms of imagery.
      no-entry zone, a road, and an irrigation sector linked to a valve.
   3. Validate shows 0 errors. Save, reload, and get the same collection.
   4. Run `farm_geojson.py validate` and `farm_geojson.py tree` on the saved file.
-- Precision against Isaac:
-  1. Load an Isaac top-down render as an `enu` overlay. Producing the render belongs in
-     ninsar-isaac-sim.
-  2. Generate rows and plants over the cabbage, grapevine and lemon blocks.
-  3. Compare the generated plant positions in ENU with the crop centers in
-     `config/isaac_assets.json`. Target: mean error below 0.2 m.
+- The precision check against the Isaac scene is future feature F1 (§10).
+
+## 10. Future features
+
+### F1. Isaac top-down render and precision check
+
+Goal: measure how precisely a farm described in the editor matches a known scene.
+
+1. In ninsar-isaac-sim, add a tool that renders an orthographic top-down image of the
+   scene. It writes the PNG and its `enu` sidecar (§7): the corners are the camera
+   footprint in scene metres. The origin is an arbitrary fixed point (for example the
+   Montoldre site), so the scene also lines up with satellite imagery.
+2. Load the render with `--imagery`, draw the parcels over the cabbage, grapevine and
+   lemon blocks, and generate rows and plants.
+3. Compare the generated plant positions in ENU with the crop centers in
+   `config/isaac_assets.json` (nearest neighbour). Target: mean error below 0.2 m.
+
+Everything the editor needs is in place: `enu` overlays, typed x/y, Measure and the
+generators. Only the render tool and the comparison script are missing.

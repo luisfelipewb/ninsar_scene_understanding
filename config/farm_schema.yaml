@@ -301,11 +301,13 @@ workflow:
       - {label: Add yard, layer: area, kind: yard}
       - {label: Add water body, layer: area, kind: water_body, props: {water_type: pond}}
       - {label: Add vegetation area, layer: area, kind: vegetation, props: {vegetation_type: hedgerow}}
+      - {label: Cut hole in selected area, action: cut_hole}
   - step: Rows
     hint: One crop per row, drawn from the row start to the row end, inside a parcel.
     buttons:
       - {label: Generate rows…, action: generate_rows}
       - {label: Draw single row, layer: row}
+      - {label: Offset row…, action: offset_row}
   - step: Plants & row supports
     hint: Plants and posts belong to the nearest row.
     buttons:

@@ -14,6 +14,8 @@ let pickCallback = null;
 let clickHook = null;      // gets the latlng of every map click (generator edge picking)
 let preview = null;        // L.LayerGroup with generator previews
 let editingSuspended = false;  // no vertex editing while a generator dialog is open
+const imagery = [];        // {layer, label}: local overlays, kept across layer-control rebuilds
+let measure = null;        // {a, b, line} while the measure tool is on
 
 const SNAP = { snappable: true, snapDistance: 12, allowSelfIntersection: false };
 const GEOM_RANK = { Polygon: 0, MultiPolygon: 0, LineString: 1, MultiLineString: 1, Point: 2, MultiPoint: 2 };
@@ -129,16 +131,20 @@ function reorder() {
 function makeGroups() {
   groups.forEach((g) => map.removeLayer(g));
   groups.clear();
+  state.schema.types.forEach((t, i) => groups.set(i, L.layerGroup().addTo(map)));
+  groups.set('unclassified', L.layerGroup().addTo(map));
+  buildControl();
+}
+
+function buildControl() {
+  if (!groups.size) return;  // makeGroups() builds it on the first render
   if (control) map.removeControl(control);
   const overlays = {};
   state.schema.types.forEach((t, i) => {
-    const g = L.layerGroup().addTo(map);
-    groups.set(i, g);
-    if (!t.hidden) overlays[`<span class="swatch" style="background:${t.color}"></span>${t.label}`] = g;
+    if (!t.hidden) overlays[`<span class="swatch" style="background:${t.color}"></span>${t.label}`] = groups.get(i);
   });
-  const unclassified = L.layerGroup().addTo(map);
-  groups.set('unclassified', unclassified);
-  overlays['<span class="swatch" style="background:#888"></span>Unclassified'] = unclassified;
+  for (const { layer, label } of imagery) overlays[`<span class="swatch img"></span>${label}`] = layer;
+  overlays['<span class="swatch" style="background:#888"></span>Unclassified'] = groups.get('unclassified');
   control = L.control.layers(baseLayers, overlays, { collapsed: true, position: 'topright' }).addTo(map);
 }
 
@@ -301,6 +307,73 @@ export function nearestEdge(f, latlng) {
 }
 export const getMap = () => map;
 
+// --- local imagery (docs/FARM_EDITOR.md §7) ---------------------------------------------------
+
+export function addImagery(list) {
+  const errors = [];
+  for (const entry of list) {
+    if (entry.error) { errors.push(`${entry.label}: ${entry.error}`); continue; }
+    const opts = { pane: 'imagery', interactive: false };
+    const layer = entry.type === 'tiles'
+      ? L.tileLayer(entry.url, { ...opts, minZoom: entry.min_zoom, maxNativeZoom: entry.max_zoom, maxZoom: 23 })
+      : L.imageOverlay.rotated(entry.url, ...['topleft', 'topright', 'bottomleft'].map((c) => L.latLng(entry.corners[c])),
+        { ...opts, opacity: entry.opacity ?? 0.8 });
+    layer.addTo(map);
+    imagery.push({ layer, label: entry.label, bounds: entry.corners ? L.latLngBounds(Object.values(entry.corners)) : null });
+  }
+  if (imagery.length) {
+    buildControl();
+    const slider = L.control({ position: 'bottomleft' });
+    slider.onAdd = () => {
+      const el = L.DomUtil.create('div', 'leaflet-bar opacity-control');
+      el.innerHTML = '<label>imagery <input type="range" min="0" max="1" step="0.05" value="0.8"></label>';
+      L.DomEvent.disableClickPropagation(el);
+      el.querySelector('input').addEventListener('input', (e) => imagery.forEach(({ layer }) => layer.setOpacity(Number(e.target.value))));
+      return el;
+    };
+    slider.addTo(map);
+  }
+  return errors;
+}
+
+export const imageryBounds = () => imagery.map((i) => i.bounds).filter(Boolean);
+
+// --- measure tool ------------------------------------------------------------------------------
+
+export function startMeasure(describe) {
+  stopMeasure();
+  measure = {
+    a: null, b: null,
+    line: L.polyline([], { renderer, color: '#00e5ff', weight: 3, dashArray: [4, 4], interactive: false, pmIgnore: true }).addTo(map),
+    label: L.marker([0, 0], { interactive: false, keyboard: false, pmIgnore: true, icon: L.divIcon({ className: 'measure-tip', html: '', iconSize: null }) }),
+  };
+  const show = (b) => {
+    if (!measure?.a) return;
+    measure.line.setLatLngs([measure.a, b]);
+    measure.label.setLatLng([(measure.a.lat + b.lat) / 2, (measure.a.lng + b.lng) / 2]).addTo(map);
+    measure.label.getElement().textContent = describe(measure.a, b);
+  };
+  measure.move = (e) => { if (measure.a && !measure.b) show(e.latlng); };
+  map.on('mousemove', measure.move);
+  setClickHook((ll) => {
+    if (!measure.a || measure.b) { measure.a = ll; measure.b = null; } else { measure.b = ll; }
+    show(ll);
+  });
+  emit('mode', 'Measure: click two points (Esc to stop)');
+}
+
+export function stopMeasure() {
+  if (!measure) return;
+  map.off('mousemove', measure.move);
+  map.removeLayer(measure.line);
+  map.removeLayer(measure.label);
+  measure = null;
+  setClickHook(null);
+  emit('mode', '');
+}
+
+export const isMeasuring = () => !!measure;
+
 // --- view ---------------------------------------------------------------------------------
 
 export function zoomTo(ids, { leftPanel = false } = {}) {
@@ -338,6 +411,7 @@ export function initMap(el) {
     'None (offline)': L.layerGroup(),
   };
   baseLayers.Satellite.addTo(map);
+  map.createPane('imagery').style.zIndex = 250;  // above base tiles, below every feature
   L.control.scale({ metric: true, imperial: false, maxWidth: 150 }).addTo(map);
   map.pm.setGlobalOptions(SNAP);
 

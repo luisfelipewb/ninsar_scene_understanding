@@ -898,6 +898,27 @@ def make_posts(fc, target_ids, params, schema=None):
     return {"features": feats, "updates": {}, "existing": existing, "stats": stats}
 
 
+def make_offset_rows(fc, row_id, params, schema=None):
+    """Copies of a row, `distance_m` apart (positive: to the left of the row direction).
+
+    params: distance_m, count. Copies keep the row's crop, variety and plant spacing.
+    Returns {features, updates, existing, stats} like the other generators.
+    """
+    idx = FarmIndex(fc, schema)
+    row = idx.nodes.get(row_id)
+    if row is None or row.layer != "row":
+        raise KeyError(f"{row_id} is not a valid row")
+    d = params.get("distance_m")
+    if not _is_number(d) or d == 0:
+        raise ValueError("'distance_m' must be a non-zero number of metres")
+    count = int(params.get("count") or 1)
+    if not 1 <= count <= 5000:
+        raise ValueError("'count' must be between 1 and 5000")
+    props = {k: v for k, v in row.props.items() if k in ("layer", "kind", "variety", "plant_spacing_m")}
+    feats = [_feature(row.geom.offset_curve(d * k), idx.frame, **props) for k in range(1, count + 1)]
+    return {"features": feats, "updates": {}, "existing": [], "stats": {"count": count, "span_m": round(abs(d) * count, 2)}}
+
+
 # --- CLI --------------------------------------------------------------------------------
 
 def _summary(idx, fid):

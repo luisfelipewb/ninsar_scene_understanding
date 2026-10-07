@@ -93,7 +93,10 @@ export function setCollection(fc, { dirty = false } = {}) {
   state.derivedStale = true;
   state.dirty = dirty;
   state.revision += 1;
+  history.undo = [];
+  history.redo = [];
   emit('loaded');
+  emit('history');
   emit('selection');
   emit('dirty');
 }
@@ -106,6 +109,7 @@ function touched() {
 }
 
 export function addFeatures(features) {
+  record({ type: 'add', features: clone(features) });
   for (const f of features) {
     state.fc.features.push(f);
     index.set(f.id, f);
@@ -123,9 +127,12 @@ export function updateFeature(id, changes, source = null) {
 export function updateFeatures(list, source = null) {
   const updated = [];
   const renamed = {};
+  const before = [];
+  const after = [];
   for (const [id, changes] of list) {
     const f = index.get(id);
     if (!f) continue;
+    before.push(snapshot(f));
     if (changes.properties) f.properties = changes.properties;
     if (changes.geometry) f.geometry = roundGeometry(changes.geometry);
     if (changes.id && changes.id !== id) {
@@ -136,13 +143,16 @@ export function updateFeatures(list, source = null) {
       if (state.selection.delete(id)) state.selection.add(f.id);
     }
     updated.push(f.id);
+    after.push(snapshot(f));
   }
   if (!updated.length) return;
+  record({ type: 'update', before, after });
   touched();
   emit('changed', { updated, renamed, source });
 }
 
 export function removeFeatures(ids) {
+  record({ type: 'remove', features: clone(ids.map((id) => index.get(id)).filter(Boolean)) });
   const gone = new Set(ids);
   state.fc.features = state.fc.features.filter((f) => !gone.has(f.id));
   ids.forEach((id) => { index.delete(id); state.selection.delete(id); });
@@ -190,3 +200,71 @@ const roundCoords = (c) => (typeof c === 'number' ? round8(c) : c.map(roundCoord
 export function roundGeometry(g) {
   return { type: g.type, coordinates: roundCoords(g.coordinates) };
 }
+
+// --- undo / redo ----------------------------------------------------------------------
+// Each step is a list of operations with what is needed to invert them (not snapshots of
+// the whole collection, which would cost megabytes per step with thousands of plants).
+// Ids are never handed back on undo: next_id only grows (GeoJSON spec §4.1).
+
+const history = { undo: [], redo: [], group: null, replaying: false, limit: 200 };
+
+function clone(x) { return JSON.parse(JSON.stringify(x)); }
+function snapshot(f) { return { id: f.id, properties: clone(f.properties), geometry: clone(f.geometry) }; }
+
+function record(op) {
+  if (history.replaying) return;
+  if (history.group) { history.group.push(op); return; }
+  pushStep([op]);
+}
+
+function pushStep(ops) {
+  if (!ops.length) return;
+  history.undo.push(ops);
+  if (history.undo.length > history.limit) history.undo.shift();
+  history.redo = [];
+  emit('history');
+}
+
+// run `fn` as one undo step
+export function group(fn) {
+  if (history.group) return fn();
+  history.group = [];
+  try {
+    return fn();
+  } finally {
+    const ops = history.group;
+    history.group = null;
+    pushStep(ops);
+  }
+}
+
+function replay(op, forward) {
+  const ids = (features) => features.map((f) => f.id);
+  if (op.type === 'update') {
+    const [from, to] = forward ? [op.before, op.after] : [op.after, op.before];
+    updateFeatures(from.map((f, i) => [f.id, { properties: clone(to[i].properties), geometry: to[i].geometry, id: to[i].id }]));
+  } else if ((op.type === 'add') === forward) {
+    addFeatures(clone(op.features));
+  } else {
+    removeFeatures(ids(op.features));
+  }
+}
+
+function step(fromStack, toStack, forward) {
+  const ops = fromStack.pop();
+  if (!ops) return false;
+  history.replaying = true;
+  try {
+    (forward ? ops : [...ops].reverse()).forEach((op) => replay(op, forward));
+  } finally {
+    history.replaying = false;
+  }
+  toStack.push(ops);
+  emit('history');
+  return true;
+}
+
+export const undo = () => step(history.undo, history.redo, false);
+export const redo = () => step(history.redo, history.undo, true);
+export const canUndo = () => history.undo.length > 0;
+export const canRedo = () => history.redo.length > 0;
