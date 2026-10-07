@@ -2,7 +2,8 @@
 
 Draft v0, 2026-10-07. Structure of the farm scene graph (`spark_dsg::DynamicSceneGraph`)
 used by `scripts/make_farm_dsg.py`, `scripts/make_isaac_farm_dsg.py` and the planned
-GeoJSON importer.
+GeoJSON importer. The input file format is [FARM_GEOJSON_SPEC.md](FARM_GEOJSON_SPEC.md);
+the tool that writes it is [FARM_EDITOR.md](FARM_EDITOR.md).
 
 ## 1. Scope
 
@@ -122,6 +123,9 @@ in config, not in this spec.
 Recommended crop attributes: `health` (0–1), `growth_stage_bbch`, `fruit_count`,
 `row_index` (position along the row, from 0).
 
+The bounding box of a prior object comes from its GeoJSON footprint, or else from a
+per-class default. Perception then corrects it (GeoJSON spec §4.3).
+
 ### 5.2 ROWS (layer 2)
 
 One crop per row. The labelspace holds the crop classes of layer 1.
@@ -201,7 +205,8 @@ GeoJSON file remains the record of the prior.
 
 - Frame: local ENU, metres, z up, named `map`. The origin is stored in the graph
   metadata. GeoJSON coordinates (WGS84) are converted on import.
-- Angles: radians in `bounding_box`, degrees in `*_deg` metadata.
+- Angles: radians in `bounding_box`, degrees in `*_deg` metadata. Both are
+  counter-clockwise from east (+x).
 - Graph metadata: `spec_version`, `site`, `origin` (`lat`, `lon`, `alt`), `frame`,
   `units`, `labelspaces`.
 
