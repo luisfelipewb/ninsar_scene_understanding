@@ -41,10 +41,11 @@ src/ninsar_mapping/
     serve.py                    Flask app + CLI
     static/index.html, style.css
     static/js/api.js            fetch wrappers for §6
+    static/js/state.js          collection, ids, selection, change events
     static/js/map.js            Leaflet map, layer groups, styling, Geoman draw/edit
     static/js/panels.js         properties form, issue list, derived tree
     static/js/workflow.js       step panel and presets
-    static/js/app.js            state, undo/redo, autosave, import/export
+    static/js/app.js            boot, top bar, presets, undo/redo, autosave, import/export
     static/vendor/              Leaflet 1.9, leaflet-geoman-free, Leaflet.ImageOverlay.Rotated
   test/test_farm_geojson.py
   test/data/mini_farm.geojson

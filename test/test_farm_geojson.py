@@ -360,3 +360,17 @@ def test_schema_prefixes_match_dsg_spec():
                 ("navigation", None): "R"}
     got = {(t["layer"], t["category"]): t["prefix"] for t in fg.default_schema().type_list}
     assert got == expected
+
+
+def test_workflow_buttons_name_existing_types():
+    schema = fg.default_schema()
+    for step in schema.workflow:
+        for b in step["buttons"]:
+            if "action" in b:
+                continue
+            t = schema.entry(b["layer"], b.get("category"), b.get("kind"))
+            assert t is not None, b
+            assert b.get("geometry", t["geometry"][0]) in t["geometry"], b
+            for key, value in b.get("props", {}).items():
+                attr = next(a for a in t["attributes"] if a["name"] == key)
+                assert attr["type"] != "enum" or value in attr["values"], b

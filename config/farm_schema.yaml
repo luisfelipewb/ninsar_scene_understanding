@@ -277,3 +277,66 @@ types:
     label: Road
     attributes:
       - {name: width_m, type: float, unit: m}
+
+# --- editor workflow (docs/FARM_EDITOR.md §4.1) ---------------------------------------
+# Buttons pick a type by layer/category; `kind` fixes the class, otherwise the editor shows
+# a class chooser next to the button. `geometry` picks one of the type's geometries,
+# `props` are preset values, `continue` keeps drawing after each shape, `single` allows
+# only one feature of that type, and `action` names an editor tool instead of a drawing.
+workflow:
+  - step: Farm boundary
+    hint: Draw the outer boundary of the farm. Everything else must lie inside it.
+    buttons:
+      - {label: Draw farm boundary, layer: farm, kind: farm, single: true}
+  - step: Restricted zones
+    hint: Places robots must avoid (no entry) or drive carefully (caution).
+    buttons:
+      - {label: Add no-entry zone, layer: overlay, kind: restricted_area, props: {restriction: no_entry}}
+      - {label: Add caution zone, layer: overlay, kind: restricted_area, props: {restriction: caution}}
+  - step: Areas
+    hint: Non-overlapping subdivisions of the farm. Snap to shared edges.
+    buttons:
+      - {label: Add parcel, layer: area, kind: parcel}
+      - {label: Add yard, layer: area, kind: yard}
+      - {label: Add water body, layer: area, kind: water_body, props: {water_type: pond}}
+      - {label: Add vegetation area, layer: area, kind: vegetation, props: {vegetation_type: hedgerow}}
+  - step: Rows
+    hint: One crop per row, drawn from the row start to the row end, inside a parcel.
+    buttons:
+      - {label: Generate rows…, action: generate_rows}
+      - {label: Draw single row, layer: row}
+  - step: Plants & row supports
+    hint: Plants and posts belong to the nearest row.
+    buttons:
+      - {label: Fill rows with plants…, action: generate_plants}
+      - {label: Add posts…, action: generate_posts}
+      - {label: Add plant, layer: object, category: crop, continue: true}
+      - {label: Add post, layer: object, category: row_support, kind: post, continue: true}
+      - {label: Draw wire / drip line, layer: object, category: row_support, kind: trellis_wire}
+  - step: Structures & equipment
+    hint: Draw building footprints; their size is taken from the polygon.
+    buttons:
+      - {label: Draw building, layer: object, category: structure, kind: building}
+      - {label: Draw fence / wall, layer: object, category: structure, kind: fence}
+      - {label: Add gate, layer: object, category: structure, kind: gate}
+      - {label: Add equipment, layer: object, category: equipment}
+      - {label: Add service point, layer: object, category: service_point}
+      - {label: Add obstacle, layer: object, category: obstacle, geometry: Point}
+      - {label: Draw obstacle area, layer: object, category: obstacle, geometry: Polygon}
+      - {label: Add tree / shrub, layer: object, category: vegetation}
+      - {label: Add movable, layer: object, category: movable}
+  - step: Roads
+    hint: Farm roads robots can drive on. Lanes between rows are derived automatically.
+    buttons:
+      - {label: Draw road, layer: navigation, kind: road}
+  - step: Overlays
+    hint: Groups that cut across areas. Membership is computed from the polygon.
+    buttons:
+      - {label: Add irrigation sector, layer: overlay, kind: irrigation_sector}
+      - {label: Add management zone, layer: overlay, kind: management_zone}
+  - step: Check & export
+    hint: Fix all errors before building the scene graph.
+    buttons:
+      - {label: Validate, action: validate}
+      - {label: Show tree, action: tree}
+      - {label: Export GeoJSON, action: export}

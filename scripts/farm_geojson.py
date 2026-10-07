@@ -50,6 +50,7 @@ class Schema:
         self.reserved = set(raw["reserved"])
         self.default_size_m = {**raw["default_size_m"],
                                **{name: c["default_size_m"] for name, c in self.crops.items()}}
+        self.workflow = raw.get("workflow", [])
         self.type_list = []
         self.types = {}  # (layer, category, kind) -> type entry
         for entry in raw["types"]:
@@ -62,10 +63,15 @@ class Schema:
     def type_of(self, props):
         return self.types.get((props.get("layer"), props.get("category"), props.get("kind")))
 
+    def entry(self, layer, category=None, kind=None):
+        """Type entry for a workflow button: by kind when given, else the first of the layer/category."""
+        return next((t for t in self.type_list if t["layer"] == layer and t["category"] == category
+                     and (kind is None or kind in t["kinds"])), None)
+
     def to_json(self):
         return {"version": self.version, "crops": self.crops, "thresholds": self.thresholds,
                 "reserved": sorted(self.reserved), "default_size_m": self.default_size_m,
-                "types": self.type_list}
+                "types": self.type_list, "workflow": self.workflow}
 
 
 _DEFAULT_SCHEMA = None
