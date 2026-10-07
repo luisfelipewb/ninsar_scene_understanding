@@ -7,9 +7,11 @@ export const state = {
   path: '',
   derived: {},
   issues: [],
+  issuesById: new Map(),  // feature id -> {level: worst level, list}
   derivedStale: true,
   selection: new Set(),
   dirty: false,
+  live: false,     // validate automatically after changes
   revision: 0,  // bumped on every change; autosave compares it
 };
 
@@ -85,6 +87,7 @@ export function setCollection(fc, { dirty = false } = {}) {
   state.selection.clear();
   state.derived = {};
   state.issues = [];
+  state.issuesById = new Map();
   state.derivedStale = true;
   state.dirty = dirty;
   state.revision += 1;
@@ -160,11 +163,21 @@ export function markSaved() {
   emit('dirty');
 }
 
-export function setReport({ issues, derived }) {
+// `revision`: the state.revision the report was computed for; a newer edit keeps it stale
+export function setReport({ issues, derived }, revision = state.revision) {
+  const before = new Set(state.issuesById.keys());
   state.issues = issues;
+  state.issuesById = new Map();
+  for (const i of issues) {
+    if (!i.id) continue;
+    const entry = state.issuesById.get(i.id) || { level: 'warning', list: [] };
+    entry.list.push(i);
+    if (i.level === 'error') entry.level = 'error';
+    state.issuesById.set(i.id, entry);
+  }
   state.derived = derived;
-  state.derivedStale = false;
-  emit('report');
+  state.derivedStale = revision !== state.revision;
+  emit('report', { touched: [...new Set([...before, ...state.issuesById.keys()])] });
 }
 
 // --- geometry -------------------------------------------------------------------------

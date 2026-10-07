@@ -2,7 +2,7 @@
 // keyboard shortcuts and autosave.
 import { api } from './api.js';
 import { fitAll, getMap, goTo, initMap, isBusy, setPick, startDraw, stopDraw } from './map.js';
-import { deleteSelection, initPanels } from './panels.js';
+import { deleteSelection, initPanels, showTab } from './panels.js';
 import {
   addFeatures, byId, entryFor, ID_RE, markSaved, newId, on, roundGeometry, select, setCollection,
   setReport, state, typeOf,
@@ -46,11 +46,14 @@ on('preset', ({ button, entry, geometry, kind }) => {
 async function save() {
   try {
     status('Saving…');
+    const revision = state.revision;
     const res = await api.save(state.fc);
     if (res.origin) state.fc.origin = res.origin;
-    state.fc.next_id = res.next_id;
-    markSaved();
-    setReport(res);
+    for (const [prefix, n] of Object.entries(res.next_id)) {  // ids made during the request stay valid
+      state.fc.next_id[prefix] = Math.max(state.fc.next_id[prefix] || 0, n);
+    }
+    if (state.revision === revision) markSaved();
+    setReport(res, revision);
     const errors = res.issues.filter((i) => i.level === 'error').length;
     status(`Saved${errors ? ` with ${errors} errors` : ''}`, errors ? 'warn' : 'ok');
   } catch (e) {
@@ -58,11 +61,20 @@ async function save() {
   }
 }
 
-async function validate() {
+let validating = null;  // the request in flight, so live validation never overlaps
+
+async function validate({ quiet = false } = {}) {
+  if (validating) return validating;
+  validating = runValidate(quiet).finally(() => { validating = null; });
+  return validating;
+}
+
+async function runValidate(quiet) {
   try {
-    status('Validating…');
+    if (!quiet) status('Validating…');
     const t0 = performance.now();
-    setReport(await api.validate(state.fc));
+    const revision = state.revision;
+    setReport(await api.validate(state.fc), revision);
     const errors = state.issues.filter((i) => i.level === 'error').length;
     status(`${errors} errors, ${state.issues.length - errors} warnings (${Math.round(performance.now() - t0)} ms)`,
       errors ? 'warn' : 'ok');
@@ -88,7 +100,7 @@ function exportFile() {
 
 const ACTIONS = {
   validate, export: exportFile, save,
-  tree: () => status('The tree view comes with milestone 3', 'warn'),
+  tree: async () => { if (state.derivedStale) await validate(); showTab('tree'); },
   generate_rows: () => status('Row generation comes with milestone 4', 'warn'),
   generate_plants: () => status('Plant generation comes with milestone 4', 'warn'),
   generate_posts: () => status('Post generation comes with milestone 4', 'warn'),
@@ -201,10 +213,21 @@ async function boot() {
   initMap($('map'));
   initWorkflow();
   initPanels();
-  setActionEnabled('tree', false, 'milestone 3');
   ['generate_rows', 'generate_plants', 'generate_posts'].forEach((a) => setActionEnabled(a, false, 'milestone 4'));
 
   on('dirty', updateDirty);
+  try { state.live = localStorage.getItem('farmEditor.live') === '1'; } catch { /* storage blocked */ }
+  let liveTimer = null;
+  on('live', (enabled) => {
+    state.live = enabled;
+    try { localStorage.setItem('farmEditor.live', enabled ? '1' : '0'); } catch { /* storage blocked */ }
+    if (enabled) validate({ quiet: true });
+  });
+  on('changed', () => {
+    if (!state.live) return;
+    clearTimeout(liveTimer);
+    liveTimer = setTimeout(() => validate({ quiet: true }), 1000);
+  });
   on('mode', (msg) => { $('mode').textContent = msg; });
   on('status', ({ msg, level }) => status(msg, level));
   on('featureClick', ({ id, shift }) => select([id], { add: shift }));
@@ -217,7 +240,7 @@ async function boot() {
   on('loaded', () => { $('counts').textContent = `${state.fc.features.length} features`; });
 
   $('btn-save').onclick = save;
-  $('btn-validate').onclick = validate;
+  $('btn-validate').onclick = () => validate();
   $('btn-export').onclick = exportFile;
   $('btn-open').onclick = openFile;
   $('btn-import').onclick = () => readFile((fc) => importFeatures(fc));

@@ -1,7 +1,7 @@
 // Leaflet map: one canvas renderer for every feature (fast with thousands of plants),
 // one toggleable group per catalog type, Geoman for drawing and vertex editing.
 /* global L */
-import { colorOf, emit, LAYER_ORDER, on, state, typeOf, updateFeature } from './state.js';
+import { byId, colorOf, emit, LAYER_ORDER, on, state, typeOf, updateFeature } from './state.js';
 
 let map;
 let renderer;
@@ -36,9 +36,18 @@ function baseStyle(f) {
   }
 }
 
+const ISSUE_COLOR = { error: '#e8202a', warning: '#ff9800' };
+
 function styleFor(f) {
-  const s = baseStyle(f);
-  if (!state.selection.has(f.id)) return s;
+  const s = { dashArray: null, lineCap: 'round', ...baseStyle(f) };  // setStyle merges: reset what other states set
+  if (!state.selection.has(f.id)) {
+    const issue = state.issuesById.get(f.id);
+    if (!issue) return s;
+    const color = ISSUE_COLOR[issue.level];
+    return f.geometry.type === 'Point'
+      ? { ...s, color, weight: 2.5, radius: s.radius + 1.5 }
+      : { ...s, color, weight: (s.weight || 2) + 2, dashArray: '1 6', lineCap: 'round' };  // dotted: unlike any type style
+  }
   return f.geometry.type === 'Point'
     ? { ...s, color: '#ffd700', weight: 3, radius: s.radius + 2 }
     : { ...s, color: '#ffd700', weight: (s.weight || 2) + 2 };
@@ -138,7 +147,7 @@ export function render() {
 }
 
 function restyle(id) {
-  const f = state.fc.features.find((x) => x.id === id);
+  const f = byId(id);
   const layer = layers.get(id);
   if (!f || !layer) return;
   const s = styleFor(f);
@@ -194,17 +203,16 @@ on('changed', ({ added = [], updated = [], removed = [], renamed = {}, source })
     if (layer) { layer.featureId = to; layers.set(to, layer); }
     if (editing?.id === from) editing.id = to;
   }
-  const byId = new Map(state.fc.features.map((f) => [f.id, f]));
   let needOrder = false;
   for (const id of added) {
-    addLayer(byId.get(id));
-    needOrder ||= byId.get(id).geometry.type !== 'Point';
+    addLayer(byId(id));
+    needOrder ||= byId(id).geometry.type !== 'Point';
   }
   for (const id of updated) {
     if (source === 'map' || source === 'props') { restyle(id); continue; }
     const wasEditing = editing?.id === id;
     removeLayer(id);
-    addLayer(byId.get(id));
+    addLayer(byId(id));
     needOrder = true;
     if (wasEditing) startEditing(id);
   }
@@ -212,6 +220,7 @@ on('changed', ({ added = [], updated = [], removed = [], renamed = {}, source })
 });
 
 on('loaded', render);
+on('report', ({ touched }) => touched.forEach(restyle));
 
 // --- drawing and picking ----------------------------------------------------------------
 

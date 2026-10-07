@@ -1,24 +1,11 @@
 // Right-hand panels: properties of the selection (form built from the catalog) and the
 // issue list from the last validation.
+import { h } from './dom.js';
 import { setPick, zoomTo } from './map.js';
 import {
   byId, COMMON_KEYS, emit, labelOf, newId, on, removeFeatures, select, state, typeOf, updateFeatures,
 } from './state.js';
-
-// --- tiny DOM helper --------------------------------------------------------------------
-
-export function h(tag, attrs = {}, ...children) {
-  const el = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs)) {
-    if (v == null || v === false) continue;
-    if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
-    else if (k === 'class') el.className = v;
-    else if (v === true) el.setAttribute(k, '');
-    else el.setAttribute(k, v);
-  }
-  for (const c of children.flat()) if (c != null) el.append(c);
-  return el;
-}
+import { renderTree } from './tree.js';
 
 const fmt = (v) => (Array.isArray(v) ? v.join(', ') : typeof v === 'number' ? String(Math.round(v * 100) / 100) : String(v));
 const MIXED = '— mixed —';
@@ -210,16 +197,16 @@ export function deleteSelection() {
   removeFeatures(ids);
 }
 
-// --- issues ---------------------------------------------------------------------------------
+// --- issues / tree tabs ------------------------------------------------------------------
 
-function renderIssues() {
-  const el = document.getElementById('issues');
-  el.replaceChildren();
-  const errors = state.issues.filter((i) => i.level === 'error').length;
-  const warnings = state.issues.length - errors;
-  el.append(h('h3', {}, 'Issues',
-    h('span', { class: 'type' }, Object.keys(state.derived).length || state.issues.length
-      ? `${errors} errors, ${warnings} warnings${state.derivedStale ? ' (out of date)' : ''}` : 'not validated yet')));
+let tab = 'issues';
+
+export function showTab(name) {
+  tab = name;
+  renderReport();
+}
+
+function issueList() {
   const list = h('div', { class: 'issue-list' });
   for (const i of state.issues.slice(0, 500)) {
     list.append(h('div', {
@@ -228,16 +215,40 @@ function renderIssues() {
     }, h('b', {}, i.rule), ' ', h('span', { class: 'id' }, i.id || '—'), ' ', i.message));
   }
   if (state.issues.length > 500) list.append(h('div', { class: 'muted' }, `… ${state.issues.length - 500} more`));
-  el.append(list);
+  if (!state.issues.length && !state.derivedStale) list.append(h('p', { class: 'ok' }, 'No issues: the farm is ready for the scene graph.'));
+  return list;
+}
+
+function renderReport() {
+  const el = document.getElementById('issues');
+  el.replaceChildren();
+  const errors = state.issues.filter((i) => i.level === 'error').length;
+  const warnings = state.issues.length - errors;
+  const validated = Object.keys(state.derived).length || state.issues.length;
+  const tabButton = (name, label) => h('button', { type: 'button', class: `tab${tab === name ? ' active' : ''}`,
+    onclick: () => showTab(name) }, label);
+  el.append(h('div', { class: 'tabs' },
+    tabButton('issues', `Issues${validated ? ` ${errors} ✕ ${warnings} !` : ''}`),
+    tabButton('tree', 'Tree'),
+    h('label', { class: 'live', title: 'Validate automatically 1 s after each change' },
+      h('input', { type: 'checkbox', checked: state.live, onchange: (e) => emit('live', e.target.checked) }), 'live')));
+  el.append(h('p', { class: `report-state${state.derivedStale ? ' stale' : ''}` },
+    !validated ? 'Not validated yet.' : state.derivedStale ? 'Out of date: validate again.' : 'Up to date.'));
+  const body = h('div', { class: 'tab-body' });
+  if (tab === 'tree') renderTree(body); else body.append(issueList());
+  el.append(body);
 }
 
 export function initPanels() {
   on('selection', renderProps);
-  on('report', () => { renderProps(); renderIssues(); });
-  on('loaded', () => { renderProps(); renderIssues(); });
+  on('report', () => { renderProps(); renderReport(); });
+  on('loaded', () => { renderProps(); renderReport(); });
   on('changed', ({ source }) => {
     if (!source) renderProps();  // map/props edits keep the form (and its focus) as it is
     emit('stale');
   });
-  on('stale', () => document.querySelector('#issues .type')?.classList.add('stale'));
+  on('stale', () => {
+    const p = document.querySelector('#issues .report-state');
+    if (p && Object.keys(state.derived).length) { p.textContent = 'Out of date: validate again.'; p.classList.add('stale'); }
+  });
 }

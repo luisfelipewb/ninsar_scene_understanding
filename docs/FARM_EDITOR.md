@@ -160,13 +160,22 @@ panel changes the class later, for example from `shed` to `building`.
 
 ### 4.4 Validation and tree
 
-- *Validate* posts the collection to the server. Issues appear in a list, sorted by level.
-  Offending features get a red outline (errors) or an orange one (warnings).
-- Validation runs automatically on save, and optionally live, debounced by 1 s. Saving
-  never blocks, but the status shows the error count.
-- *Show tree* lists farm → areas → rows → objects with counts, using the derived parents,
-  plus the overlays and their members. It is the quickest way to check that every plant
-  landed in the right row.
+- *Validate* posts the collection to the server. The side panel's **Issues** tab lists the
+  issues, errors first. Clicking one selects the feature and zooms to it, and the
+  properties panel repeats that feature's own issues.
+- Features with issues get a dotted outline: red for errors, orange for warnings. The
+  dotted pattern is used by no feature type, so a no-entry zone never looks like an error.
+- Each workflow step shows a badge with its error (✕) and warning (!) counts. G1 counts
+  under the farm step; unclassified features and the overall total count under *Check &
+  export*.
+- Validation also runs on save. The *live* checkbox validates 1 s after each change and is
+  remembered per browser. Saving never blocks. A result computed before a newer edit stays
+  marked *out of date*.
+- The **Tree** tab (or *Show tree*) shows farm → areas → rows → objects with counts, using
+  the derived parents. It also lists the overlays with their members, the roads, the
+  features outside the farm, and the features that are not in the tree (invalid or
+  unclassified). Children render when a node is opened, at most 100 at a time. It is the
+  quickest way to check that every plant landed in the right row.
 
 ### 4.5 Import, export, history
 
