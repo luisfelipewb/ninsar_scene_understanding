@@ -1,0 +1,32 @@
+# Live-tunable extrinsic. The wildcard namespace means the same file works
+# whatever the node is named, so several instances can share it.
+#
+# Values below mirror the commented `edit:` block in
+# ninsar_bag_fix/config/pom_4x4.yaml - tune them in rqt_reconfigure, then call
+#   ros2 service call /tf_publisher/print_transform std_srvs/srv/Trigger
+# # to get the snippet to paste back.
+# /**:
+#   ros__parameters:
+#     parent_frame: robot_base_link
+#     child_frame: robot_lidar_link
+#     x: 2.95
+#     y: 0.0
+#     z: 0.52
+#     roll_deg: 0.0
+#     pitch_deg: 37.0      # 0.645772 rad
+#     yaw_deg: 0.0
+#     publish_rate: 30.0
+#     static_tf: false     # read-only at runtime; set it here or on the CLI
+
+/**:
+  ros__parameters:
+    parent_frame: robot_base_link
+    child_frame: robot_b_two_link
+    x: 3.0
+    y: 0.0
+    z: 0.89
+    roll_deg: 0.0
+    pitch_deg: -15.0      # 0.645772 rad
+    yaw_deg: 180.0
+    publish_rate: 60.0
+    static_tf: false     # read-only at runtime; set it here or on the CLI

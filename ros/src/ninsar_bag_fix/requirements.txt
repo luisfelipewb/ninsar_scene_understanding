@@ -1,0 +1,7 @@
+# ROS 2 packages (rosbag2_py, rclpy, rosidl_runtime_py) come from the ROS
+# installation, not pip:  source /opt/ros/jazzy/setup.bash
+PyYAML>=6.0
+pytest>=7.0
+
+# Only needed to read Trektor's ROS 1 .bag files:
+rosbags>=0.9

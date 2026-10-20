@@ -1,0 +1,90 @@
+# POM_4x4 - ROS 2 (jazzy), mcap bags.
+#
+#   source /opt/ros/jazzy/setup.bash
+#   python3 -m bagfix run configs/pom_4x4.yaml /data/2026-07-09-16-39-34 --dry-run
+#
+# Point at the session folder (the one named after the recording); the `bag/`
+# sub-folder holding bag_0.mcap, bag_1.mcap ... is found automatically.
+# Topic entries are globs, so a different camera serial still matches.
+
+robot: pom_4x4
+
+output:
+  root: output       # relative paths are resolved against the workspace root
+  suffix: _fixed     # output goes to <root>/<session name><suffix>/bag/
+  storage: mcap
+  # max_bagfile_size: 0   # bytes per split file; unset = split like the source
+
+pipeline:
+  # The Visionary-B camera recorded an empty/wrong frame_id on all three topics.
+  - transform: frame_id
+    topics:
+      - /visionary_b_two/*/rgb
+      - /visionary_b_two/*/depth
+      - /visionary_b_two/*/camera_info
+    frame_id: robot_b_two_left_camera_optical_frame
+
+  # Calibration came out with negative focal lengths and a garbage R/P.
+  - transform: camera_info
+    topics:
+      - /visionary_b_two/*/camera_info
+    force_positive_focal: true
+    fix_principal_point: true
+    identity_rectification: true
+    rebuild_p: true
+    fallback_hfov_deg: 90.0     # only used if fx/fy are 0 and cannot be inferred
+
+  # The depth stream is recorded as mono16, which depth_image_proc refuses
+  # ("Depth image has unsupported encoding [mono16]"). Same buffer as 16UC1 -
+  # one channel, 16-bit unsigned - so only the label changes. Note that 16UC1
+  # additionally *means* millimetres to the depth pipeline; that unit is an
+  # assumption about this sensor, not something the bytes establish.
+  - transform: image_encoding
+    topics:
+      - /visionary_b_two/*/depth
+    from: mono16
+    to: 16UC1
+
+  # The colour stream is recorded as bgr8 and the bytes really are B, G, R, so
+  # everything downstream renders red and blue swapped. Unlike the depth rule
+  # above, this one *rewrites the pixels* - it exchanges the red and blue
+  # channels - and then relabels to match. It is its own inverse, so it must not
+  # be run twice; preflight refuses a topic that is already rgb8.
+  - transform: image_channel_swap
+    topics:
+      - /visionary_b_two/*/rgb
+    from: bgr8
+    to: rgb8
+
+    # Correct the lidar extrinsic recorded in the bag. `edit` asserts the pair
+    # is already on /tf_static - use `add` for one that was never published,
+    # and `remove` to delete a stale frame.
+  - transform: tf_static
+    # remove:
+    #   - parent: robot_base_link
+    #     child: robot_lidar_link
+    edit:
+      - parent: robot_base_link
+        child: robot_lidar_link
+        xyz: [2.95, 0.0, 0.52]
+        rpy_deg: [-0.58, 17.87, 0.0]   # degrees; use `rpy:` for radians
+      - parent: robot_base_link
+        child: robot_b_two_link
+        xyz: [3.0, 0.0, 0.89]
+        rpy_deg: [0.0, 23.5, 0.0]
+
+  # Legacy: lidar header stamps lagged the receive time on very old recordings.
+  # Off by default - enable per bag in the `bags:` section below.
+  - transform: stamp_offset
+    enabled: false
+    topics:
+      - /robot/lidar/points
+      - /robot/lidar/imu
+    mode: auto                  # auto | fixed (offset_ns) | receive_time
+
+# Per-bag overrides, keyed by the bag directory name. Deep-merged over the rule
+# of the same name above.
+bags:
+  2026-07-08-12-00-05:
+    stamp_offset:
+      enabled: true
