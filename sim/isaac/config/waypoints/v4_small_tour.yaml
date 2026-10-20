@@ -1,4 +1,4 @@
-# Tour of ~/data/ninsar/assets/Montoldre_V4_small.usd, built from the scene's prim positions
+# Tour of assets/Montoldre_V4_small.usd, built from the scene's prim positions
 # 1. +y east of the lemon5..lemon row, round lemon, -y between the lemon rows, round lemon10
 # 2. +y between the two grapevine rows, round grapevine10, -y between the vines and fence001-006
 # 3. east between BuddhaStatue and D6
@@ -10,7 +10,7 @@
 # z is 0: set trajectory.terrain so it is a clearance above the ground
 
 source:
-  scene: ~/data/ninsar/assets/Montoldre_V4_small.usd
+  scene: assets/Montoldre_V4_small.usd
   spacing_m: 0.5
   arc_step_deg: 15.0
 

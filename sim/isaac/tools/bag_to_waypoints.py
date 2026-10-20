@@ -50,6 +50,13 @@ sys.path.insert(0, PROJECT_DIR)
 from rigsim import terrain_height, waypoint_config  # noqa: E402  (needs PROJECT_DIR on the path)
 
 WAYPOINTS_DIR = os.path.join(PROJECT_DIR, "config", "waypoints")
+REPO_DIR = os.path.dirname(os.path.dirname(PROJECT_DIR))
+
+
+def shown(path):
+    """A path for the file's provenance: repo-relative when inside the repo, so it's the same on every machine."""
+    path = os.path.abspath(path)
+    return os.path.relpath(path, REPO_DIR) if os.path.commonpath([path, REPO_DIR]) == REPO_DIR else path
 
 TF_TOPICS = ["/tf", "/tf_static"]
 
@@ -364,7 +371,7 @@ def main():
     # Only a chain worth spelling out earns a line; a single hop is its own.
     hops = f" via {' <- '.join(chain[1:-1])}" if len(chain) > 2 else ""
     comments = [
-        f"Extracted by bag_to_waypoints.py from {os.path.abspath(args.bag)}",
+        f"Extracted by bag_to_waypoints.py from {shown(args.bag)}",
         f"{args.root} -> {args.base}{hops}",
         f"{recorded} recorded poses decimated to {len(keep)} waypoints "
         f"within {args.pos_tol}m / {args.ang_tol}deg",
@@ -375,16 +382,16 @@ def main():
         for when, length in gaps
     ]
     source = {
-        "bag": os.path.abspath(args.bag),
+        "bag": shown(args.bag),
         "root_frame": args.root,
         "base_frame": args.base,
         "recentred": not args.no_recentre,
         "timed": not args.no_times,
     }
     if args.terrain is not None:
-        source["terrain"] = os.path.abspath(args.terrain)
+        source["terrain"] = shown(args.terrain)
         source["clearance"] = args.z or 0.0
-        comments.append(f"z follows {os.path.abspath(args.terrain)} at {args.z or 0.0:g}m clearance")
+        comments.append(f"z follows {shown(args.terrain)} at {args.z or 0.0:g}m clearance")
 
     written = waypoint_config.save_waypoints(
         out_path, [tuple(w) for w in waypoints], None if args.no_times else list(times), comments, source

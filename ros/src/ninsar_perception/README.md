@@ -13,6 +13,7 @@ The NINSAR perception front end, from camera images to per-frame 3D objects.
 | path | |
 |---|---|
 | `ninsar_perception/semantic_cloud_adapter.py` | the adapter node |
+| `ninsar_perception/seg_label_colorizer.py` | debug node: colours a label image by class name for Foxglove/RViz |
 | `src/object_detector_node.cpp` | the detector node |
 | `include/ninsar_perception/clustering.hpp`, `src/clustering.cpp` | pure code: instance table decoding, class split, clustering, boxes, frames |
 | `test/` | gtests and pytest (`colcon test --packages-select ninsar_perception`) |

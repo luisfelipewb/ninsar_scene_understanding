@@ -1,5 +1,5 @@
 {
- "source": "/home/luis/data/ninsar/assets/Montoldre_V4_small.usd",
+ "source": "sim/isaac/assets/Montoldre_V4_small.usd",
  "up_axis": "Z",
  "meters_per_unit": 1.0,
  "assets": [

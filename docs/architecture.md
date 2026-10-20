@@ -32,10 +32,22 @@ From a farm description to a scene graph that robots keep up to date and that pl
 | system launch files, rviz, per-scenario configs | `ros/src/ninsar_bringup` |
 | robot bag repair, lidar calibration, TF tuning | `ros/src/ninsar_bag_fix`, `ninsar_lidar_calib`, `ninsar_tf_tools` |
 | Voxeland, Hydra, spark_dsg and their dependencies | `ros/src/upstream` (pinned in `ros/upstream.repos`) |
-| Isaac Sim scenes and tools | `~/workspaces/ninsar-isaac-sim`, moving to `sim/isaac` |
+| Isaac Sim scenes and tools | `sim/isaac` (assets through `sim/isaac/assets` → `data/assets`) |
 | bags, assets, farms, scene graphs, maps | `data/` |
 
 ![Repositories at a glance](diagrams/png/9_repositories_simple.png)
+
+## Isaac Sim and ROS
+
+Isaac Sim and the ROS workspace run under different Pythons and share no code. They meet in
+three places, and a change on one side has to keep these working:
+
+| interface | Isaac side (`sim/isaac`) | ROS side (`ros/`) |
+|---|---|---|
+| **Bag topics** | `run_scene.py` publishes, `ros2 bag record` writes to `data/bags/isaac/` | `ninsar_bringup` `isaac_voxeland.launch` reads `/clock`, `/tf`, `/tf_static` and `/sensor_rig/front_camera/{rgb, depth, camera_info, semantic_segmentation, semantic_labels}` |
+| **Frames** | world prim → `base_link` → `sensor_rig` → `zed_x_front` → `front_left_camera_optical_link` (frame names are prim names) | the adapter's `output_frame` (`zed_x_front`) and the scene graph's `frame_id: world` |
+| **Labels** | semantic class names on the prims; `semantic_labels` JSON maps image ids to names per frame | `config/isaac/semantic_cloud_adapter.yaml` `categories` (by name; ids are only a fallback) |
+| **Assets list** | `tools/scan_isaac_assets.py` writes `ros/src/ninsar_farm/config/isaac_assets.json` | `ros2 run ninsar_farm make_isaac_farm_dsg` builds the ground-truth scene graph from it |
 
 ## Interfaces
 

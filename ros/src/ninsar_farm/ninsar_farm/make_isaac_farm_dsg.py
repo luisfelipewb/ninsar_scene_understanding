@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build a farm scene graph from the assets of an Isaac Sim scene.
 
-Input is the JSON written by ninsar-isaac-sim's tools/scan_isaac_assets.py (labelled prims and their
+Input is the JSON written by sim/isaac/tools/scan_isaac_assets.py (labelled prims and their
 world boxes). Same layers and edge conventions as make_farm_dsg.py, minus
 the navigation partition:
   1  DETECTIONS  crops, buildings, obstacles (tree, fence, obstacle, unlabelled prop), landmarks
@@ -14,8 +14,7 @@ prim path in metadata. Rows and parcels follow the rows' heading (oriented boxes
 detections keep the scan's axis-aligned boxes.
 
 Usage:
-  ~/isaacsim/python.sh ~/workspaces/ninsar-isaac-sim/tools/scan_isaac_assets.py \
-    --out ros/src/ninsar_farm/config/isaac_assets.json   # from the repo root
+  ~/isaacsim/python.sh sim/isaac/tools/scan_isaac_assets.py   # from the repo root; writes config/isaac_assets.json
   ros2 run ninsar_farm make_isaac_farm_dsg   # -> data/dsg/isaac_farm_dsg.json
   ros2 launch hydra_visualizer static_visualizer.launch.yaml \
     scene_graph:=$PWD/data/dsg/isaac_farm_dsg.json \

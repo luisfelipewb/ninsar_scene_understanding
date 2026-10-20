@@ -6,7 +6,8 @@ contracts between components; read them when you change one side of an interface
 1. [architecture.md](architecture.md): what the system does, which package does what, diagrams
 2. [setup/ros.md](setup/ros.md): build and test the ROS workspace, upstream pins and patches
 3. [../data/README.md](../data/README.md): what goes in `data/` and where to get it
-4. [guides/run_isaac_bag.md](guides/run_isaac_bag.md): semantic mapping on the Isaac Sim bag
+4. [setup/isaac.md](setup/isaac.md): Isaac Sim, if you generate synthetic data
+5. [guides/run_isaac_bag.md](guides/run_isaac_bag.md): semantic mapping on the Isaac Sim bag
 
 ## Guides
 
@@ -16,6 +17,7 @@ contracts between components; read them when you change one side of an interface
 | [VOXELAND_GUIDE.md](guides/VOXELAND_GUIDE.md) | Voxeland in depth: packages, input, server, map queries |
 | [HYDRA_GUIDE.md](guides/HYDRA_GUIDE.md) | Hydra scene graphs, and rendering a hand-built one in RViz |
 | [FARM_EDITOR.md](guides/FARM_EDITOR.md) | the farm GeoJSON editor |
+| [isaac_sim.md](guides/isaac_sim.md) | Isaac Sim: run configs, trajectories and scene tools, recording a bag |
 | [bag_fix.md](guides/bag_fix.md) | robot bag tools: repair, lidar calibration, TF tuning |
 
 ## Specs

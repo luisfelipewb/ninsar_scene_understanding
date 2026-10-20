@@ -1,4 +1,4 @@
-# Extracted by bag_to_waypoints.py from /home/luis/workspaces/ninsar-bag-fix/output/2026-07-09-11-56-00_fixed/bag
+# Extracted by bag_to_waypoints.py from data/bags/robot/fixed/2026-07-09-11-56-00_fixed/bag
 # map -> robot_base_footprint
 # 2012 recorded poses decimated to 115 waypoints within 0.05m / 1.0deg
 # replays as: 115 poses, 226.8s, 242.4m, median speed 1.25 m/s
@@ -6,7 +6,7 @@
 # WARNING recording gap at t=156.7s lasting 12.7s; the path there is interpolated
 
 source:
-  bag: /home/luis/workspaces/ninsar-bag-fix/output/2026-07-09-11-56-00_fixed/bag
+  bag: data/bags/robot/fixed/2026-07-09-11-56-00_fixed/bag
   root_frame: map
   base_frame: robot_base_footprint
   recentred: true

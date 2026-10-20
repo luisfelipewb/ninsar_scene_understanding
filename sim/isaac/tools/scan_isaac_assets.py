@@ -7,22 +7,25 @@ Direct children of /root/Props and /root/Buildings with no label anywhere in
 their subtree are listed too, with "class": null. The ground is skipped.
 
 Each asset: path, name, class, and the axis-aligned world box (center, size)
-from UsdGeom.BBoxCache. ninsar_mapping's scripts/make_isaac_farm_dsg.py turns
-the file into a scene graph; its default input is that package's config/isaac_assets.json.
+from UsdGeom.BBoxCache. `ros2 run ninsar_farm make_isaac_farm_dsg` turns the file
+into a scene graph; its default input is ros/src/ninsar_farm/config/isaac_assets.json,
+which is also this tool's default output.
 
 Needs pxr, which needs a headless SimulationApp up first, so it runs under
 Isaac Sim's interpreter (ROS 2 sourced) and takes a minute to start:
 
     source /opt/ros/jazzy/setup.bash
-    ~/isaacsim/python.sh ~/workspaces/ninsar-isaac-sim/tools/scan_isaac_assets.py \
-        --out ~/workspaces/ninsar-semantic-segmentation/src/ninsar_mapping/config/isaac_assets.json
+    ~/isaacsim/python.sh ~/workspaces/ninsar-scene-understanding/sim/isaac/tools/scan_isaac_assets.py
 """
 import argparse
 import json
 import os
 import sys
 
-DEFAULT_USD = os.path.expanduser("~/data/ninsar/assets/Montoldre_V4_small.usd")
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # sim/isaac
+REPO_DIR = os.path.dirname(os.path.dirname(PROJECT_DIR))
+DEFAULT_USD = os.path.join(PROJECT_DIR, "assets", "Montoldre_V4_small.usd")
+DEFAULT_OUT = os.path.join(REPO_DIR, "ros", "src", "ninsar_farm", "config", "isaac_assets.json")
 LABEL_ATTR = "semantics:labels:class"
 UNLABELLED_GROUPS = ("/root/Props", "/root/Buildings")
 SKIP_CLASSES = {"ground"}
@@ -31,7 +34,7 @@ SKIP_CLASSES = {"ground"}
 def parse_args():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("usd", nargs="?", default=DEFAULT_USD, help=f"scene to scan (default: {DEFAULT_USD})")
-    ap.add_argument("--out", default="isaac_assets.json", help="output JSON (relative to the cwd of python.sh!)")
+    ap.add_argument("--out", default=DEFAULT_OUT, help=f"output JSON (default: {DEFAULT_OUT}; relative paths are from the cwd of python.sh)")
     args = ap.parse_args()
     if not os.path.isfile(args.usd):
         ap.error(f"{args.usd}: no such file")
@@ -74,7 +77,10 @@ def main(args):
             if not any(p.GetPath() in labelled_roots for p in Usd.PrimRange(prim)):
                 assets.append(asset(prim, None))
 
-    doc = {"source": args.usd, "up_axis": UsdGeom.GetStageUpAxis(stage),
+    # repo-relative when the scene is in the repo (through sim/isaac/assets), so the file is the same on every machine
+    inside = os.path.commonpath([args.usd, REPO_DIR]) == REPO_DIR
+    source = os.path.relpath(args.usd, REPO_DIR) if inside else args.usd
+    doc = {"source": source, "up_axis": UsdGeom.GetStageUpAxis(stage),
            "meters_per_unit": UsdGeom.GetStageMetersPerUnit(stage), "assets": assets}
     with open(args.out, "w") as f:
         json.dump(doc, f, indent=1)

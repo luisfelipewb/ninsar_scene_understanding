@@ -6,7 +6,7 @@ front end and a semantic 3D map, organized as a farm scene graph that planners c
 | folder | what | runs with |
 |---|---|---|
 | [`ros/`](ros/) | the colcon workspace: our ROS 2 packages, pinned upstream sources, patches | ROS 2 Jazzy, `colcon` |
-| `sim/` | simulators. Isaac Sim moves here next; until then it's in `~/workspaces/ninsar-isaac-sim` | the simulator's own Python |
+| [`sim/isaac/`](sim/isaac/) | Isaac Sim scenes and tools: a sensor rig flown over a simulated farm | Isaac Sim's own Python (`~/isaacsim/python.sh`) |
 | [`data/`](data/README.md) | bags, Isaac assets, farms, scene graphs, maps (local, not in git) | |
 | [`docs/`](docs/README.md) | architecture, setup, guides, specs | |
 
@@ -21,4 +21,5 @@ colcon build && source install/setup.bash
 ```
 
 Then follow [docs/guides/run_isaac_bag.md](docs/guides/run_isaac_bag.md) to map the Isaac Sim
-bag. The details of the build are in [docs/setup/ros.md](docs/setup/ros.md).
+bag. The details of the build are in [docs/setup/ros.md](docs/setup/ros.md); Isaac Sim's setup is
+in [docs/setup/isaac.md](docs/setup/isaac.md).

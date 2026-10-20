@@ -32,8 +32,8 @@ Run, with your ROS 2 environment sourced:
 
     source /opt/ros/jazzy/setup.bash
     cd ~/isaacsim
-    ./python.sh ~/workspaces/ninsar-isaac-sim/run_scene.py \\
-        ~/workspaces/ninsar-isaac-sim/config/montoldre.yaml --headless
+    S=~/workspaces/ninsar-scene-understanding/sim/isaac
+    ./python.sh $S/run_scene.py $S/config/montoldre.yaml --headless
 
 Then `ros2 run tf2_tools view_frames`, or RViz2 with Fixed Frame = the world
 prim's name and "Use simulation time" on.

@@ -22,10 +22,10 @@ Two output modes:
                    Color mode -> Color map (Turbo) with Value max = num classes
 
 Usage (camera namespace is a parameter; one node per camera):
-  python3 seg_label_colorizer.py --ros-args \
+  ros2 run ninsar_perception seg_label_colorizer --ros-args \
       -p camera_namespace:=/sensor_rig/front_camera
 
-  python3 seg_label_colorizer.py --ros-args \
+  ros2 run ninsar_perception seg_label_colorizer --ros-args \
       -p camera_namespace:=/sensor_rig/bottom_camera
 
 Set camera_namespace to the empty string to use relative topic names instead,
@@ -43,6 +43,7 @@ from collections import OrderedDict
 
 import numpy as np
 import rclpy
+from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile, ReliabilityPolicy
 from sensor_msgs.msg import Image
@@ -287,7 +288,7 @@ def main() -> None:
     node = SegLabelColorizer()
     try:
         rclpy.spin(node)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
         node.destroy_node()

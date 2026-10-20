@@ -294,7 +294,7 @@ The server scans `--imagery DIR` for two forms of imagery.
 
 Goal: measure how precisely a farm described in the editor matches a known scene.
 
-1. In ninsar-isaac-sim, add a tool that renders an orthographic top-down image of the
+1. In `sim/isaac`, add a tool that renders an orthographic top-down image of the
    scene. It writes the PNG and its `enu` sidecar (§7): the corners are the camera
    footprint in scene metres. The origin is an arbitrary fixed point (for example the
    Montoldre site), so the scene also lines up with satellite imagery.

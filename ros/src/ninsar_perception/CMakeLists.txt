@@ -37,7 +37,7 @@ install(TARGETS object_detector DESTINATION lib/${PROJECT_NAME})
 
 # Python nodes: the ninsar_perception module plus one launcher script per node.
 ament_python_install_package(${PROJECT_NAME})
-install(PROGRAMS scripts/semantic_cloud_adapter DESTINATION lib/${PROJECT_NAME})
+install(PROGRAMS scripts/semantic_cloud_adapter scripts/seg_label_colorizer DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
