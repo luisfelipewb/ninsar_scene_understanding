@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>ninsar_farm</name>
+  <version>0.0.0</version>
+  <description>NINSAR farm description tools: the farm GeoJSON library and editor, and the farm scene graph builders (GeoJSON to DSG, Isaac assets to DSG). Plain Python, no ROS runtime.</description>
+  <maintainer email="luisfelipewb@gmail.com">Luis Felipe Wolf Batista</maintainer>
+  <license>TODO</license>
+
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>spark_dsg</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-shapely</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>python3-flask</exec_depend>
+
+  <test_depend>python3-pytest</test_depend>
+  <test_depend>python3-pil</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

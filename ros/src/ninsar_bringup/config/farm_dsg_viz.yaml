@@ -1,0 +1,55 @@
+# hydra_visualizer renderer config for farm scene graphs that follow docs/FARM_DSG_SPEC.md
+# (ninsar_farm/geojson_to_dsg.py):
+#   ros2 launch hydra_visualizer static_visualizer.launch.yaml \
+#     scene_graph:=$HOME/data/ninsar/mini_farm_dsg.json \
+#     visualizer_config_path:=$(ros2 pkg prefix --share ninsar_bringup)/config/farm_dsg_viz.yaml
+# Node colors come from each node's `color` attribute (default NodeColorAdapter).
+# hydra configures partitions per layer id: `partitions: 1` covers NAVIGATION (n) and
+# AGENTS (a), `partitions: 4` covers OVERLAYS (o).
+---
+renderer:
+  layer_z_step: 8.0           # metres between layer "floors"
+  collapse_layers: false
+  layers:
+    1:  # OBJECTS: crops, row supports, structures, equipment, ... (on the ground)
+      visualize: true
+      z_offset_scale: 0.0
+      nodes: {scale: 0.35, alpha: 1.0, use_sphere: true}
+      bounding_boxes: {draw: true, scale: 0.03, edge_scale: 0.02, alpha: 0.9}
+      edges: {scale: 0.05, alpha: 0.8, use_color: true,     # next_in_row, near
+              interlayer_scale: 0.03, interlayer_alpha: 0.4, interlayer_use_source: false}
+    2:  # ROWS
+      visualize: true
+      z_offset_scale: 1.0
+      nodes: {scale: 0.8, alpha: 0.9, use_sphere: false}
+      text: {draw: true, adapter: {type: NameTextAdapter}, height: 0.8, scale: 0.8}
+      edges: {scale: 0.08, alpha: 0.6, use_color: false,    # adjacent_row
+              interlayer_scale: 0.02, interlayer_alpha: 0.25, interlayer_use_source: true}
+    3:  # AREAS: footprint box drawn on the ground, node floating above it
+      visualize: true
+      z_offset_scale: 2.0
+      nodes: {scale: 1.2, alpha: 0.9, use_sphere: false}
+      text: {draw: true, adapter: {type: NameTextAdapter}, height: 1.5, scale: 1.2}
+      bounding_boxes: {draw: true, collapse: true, scale: 0.15, edge_scale: 0.02, alpha: 0.8, edge_break_ratio: 0.2}
+      edges: {scale: 0.15, alpha: 0.8, use_color: false,    # adjacent_area
+              interlayer_scale: 0.04, interlayer_alpha: 0.4, interlayer_use_source: true}
+    4:  # FARM
+      visualize: true
+      z_offset_scale: 3.0
+      nodes: {scale: 2.0, alpha: 1.0, use_sphere: true}
+      text: {draw: true, adapter: {type: NameTextAdapter}, height: 2.5, scale: 2.0}
+      edges: {interlayer_scale: 0.06, interlayer_alpha: 0.5, interlayer_use_source: true}
+  partitions:
+    1:  # NAVIGATION (n) and AGENTS (a): lanes, headlands, roads, entrances, access edges
+      visualize: true
+      z_offset_scale: 0.0
+      nodes: {scale: 0.2, alpha: 0.9, use_sphere: true}
+      edges: {scale: 0.04, alpha: 0.7, use_color: true,
+              interlayer_scale: 0.015, interlayer_alpha: 0.3, interlayer_use_color: false}
+    4:  # OVERLAYS (o): one floor above the farm; member_of edges kept faint
+      visualize: true
+      z_offset_scale: 4.0
+      nodes: {scale: 1.5, alpha: 0.9, use_sphere: false}
+      text: {draw: true, adapter: {type: NameTextAdapter}, height: 2.0, scale: 1.5}
+      bounding_boxes: {draw: true, collapse: true, scale: 0.1, edge_scale: 0.02, alpha: 0.5, edge_break_ratio: 0.2}
+      edges: {interlayer_scale: 0.02, interlayer_alpha: 0.15, interlayer_use_source: true}

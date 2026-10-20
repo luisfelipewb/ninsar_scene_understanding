@@ -1,0 +1,393 @@
+# Farm GeoJSON catalog (docs/FARM_GEOJSON_SPEC.md §4). Single source for the farm editor
+# UI, the validator and the DSG importer (ninsar_farm/farm_geojson.py).
+#
+# types[]: one entry per (layer, category); `kinds` lists the classes, or `crops` for the
+#   crop classes below.
+#   parents:    allowed tree parents (DSG §5.1): farm | area | parcel | row
+#   geometry:   allowed GeoJSON geometry types
+#   attributes: intrinsic properties (name/description are allowed on every type)
+#     type: str | float | int | enum | uid_ref;  unit "m" means a positive length
+#   derived:    values computed on import (§6), shown read-only in the editor
+#   exclusive:  overlays only (DSG O4): true, false or {per: <attribute>}
+version: "0.1"
+
+crops:
+  cabbage:   {color: "#3cb44b", default_size_m: [0.5, 0.5, 0.4]}
+  grapevine: {color: "#911eb4", default_size_m: [0.6, 0.6, 1.8]}
+  lemon:     {color: "#ffe119", default_size_m: [3.0, 3.0, 3.5]}
+
+thresholds:
+  contain_tol_m: 0.10   # G7, G9-G11, containment in §6
+  overlap_tol_m: 0.05   # G8, G13
+  access_m: 15.0        # G16
+  row_strip_m: 0.5      # row strip half-width when a parcel's row spacing is unknown
+  row_end_m: 1.5        # row strip reach beyond each row end (end anchors)
+  # DSG importer (ninsar_farm/geojson_to_dsg.py, DSG spec §8)
+  road_step_m: 5.0      # max spacing of road waypoints
+  junction_m: 0.5       # road waypoints closer than this are merged
+  lane_step_m: 4.0      # max spacing of lane waypoints
+  entrance_m: 15.0      # extra headland -> road entrances; warning on the forced one
+  near_m: 1.0           # "near": max gap between object footprints
+  adjacent_area_m: 12.0 # "adjacent_area": max gap between area boundaries
+  clearance_m: 0.5      # navigation edge blocked by an object footprint closer than this
+  flat_height_m: 0.1    # box height of the farm, areas and overlays
+
+# semantic label id per object class and crop (DSG spec §5.1). Ids shared with the Isaac
+# perception labels (ninsar_bringup config/isaac/semantic_cloud_adapter.yaml label_names) keep their value; 0 BACKGROUND,
+# 1 UNLABELLED and 3 ground are reserved. Never renumber or reuse an id.
+label_ids:
+  unknown: 2
+  fence: 4
+  building: 5
+  tree: 6
+  grapevine: 7
+  lemon: 8
+  cabbage: 9
+  weed: 10
+  shrub: 11
+  post: 12
+  end_anchor: 13
+  trellis_wire: 14
+  drip_line: 15
+  soil_sensor: 16
+  insect_trap: 17
+  weather_station: 18
+  valve: 19
+  sprinkler: 20
+  shed: 21
+  silo: 22
+  tank: 23
+  wall: 24
+  gate: 25
+  dock: 26
+  refill_point: 27
+  bin_drop: 28
+  parking: 29
+  bin: 30
+  crate: 31
+  trailer: 32
+  hose: 33
+  rock: 34
+  pole: 35
+  debris: 36
+
+# keys that must not appear in feature properties (§4.1): lifecycle + derived
+reserved: [uid, source, status, modified, confidence, last_observed, geometry, parent,
+           overlays, member_of, row_index, n_rows, n_plants, length_m, heading_deg,
+           area_m2, crops, position, bounding_box]
+
+# per-class default box [x, y, z] in metres (§4.3); crops are in `crops` above
+default_size_m:
+  weed: [0.3, 0.3, 0.3]
+  tree: [5.0, 5.0, 8.0]
+  shrub: [1.5, 1.5, 1.5]
+  post: [0.1, 0.1, 1.8]
+  end_anchor: [0.2, 0.2, 0.5]
+  trellis_wire: [0.05, 0.05, 1.8]
+  drip_line: [0.05, 0.05, 0.1]
+  soil_sensor: [0.2, 0.2, 0.3]
+  insect_trap: [0.3, 0.3, 1.5]
+  weather_station: [1.0, 1.0, 3.0]
+  valve: [0.3, 0.3, 0.5]
+  sprinkler: [0.2, 0.2, 1.0]
+  building: [10.0, 10.0, 6.0]
+  shed: [5.0, 5.0, 4.0]
+  silo: [4.0, 4.0, 10.0]
+  tank: [2.0, 2.0, 3.0]
+  fence: [0.1, 0.1, 1.5]
+  wall: [0.3, 0.3, 2.0]
+  gate: [4.0, 0.1, 1.5]
+  dock: [2.0, 2.0, 1.0]
+  refill_point: [1.0, 1.0, 1.5]
+  bin_drop: [3.0, 3.0, 1.0]
+  parking: [5.0, 3.0, 0.1]
+  bin: [1.2, 1.0, 0.8]
+  crate: [0.6, 0.4, 0.3]
+  trailer: [5.0, 2.2, 2.5]
+  hose: [0.5, 0.5, 0.2]
+  rock: [0.8, 0.8, 0.5]
+  pole: [0.3, 0.3, 4.0]
+  debris: [1.0, 1.0, 0.5]
+  unknown: [1.0, 1.0, 1.0]
+
+types:
+  # --- layer 4: farm --------------------------------------------------------------
+  - layer: farm
+    kinds: [farm]
+    prefix: F
+    geometry: [Polygon]
+    color: "#000000"
+    label: Farm boundary
+    attributes:
+      - {name: name, type: str, required: true}
+    derived: [area_m2]
+
+  # --- layer 4 / o: overlays ------------------------------------------------------
+  - layer: overlay
+    kinds: [irrigation_sector]
+    prefix: Z
+    geometry: [Polygon]
+    color: "#4363d8"
+    label: Irrigation sector
+    exclusive: true
+    attributes:
+      - {name: valve, type: uid_ref, ref_kind: [valve], required: true}
+      - {name: method, type: enum, values: [drip, sprinkler]}
+    derived: [members]
+  - layer: overlay
+    kinds: [management_zone]
+    prefix: Z
+    geometry: [Polygon]
+    color: "#f58231"
+    label: Management zone
+    exclusive: {per: scheme}
+    attributes:
+      - {name: scheme, type: str, required: true}
+      - {name: value, type: str, required: true}
+    derived: [members]
+  - layer: overlay
+    kinds: [restricted_area]
+    prefix: Z
+    geometry: [Polygon]
+    color: "#e6194b"
+    label: Restricted zone
+    exclusive: false
+    attributes:
+      - {name: restriction, type: enum, values: [no_entry, caution], required: true}
+      - {name: reason, type: enum, values: [protected, slope, wet, soft_ground, private, other]}
+    derived: [members]
+
+  # --- layer 3: areas -------------------------------------------------------------
+  - layer: area
+    kinds: [parcel]
+    prefix: A
+    geometry: [Polygon]
+    parents: [farm]
+    color: "#46a0dc"
+    label: Parcel
+    attributes:
+      - {name: row_spacing_m, type: float, unit: m}
+      - {name: headland_m, type: float, unit: m}
+    derived: [crops, n_rows, heading_deg, area_m2]
+  - layer: area
+    kinds: [yard]
+    prefix: A
+    geometry: [Polygon]
+    parents: [farm]
+    color: "#a9a9a9"
+    label: Yard
+    derived: [area_m2]
+  - layer: area
+    kinds: [water_body]
+    prefix: A
+    geometry: [Polygon]
+    parents: [farm]
+    color: "#00bfff"
+    label: Water body
+    attributes:
+      - {name: water_type, type: enum, values: [pond, stream, ditch], required: true}
+    derived: [area_m2]
+  - layer: area
+    kinds: [vegetation]
+    prefix: A
+    geometry: [Polygon]
+    parents: [farm]
+    color: "#2e8b57"
+    label: Vegetation area
+    attributes:
+      - {name: vegetation_type, type: enum, values: [hedgerow, woodland, grass_strip], required: true}
+    derived: [area_m2]
+
+  # --- layer 2: rows --------------------------------------------------------------
+  - layer: row
+    kinds: crops
+    prefix: r
+    geometry: [LineString]
+    parents: [parcel]
+    color: "#808000"
+    label: Row
+    attributes:
+      - {name: variety, type: str}
+      - {name: plant_spacing_m, type: float, unit: m}
+    derived: [row_index, n_plants, length_m, heading_deg]
+
+  # --- layer 1: objects -----------------------------------------------------------
+  - layer: object
+    category: crop
+    kinds: crops
+    prefix: c
+    geometry: [Point]
+    parents: [row]
+    color: "#3cb44b"
+    label: Plant
+    attributes:
+      - {name: variety, type: str}
+    derived: [row_index]
+  - layer: object
+    category: weed
+    kinds: [weed]
+    prefix: k
+    geometry: [Point]
+    parents: [row, area]
+    color: "#bcf60c"
+    label: Weed
+    hidden: true
+  - layer: object
+    category: vegetation
+    kinds: [tree, shrub]
+    prefix: v
+    geometry: [Point]
+    parents: [area, farm]
+    color: "#006400"
+    label: Tree / shrub
+  - layer: object
+    category: row_support
+    kinds: [post, end_anchor]
+    prefix: i
+    geometry: [Point]
+    parents: [row]
+    color: "#8b4513"
+    label: Post
+  - layer: object
+    category: row_support
+    kinds: [trellis_wire, drip_line]
+    prefix: i
+    geometry: [LineString]
+    parents: [row]
+    color: "#a0522d"
+    label: Wire / drip line
+  - layer: object
+    category: equipment
+    kinds: [soil_sensor, insect_trap, weather_station, valve, sprinkler]
+    prefix: e
+    geometry: [Point]
+    parents: [row, area, farm]
+    color: "#f032e6"
+    label: Equipment
+    attributes:
+      - {name: device_id, type: str}
+  - layer: object
+    category: structure
+    kinds: [building, shed, silo, tank]
+    prefix: B
+    geometry: [Polygon]
+    parents: [area, farm]
+    color: "#aa3c28"
+    label: Building
+  - layer: object
+    category: structure
+    kinds: [fence, wall]
+    prefix: B
+    geometry: [LineString]
+    parents: [area, farm]
+    color: "#5a3a1a"
+    label: Fence / wall
+  - layer: object
+    category: structure
+    kinds: [gate]
+    prefix: B
+    geometry: [Point]
+    parents: [area, farm]
+    color: "#d2691e"
+    label: Gate
+    attributes:
+      - {name: width_m, type: float, unit: m}
+  - layer: object
+    category: service_point
+    kinds: [dock, refill_point, bin_drop, parking]
+    prefix: s
+    geometry: [Point]
+    parents: [area, farm]
+    color: "#42d4f4"
+    label: Service point
+  - layer: object
+    category: movable
+    kinds: [bin, crate, trailer, hose]
+    prefix: m
+    geometry: [Point]
+    parents: [row, area, farm]
+    color: "#fabebe"
+    label: Movable
+  - layer: object
+    category: obstacle
+    kinds: [rock, pole, debris, unknown]
+    prefix: o
+    geometry: [Point, Polygon]
+    parents: [row, area, farm]
+    color: "#ff4500"
+    label: Obstacle
+
+  # --- navigation input -----------------------------------------------------------
+  - layer: navigation
+    kinds: [road]
+    prefix: R
+    geometry: [LineString]
+    color: "#282828"
+    label: Road
+    attributes:
+      - {name: width_m, type: float, unit: m}
+
+# --- editor workflow (docs/FARM_EDITOR.md §4.1) ---------------------------------------
+# Buttons pick a type by layer/category; `kind` fixes the class, otherwise the editor shows
+# a class chooser next to the button. `geometry` picks one of the type's geometries,
+# `props` are preset values, `continue` keeps drawing after each shape, `single` allows
+# only one feature of that type, and `action` names an editor tool instead of a drawing.
+workflow:
+  - step: Farm boundary
+    hint: Draw the outer boundary of the farm. Everything else must lie inside it.
+    buttons:
+      - {label: Draw farm boundary, layer: farm, kind: farm, single: true}
+  - step: Restricted zones
+    hint: Places robots must avoid (no entry) or drive carefully (caution).
+    buttons:
+      - {label: Add no-entry zone, layer: overlay, kind: restricted_area, props: {restriction: no_entry}}
+      - {label: Add caution zone, layer: overlay, kind: restricted_area, props: {restriction: caution}}
+  - step: Areas
+    hint: Non-overlapping subdivisions of the farm. Snap to shared edges.
+    buttons:
+      - {label: Add parcel, layer: area, kind: parcel}
+      - {label: Add yard, layer: area, kind: yard}
+      - {label: Add water body, layer: area, kind: water_body, props: {water_type: pond}}
+      - {label: Add vegetation area, layer: area, kind: vegetation, props: {vegetation_type: hedgerow}}
+      - {label: Cut hole in selected area, action: cut_hole}
+  - step: Rows
+    hint: One crop per row, drawn from the row start to the row end, inside a parcel.
+    buttons:
+      - {label: Generate rows…, action: generate_rows}
+      - {label: Draw single row, layer: row}
+      - {label: Offset row…, action: offset_row}
+  - step: Plants & row supports
+    hint: Plants and posts belong to the nearest row.
+    buttons:
+      - {label: Fill rows with plants…, action: generate_plants}
+      - {label: Add posts…, action: generate_posts}
+      - {label: Add plant, layer: object, category: crop, continue: true}
+      - {label: Add post, layer: object, category: row_support, kind: post, continue: true}
+      - {label: Draw wire / drip line, layer: object, category: row_support, kind: trellis_wire}
+  - step: Structures & equipment
+    hint: Draw building footprints; their size is taken from the polygon.
+    buttons:
+      - {label: Draw building, layer: object, category: structure, kind: building}
+      - {label: Draw fence / wall, layer: object, category: structure, kind: fence}
+      - {label: Add gate, layer: object, category: structure, kind: gate}
+      - {label: Add equipment, layer: object, category: equipment}
+      - {label: Add service point, layer: object, category: service_point}
+      - {label: Add obstacle, layer: object, category: obstacle, geometry: Point}
+      - {label: Draw obstacle area, layer: object, category: obstacle, geometry: Polygon}
+      - {label: Add tree / shrub, layer: object, category: vegetation}
+      - {label: Add movable, layer: object, category: movable}
+  - step: Roads
+    hint: Farm roads robots can drive on. Lanes between rows are derived automatically.
+    buttons:
+      - {label: Draw road, layer: navigation, kind: road}
+  - step: Overlays
+    hint: Groups that cut across areas. Membership is computed from the polygon.
+    buttons:
+      - {label: Add irrigation sector, layer: overlay, kind: irrigation_sector}
+      - {label: Add management zone, layer: overlay, kind: management_zone}
+  - step: Check & export
+    hint: Fix all errors before building the scene graph.
+    buttons:
+      - {label: Validate, action: validate}
+      - {label: Show tree, action: tree}
+      - {label: Export GeoJSON, action: export}

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>ninsar_perception</name>
+  <version>0.0.0</version>
+  <description>NINSAR perception front end: semantic_cloud_adapter builds the semantic cloud_in from depth and label images; object_detector turns cloud_in into per-frame 3D objects (class clusters and boxes).</description>
+  <maintainer email="luisfelipewb@gmail.com">Luis Felipe Wolf Batista</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>vision_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>segmentation_msgs</depend>
+  <depend>eigen</depend>
+  <depend>libpcl-all-dev</depend>
+  <depend>libopencv-dev</depend>
+
+  <!-- semantic_cloud_adapter (Python) -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>sensor_msgs_py</exec_depend>
+  <exec_depend>message_filters</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+
+  <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>ament_cmake_pytest</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

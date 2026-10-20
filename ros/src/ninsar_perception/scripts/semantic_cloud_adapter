@@ -1,0 +1,4 @@
+#!/usr/bin/env python3
+from ninsar_perception.semantic_cloud_adapter import main
+
+main()

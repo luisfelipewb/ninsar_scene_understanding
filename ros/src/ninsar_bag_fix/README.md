@@ -22,7 +22,8 @@ To run straight from the source tree instead, without building:
 export PYTHONPATH=src/ninsar_bag_fix:$PYTHONPATH
 ```
 
-`rosbags` (pip) is needed only for Trektor's ROS 1 bags.
+ROS 1 bags (Trektor) also need the `rosbags-convert` CLI: `pipx install rosbags`. It runs in its own
+isolated environment, so nothing is installed into the ROS Python.
 
 ## Layout
 

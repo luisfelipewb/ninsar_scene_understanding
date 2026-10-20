@@ -1,14 +1,19 @@
-"""Convert a ROS 1 .bag into a ROS 2 bag using the pure-Python `rosbags` package.
+"""Convert a ROS 1 .bag into a ROS 2 bag with the `rosbags-convert` CLI.
 
-No ROS 1 installation is needed. `rosbags` is imported lazily so the ROS 2-only
-workflow (POM_4x4) runs without it installed.
+No ROS 1 installation is needed. The CLI comes from the pure-Python `rosbags` package,
+installed on its own with `pipx install rosbags`, so it never touches the ROS Python.
+It's only needed for ROS 1 recordings (Trektor); the ROS 2-only workflow (POM_4x4) runs
+without it.
 """
 
 from __future__ import annotations
 
+import shutil
+import subprocess
 from pathlib import Path
 
 CONVERTED_SUFFIX = "_ros2"
+CONVERT_CLI = "rosbags-convert"
 
 
 class ConversionError(Exception):
@@ -31,36 +36,20 @@ def convert(source: str | Path, dest: str | Path, storage: str = "mcap",
             return dest
         raise ConversionError(f"{dest} already exists (set convert.cache or remove it)")
 
-    try:
-        from rosbags.convert import convert as rosbags_convert
-    except ImportError as exc:  # pragma: no cover - depends on environment
+    exe = shutil.which(CONVERT_CLI)
+    if exe is None:
         raise ConversionError(
-            "the 'rosbags' package is required for ROS 1 bags: pip install rosbags"
-        ) from exc
+            f"ROS 1 bags need the {CONVERT_CLI} CLI: pipx install rosbags"
+        )
 
     dest.parent.mkdir(parents=True, exist_ok=True)
     print(f"  converting ROS 1 bag {source} -> {dest} ({storage})")
-    try:
-        rosbags_convert(**_convert_kwargs(rosbags_convert, source, dest, storage))
-    except Exception as exc:  # pragma: no cover - depends on environment
-        raise ConversionError(f"rosbags failed to convert {source}: {exc}") from exc
+    cmd = [exe, "--src", str(source), "--dst", str(dest), "--dst-storage", storage]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout).strip()
+        raise ConversionError(f"{CONVERT_CLI} failed to convert {source}: {detail}")
     return dest
-
-
-def _convert_kwargs(func, source: Path, dest: Path, storage: str) -> dict:
-    """Build the kwargs `rosbags.convert.convert` accepts in this version.
-
-    The signature has changed across rosbags releases (`src` vs `srcs`, and
-    `dst_storage` only exists in newer ones), so pass only what it declares.
-    """
-    import inspect
-
-    params = inspect.signature(func).parameters
-    kwargs: dict = {"srcs": [source]} if "srcs" in params else {"src": source}
-    kwargs["dst"] = dest
-    if "dst_storage" in params:
-        kwargs["dst_storage"] = storage
-    return kwargs
 
 
 def find_ros1_bag(path: str | Path) -> Path | None:

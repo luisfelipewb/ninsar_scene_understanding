@@ -13,7 +13,7 @@ from ninsar_mapping.voxel_store import (
     pack_rgb, prob_field_names, store_from_cloud, unpack_rgb, yaw_matrix,
 )
 
-# isaac_voxeland.yaml categories as the server sees them ("unknown" last)
+# ninsar_bringup config/isaac/semantic_cloud_adapter.yaml categories as the server sees them ("unknown" last)
 CLASSES = ["ground", "tree", "grapevine", "lemon", "cabbage", "fence", "building", "obstacle", "unknown"]
 N = len(CLASSES)
 

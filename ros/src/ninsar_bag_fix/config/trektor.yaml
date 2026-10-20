@@ -1,6 +1,6 @@
 # Trektor - ROS 1 .bag files, converted to ROS 2 mcap before any fix is applied.
 #
-#   pip install rosbags
+#   pipx install rosbags     (provides the rosbags-convert CLI)
 #   source /opt/ros/jazzy/setup.bash
 #   python3 -m bagfix run configs/trektor.yaml /data/test_acqui --dry-run
 #
