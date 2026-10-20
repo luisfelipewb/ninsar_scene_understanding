@@ -8,11 +8,11 @@ Replaces three earlier hardcoded scripts (not kept).
 
 ## Install
 
-This is a package in the workspace at the repository root:
+This is a package in the colcon workspace `ros/`:
 
 ```bash
 source /opt/ros/jazzy/setup.bash
-cd <workspace root> && colcon build --packages-select ninsar_bag_fix
+cd ros && colcon build --packages-select ninsar_bag_fix
 source install/setup.bash                 # puts `bagfix` on the PATH
 ```
 
@@ -52,18 +52,20 @@ otherwise, and rosbag2 names split files after the bag directory, so the
 
 ## Use
 
+From `ros/`, with raw recordings in `data/bags/robot/raw/`:
+
 ```bash
 # see what is in a recording
-bagfix inspect /data/2026-07-09-16-39-34
+bagfix inspect ../data/bags/robot/raw/2026-07-09-16-39-34
 
 # see what would change, without writing anything
-bagfix run config/pom_4x4.yaml /data/2026-07-09-16-39-34 --dry-run
+bagfix run src/ninsar_bag_fix/config/pom_4x4.yaml ../data/bags/robot/raw/2026-07-09-16-39-34 --dry-run
 
 # write data/bags/robot/fixed/2026-07-09-16-39-34_fixed/bag/
-bagfix run config/pom_4x4.yaml /data/2026-07-09-16-39-34
+bagfix run src/ninsar_bag_fix/config/pom_4x4.yaml ../data/bags/robot/raw/2026-07-09-16-39-34
 
 # one-off override without editing the config
-bagfix run config/pom_4x4.yaml <session> --set stamp_offset.enabled=true
+bagfix run src/ninsar_bag_fix/config/pom_4x4.yaml <session> --set stamp_offset.enabled=true
 
 # what each transform accepts
 bagfix list-transforms
@@ -77,9 +79,9 @@ is written in the same layout so the naming scheme is reused, and it is cached
 so tuning the config does not reconvert:
 
 ```bash
-bagfix run config/trektor.yaml /data/test_acqui
-#   /data/test_acqui/{bag/,}*.bag  ->  data/bags/robot/fixed/test_acqui_ros2/bag/   (cached)
-#                                  ->  data/bags/robot/fixed/test_acqui_fixed/bag/
+bagfix run src/ninsar_bag_fix/config/trektor.yaml ../data/bags/robot/raw/test_acqui
+#   data/bags/robot/raw/test_acqui/{bag/,}*.bag  ->  data/bags/robot/fixed/test_acqui_ros2/bag/   (cached)
+#                                                ->  data/bags/robot/fixed/test_acqui_fixed/bag/
 ```
 
 ## Configs

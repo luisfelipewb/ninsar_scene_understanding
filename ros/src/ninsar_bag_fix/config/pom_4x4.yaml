@@ -1,7 +1,7 @@
 # POM_4x4 - ROS 2 (jazzy), mcap bags.
 #
-#   source /opt/ros/jazzy/setup.bash
-#   python3 -m bagfix run configs/pom_4x4.yaml /data/2026-07-09-16-39-34 --dry-run
+#   cd ros && source install/setup.bash
+#   bagfix run src/ninsar_bag_fix/config/pom_4x4.yaml ../data/bags/robot/raw/2026-07-09-16-39-34 --dry-run
 #
 # Point at the session folder (the one named after the recording); the `bag/`
 # sub-folder holding bag_0.mcap, bag_1.mcap ... is found automatically.

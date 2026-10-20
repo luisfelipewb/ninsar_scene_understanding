@@ -1,8 +1,8 @@
 # Trektor - ROS 1 .bag files, converted to ROS 2 mcap before any fix is applied.
 #
 #   pipx install rosbags     (provides the rosbags-convert CLI)
-#   source /opt/ros/jazzy/setup.bash
-#   python3 -m bagfix run configs/trektor.yaml /data/test_acqui --dry-run
+#   cd ros && source install/setup.bash
+#   bagfix run src/ninsar_bag_fix/config/trektor.yaml ../data/bags/robot/raw/test_acqui --dry-run
 #
 # Point at the session folder, exactly as for POM_4x4: a .bag sitting directly
 # in it or in a `bag/` sub-folder is found automatically. The conversion lands

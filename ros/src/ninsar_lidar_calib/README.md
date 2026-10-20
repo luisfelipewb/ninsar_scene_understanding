@@ -21,7 +21,7 @@ Python (`scipy.optimize.least_squares`).
 
 ```bash
 ros2 launch ninsar_lidar_calib calibrate.launch.py
-ros2 bag play /data/2026-07-09-16-39-34/bag --clock
+ros2 bag play ../data/bags/robot/raw/2026-07-09-16-39-34/bag --clock
 ```
 
 Every guess is a live ROS parameter — change it and the next scan uses it:
@@ -54,7 +54,7 @@ and replays TF into a `BufferCore`, so pose lookups are exact:
 
 ```bash
 ros2 run ninsar_lidar_calib detect_from_bag \
-    --bag /data/2026-07-09-16-39-34 \
+    --bag ../data/bags/robot/raw/2026-07-09-16-39-34 \
     --ros-args --params-file my_calib.yaml
 ```
 

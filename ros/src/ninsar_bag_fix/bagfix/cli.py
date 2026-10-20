@@ -31,7 +31,7 @@ def main(argv=None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
 
     run = sub.add_parser("run", help="apply a config's pipeline to a bag")
-    run.add_argument("config", help="robot config YAML (e.g. configs/pom_4x4.yaml)")
+    run.add_argument("config", help="robot config YAML (e.g. src/ninsar_bag_fix/config/pom_4x4.yaml)")
     run.add_argument("bag", help="source bag directory (or .bag file for ROS 1)")
     run.add_argument("-o", "--out", help="output bag directory (default: from config)")
     run.add_argument("--dry-run", action="store_true",
