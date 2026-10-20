@@ -1,5 +1,5 @@
 {
- "source": "/home/luis/workspaces/ninsar-isaac-sim/assets/Montoldre_V4_small.usd",
+ "source": "/home/luis/data/ninsar/assets/Montoldre_V4_small.usd",
  "up_axis": "Z",
  "meters_per_unit": 1.0,
  "assets": [
@@ -49,21 +49,6 @@
    ]
   },
   {
-   "path": "/root/Buildings/bat06",
-   "name": "bat06",
-   "class": "building",
-   "center": [
-    123.951,
-    -40.6814,
-    10.2382
-   ],
-   "size": [
-    27.628,
-    26.4533,
-    11.3936
-   ]
-  },
-  {
    "path": "/root/Buildings/bat07",
    "name": "bat07",
    "class": "building",
@@ -94,21 +79,6 @@
    ]
   },
   {
-   "path": "/root/Buildings/hang03",
-   "name": "hang03",
-   "class": "building",
-   "center": [
-    60.9838,
-    33.268,
-    10.8673
-   ],
-   "size": [
-    70.1124,
-    47.0224,
-    9.0357
-   ]
-  },
-  {
    "path": "/root/Buildings/hang04",
    "name": "hang04",
    "class": "building",
@@ -124,36 +94,6 @@
    ]
   },
   {
-   "path": "/root/Buildings/house01",
-   "name": "house01",
-   "class": "building",
-   "center": [
-    129.5589,
-    -140.296,
-    6.5536
-   ],
-   "size": [
-    21.2849,
-    20.7953,
-    6.5737
-   ]
-  },
-  {
-   "path": "/root/Buildings/lab",
-   "name": "lab",
-   "class": "building",
-   "center": [
-    -52.8836,
-    30.7246,
-    11.4917
-   ],
-   "size": [
-    53.1841,
-    48.6845,
-    9.2121
-   ]
-  },
-  {
    "path": "/root/Buildings/poulailler_montoldre",
    "name": "poulailler_montoldre",
    "class": "building",
@@ -166,21 +106,6 @@
     10.6583,
     13.7348,
     3.4485
-   ]
-  },
-  {
-   "path": "/root/Buildings/bat05",
-   "name": "bat05",
-   "class": "building",
-   "center": [
-    94.4435,
-    -18.7689,
-    8.5556
-   ],
-   "size": [
-    34.0031,
-    24.4652,
-    6.6949
    ]
   },
   {
@@ -2528,9 +2453,9 @@
    "name": "cabbage",
    "class": "cabbage",
    "center": [
-    -19.9417,
-    -121.329,
-    5.4611
+    -32.7915,
+    -109.8146,
+    5.5509
    ],
    "size": [
     0.4,
@@ -2543,9 +2468,9 @@
    "name": "cabbage2",
    "class": "cabbage",
    "center": [
-    -16.5773,
-    -119.19,
-    5.6243
+    -31.7077,
+    -109.2136,
+    5.5219
    ],
    "size": [
     0.6229,
@@ -2558,9 +2483,9 @@
    "name": "cabbage3",
    "class": "cabbage",
    "center": [
-    -13.0944,
-    -116.8199,
-    5.698
+    -30.5011,
+    -108.5752,
+    5.5708
    ],
    "size": [
     0.388,
@@ -2573,9 +2498,9 @@
    "name": "cabbage4",
    "class": "cabbage",
    "center": [
-    -20.9609,
-    -119.7858,
-    5.4259
+    -33.8106,
+    -108.2714,
+    5.5157
    ],
    "size": [
     0.4361,
@@ -2588,9 +2513,9 @@
    "name": "cabbage5",
    "class": "cabbage",
    "center": [
-    -17.5054,
-    -117.6464,
-    5.5481
+    -32.6358,
+    -107.6699,
+    5.573
    ],
    "size": [
     0.4986,
@@ -2603,9 +2528,9 @@
    "name": "cabbage6",
    "class": "cabbage",
    "center": [
-    -13.9309,
-    -115.3776,
-    5.6664
+    -31.3377,
+    -107.1329,
+    5.5999
    ],
    "size": [
     0.9643,
@@ -2618,9 +2543,9 @@
    "name": "cabbage7",
    "class": "cabbage",
    "center": [
-    -21.8404,
-    -118.3731,
-    5.4391
+    -34.6902,
+    -106.8586,
+    5.6143
    ],
    "size": [
     0.7588,
@@ -2633,9 +2558,9 @@
    "name": "cabbage8",
    "class": "cabbage",
    "center": [
-    -18.3066,
-    -116.0928,
-    5.546
+    -33.437,
+    -106.1164,
+    5.6354
    ],
    "size": [
     0.4454,
@@ -2648,9 +2573,9 @@
    "name": "cabbage9",
    "class": "cabbage",
    "center": [
-    -14.8276,
-    -113.8656,
-    5.6693
+    -32.2344,
+    -105.621,
+    5.6167
    ],
    "size": [
     0.8496,
@@ -2663,9 +2588,9 @@
    "name": "grapevine5",
    "class": "grapevine",
    "center": [
-    9.5518,
-    -61.5492,
-    7.0944
+    -56.7839,
+    -101.6519,
+    6.5591
    ],
    "size": [
     0.3569,
@@ -2678,9 +2603,9 @@
    "name": "grapevine4",
    "class": "grapevine",
    "center": [
-    9.6423,
-    -63.1912,
-    6.957
+    -56.6934,
+    -103.2939,
+    6.4216
    ],
    "size": [
     0.8337,
@@ -2693,9 +2618,9 @@
    "name": "grapevine3",
    "class": "grapevine",
    "center": [
-    9.6467,
-    -65.1975,
-    6.9899
+    -56.689,
+    -105.3001,
+    6.4545
    ],
    "size": [
     0.8342,
@@ -2708,9 +2633,9 @@
    "name": "grapevine2",
    "class": "grapevine",
    "center": [
-    9.4913,
-    -66.72,
-    7.1034
+    -56.8444,
+    -106.8226,
+    6.5681
    ],
    "size": [
     0.3569,
@@ -2723,9 +2648,9 @@
    "name": "grapevine1",
    "class": "grapevine",
    "center": [
-    9.5122,
-    -68.4688,
-    6.9031
+    -56.8235,
+    -108.5715,
+    6.3678
    ],
    "size": [
     0.5068,
@@ -2738,9 +2663,9 @@
    "name": "grapevine10",
    "class": "grapevine",
    "center": [
-    12.6772,
-    -62.9472,
-    7.0892
+    -53.6585,
+    -103.0498,
+    6.5538
    ],
    "size": [
     1.0764,
@@ -2753,9 +2678,9 @@
    "name": "grapevine9",
    "class": "grapevine",
    "center": [
-    12.9084,
-    -63.9285,
-    7.2935
+    -53.4273,
+    -104.0311,
+    6.7582
    ],
    "size": [
     1.1219,
@@ -2768,9 +2693,9 @@
    "name": "grapevine8",
    "class": "grapevine",
    "center": [
-    12.915,
-    -65.2359,
-    7.3419
+    -53.4207,
+    -105.3385,
+    6.8065
    ],
    "size": [
     0.8215,
@@ -2783,9 +2708,9 @@
    "name": "grapevine7",
    "class": "grapevine",
    "center": [
-    12.8726,
-    -67.1686,
-    7.1719
+    -53.4631,
+    -107.2712,
+    6.6366
    ],
    "size": [
     0.98,
@@ -2798,9 +2723,9 @@
    "name": "grapevine6",
    "class": "grapevine",
    "center": [
-    12.824,
-    -68.3638,
-    7.0124
+    -53.5117,
+    -108.4664,
+    6.4771
    ],
    "size": [
     0.3919,
@@ -2813,8 +2738,8 @@
    "name": "lemon",
    "class": "lemon",
    "center": [
-    -54.962,
-    -124.8698,
+    -42.4672,
+    -115.6991,
     6.3829
    ],
    "size": [
@@ -2828,8 +2753,8 @@
    "name": "lemon2",
    "class": "lemon",
    "center": [
-    -55.0026,
-    -126.8832,
+    -42.5079,
+    -117.7126,
     6.2892
    ],
    "size": [
@@ -2843,8 +2768,8 @@
    "name": "lemon3",
    "class": "lemon",
    "center": [
-    -54.9896,
-    -128.9933,
+    -42.4949,
+    -119.8227,
     6.2904
    ],
    "size": [
@@ -2858,8 +2783,8 @@
    "name": "lemon4",
    "class": "lemon",
    "center": [
-    -55.0774,
-    -131.0011,
+    -42.5826,
+    -121.8304,
     6.2723
    ],
    "size": [
@@ -2873,8 +2798,8 @@
    "name": "lemon5",
    "class": "lemon",
    "center": [
-    -54.9981,
-    -132.9959,
+    -42.5033,
+    -123.8253,
     6.2506
    ],
    "size": [
@@ -2888,8 +2813,8 @@
    "name": "lemon6",
    "class": "lemon",
    "center": [
-    -60.0421,
-    -127.0212,
+    -47.5474,
+    -117.8505,
     6.3183
    ],
    "size": [
@@ -2903,8 +2828,8 @@
    "name": "lemon7",
    "class": "lemon",
    "center": [
-    -59.9957,
-    -129.0004,
+    -47.501,
+    -119.8297,
     6.2153
    ],
    "size": [
@@ -2918,8 +2843,8 @@
    "name": "lemon8",
    "class": "lemon",
    "center": [
-    -59.9508,
-    -130.9403,
+    -47.4561,
+    -121.7696,
     6.288
    ],
    "size": [
@@ -2933,8 +2858,8 @@
    "name": "lemon9",
    "class": "lemon",
    "center": [
-    -59.8327,
-    -124.9222,
+    -47.3379,
+    -115.7515,
     6.3567
    ],
    "size": [
@@ -2948,8 +2873,8 @@
    "name": "lemon10",
    "class": "lemon",
    "center": [
-    -59.8708,
-    -133.0373,
+    -47.376,
+    -123.8667,
     6.2275
    ],
    "size": [
@@ -2963,8 +2888,8 @@
    "name": "BuddhaStatue",
    "class": "obstacle",
    "center": [
-    -43.2068,
-    -105.74,
+    -44.2959,
+    -110.1533,
     7.7008
    ],
    "size": [
@@ -3019,126 +2944,6 @@
    ]
   },
   {
-   "path": "/root/Props/Trees/Tree_2_041",
-   "name": "Tree_2_041",
-   "class": "tree",
-   "center": [
-    119.8345,
-    -122.5191,
-    10.0428
-   ],
-   "size": [
-    17.1021,
-    12.5095,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_042",
-   "name": "Tree_2_042",
-   "class": "tree",
-   "center": [
-    150.9847,
-    -19.4303,
-    10.0945
-   ],
-   "size": [
-    17.1021,
-    12.5095,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_043",
-   "name": "Tree_2_043",
-   "class": "tree",
-   "center": [
-    155.7619,
-    -43.2982,
-    9.5308
-   ],
-   "size": [
-    19.4686,
-    20.5228,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_044",
-   "name": "Tree_2_044",
-   "class": "tree",
-   "center": [
-    161.1485,
-    -61.8267,
-    8.9783
-   ],
-   "size": [
-    18.6855,
-    20.4272,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_045",
-   "name": "Tree_2_045",
-   "class": "tree",
-   "center": [
-    163.7776,
-    -75.0921,
-    9.4935
-   ],
-   "size": [
-    19.5807,
-    20.5168,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_046",
-   "name": "Tree_2_046",
-   "class": "tree",
-   "center": [
-    166.8828,
-    -91.8175,
-    8.8489
-   ],
-   "size": [
-    18.2156,
-    20.2954,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_047",
-   "name": "Tree_2_047",
-   "class": "tree",
-   "center": [
-    132.5035,
-    50.4309,
-    11.1253
-   ],
-   "size": [
-    17.2996,
-    12.7945,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_048",
-   "name": "Tree_2_048",
-   "class": "tree",
-   "center": [
-    132.1556,
-    65.7318,
-    11.222
-   ],
-   "size": [
-    18.2139,
-    20.2948,
-    11.3705
-   ]
-  },
-  {
    "path": "/root/Props/Trees/Tree_2_073",
    "name": "Tree_2_073",
    "class": "tree",
@@ -3180,2391 +2985,6 @@
    "size": [
     18.6664,
     14.9007,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_077",
-   "name": "Tree_2_077",
-   "class": "tree",
-   "center": [
-    206.5741,
-    -114.0473,
-    8.2444
-   ],
-   "size": [
-    20.4582,
-    18.8282,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_079",
-   "name": "Tree_2_079",
-   "class": "tree",
-   "center": [
-    171.5213,
-    -119.8908,
-    8.0896
-   ],
-   "size": [
-    14.9013,
-    18.6668,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_080",
-   "name": "Tree_2_080",
-   "class": "tree",
-   "center": [
-    172.1275,
-    90.7903,
-    12.0689
-   ],
-   "size": [
-    17.1265,
-    19.8649,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_081",
-   "name": "Tree_2_081",
-   "class": "tree",
-   "center": [
-    161.6575,
-    108.5781,
-    12.0484
-   ],
-   "size": [
-    13.3475,
-    17.6749,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_082",
-   "name": "Tree_2_082",
-   "class": "tree",
-   "center": [
-    -350.791,
-    -240.9342,
-    10.5369
-   ],
-   "size": [
-    18.5321,
-    20.3888,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_083",
-   "name": "Tree_2_083",
-   "class": "tree",
-   "center": [
-    -348.0736,
-    -230.2203,
-    10.5462
-   ],
-   "size": [
-    18.2148,
-    20.2951,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_084",
-   "name": "Tree_2_084",
-   "class": "tree",
-   "center": [
-    -346.72,
-    -217.1878,
-    11.1553
-   ],
-   "size": [
-    19.672,
-    16.7198,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_085",
-   "name": "Tree_2_085",
-   "class": "tree",
-   "center": [
-    -345.7437,
-    -206.6992,
-    11.2842
-   ],
-   "size": [
-    20.2952,
-    18.2152,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_086",
-   "name": "Tree_2_086",
-   "class": "tree",
-   "center": [
-    -344.7926,
-    -193.0796,
-    11.3729
-   ],
-   "size": [
-    17.8746,
-    20.1766,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_087",
-   "name": "Tree_2_087",
-   "class": "tree",
-   "center": [
-    -342.2354,
-    -175.9603,
-    11.3038
-   ],
-   "size": [
-    16.2936,
-    19.4555,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_088",
-   "name": "Tree_2_088",
-   "class": "tree",
-   "center": [
-    -333.5204,
-    -151.731,
-    12.0804
-   ],
-   "size": [
-    17.4877,
-    13.0697,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_089",
-   "name": "Tree_2_089",
-   "class": "tree",
-   "center": [
-    -336.1514,
-    -140.4982,
-    11.8172
-   ],
-   "size": [
-    18.5337,
-    20.3893,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_090",
-   "name": "Tree_2_090",
-   "class": "tree",
-   "center": [
-    -334.6206,
-    -133.3731,
-    12.157
-   ],
-   "size": [
-    17.3223,
-    19.9523,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_091",
-   "name": "Tree_2_091",
-   "class": "tree",
-   "center": [
-    -332.6943,
-    -123.0619,
-    11.7288
-   ],
-   "size": [
-    17.8528,
-    13.6154,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_092",
-   "name": "Tree_2_092",
-   "class": "tree",
-   "center": [
-    -331.4954,
-    -114.3083,
-    11.8814
-   ],
-   "size": [
-    16.9015,
-    12.2237,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_093",
-   "name": "Tree_2_093",
-   "class": "tree",
-   "center": [
-    -329.7223,
-    -104.9111,
-    11.9727
-   ],
-   "size": [
-    20.1757,
-    17.8722,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_094",
-   "name": "Tree_2_094",
-   "class": "tree",
-   "center": [
-    -329.5272,
-    -97.1542,
-    11.9253
-   ],
-   "size": [
-    20.0321,
-    17.5093,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_095",
-   "name": "Tree_2_095",
-   "class": "tree",
-   "center": [
-    -328.9009,
-    -88.0609,
-    12.1048
-   ],
-   "size": [
-    20.1841,
-    20.3005,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_096",
-   "name": "Tree_2_096",
-   "class": "tree",
-   "center": [
-    -326.7422,
-    -77.7113,
-    12.5337
-   ],
-   "size": [
-    19.3536,
-    20.5224,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_097",
-   "name": "Tree_2_097",
-   "class": "tree",
-   "center": [
-    -325.4417,
-    -70.8477,
-    12.3682
-   ],
-   "size": [
-    16.2948,
-    19.4562,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_098",
-   "name": "Tree_2_098",
-   "class": "tree",
-   "center": [
-    -324.9787,
-    -61.3968,
-    12.6016
-   ],
-   "size": [
-    18.2156,
-    20.2954,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_099",
-   "name": "Tree_2_099",
-   "class": "tree",
-   "center": [
-    -323.1467,
-    -53.3396,
-    12.6824
-   ],
-   "size": [
-    20.0321,
-    17.5093,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_100",
-   "name": "Tree_2_100",
-   "class": "tree",
-   "center": [
-    -321.9538,
-    -45.2442,
-    12.6902
-   ],
-   "size": [
-    19.8642,
-    17.1249,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_101",
-   "name": "Tree_2_101",
-   "class": "tree",
-   "center": [
-    -321.0508,
-    -36.0034,
-    12.6333
-   ],
-   "size": [
-    19.4565,
-    16.2954,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_102",
-   "name": "Tree_2_102",
-   "class": "tree",
-   "center": [
-    -321.088,
-    -28.4881,
-    12.7488
-   ],
-   "size": [
-    18.814,
-    15.1473,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_103",
-   "name": "Tree_2_103",
-   "class": "tree",
-   "center": [
-    -317.1348,
-    -19.8458,
-    13.129
-   ],
-   "size": [
-    14.9026,
-    18.6676,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_104",
-   "name": "Tree_2_104",
-   "class": "tree",
-   "center": [
-    -316.4038,
-    -10.1374,
-    13.2278
-   ],
-   "size": [
-    14.141,
-    18.1939,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_105",
-   "name": "Tree_2_105",
-   "class": "tree",
-   "center": [
-    -316.0968,
-    -3.1593,
-    13.5384
-   ],
-   "size": [
-    19.7706,
-    16.9239,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_106",
-   "name": "Tree_2_106",
-   "class": "tree",
-   "center": [
-    -312.9349,
-    19.4071,
-    13.396
-   ],
-   "size": [
-    20.4271,
-    18.6851,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_107",
-   "name": "Tree_2_107",
-   "class": "tree",
-   "center": [
-    -307.1997,
-    31.6799,
-    13.9932
-   ],
-   "size": [
-    20.5169,
-    19.5793,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_108",
-   "name": "Tree_2_108",
-   "class": "tree",
-   "center": [
-    -314.4418,
-    7.7412,
-    12.9952
-   ],
-   "size": [
-    17.5088,
-    20.0319,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_109",
-   "name": "Tree_2_109",
-   "class": "tree",
-   "center": [
-    -305.1992,
-    50.7242,
-    14.615
-   ],
-   "size": [
-    18.9542,
-    15.3866,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_110",
-   "name": "Tree_2_110",
-   "class": "tree",
-   "center": [
-    -298.2174,
-    69.3545,
-    14.7508
-   ],
-   "size": [
-    20.3015,
-    20.1829,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_111",
-   "name": "Tree_2_111",
-   "class": "tree",
-   "center": [
-    -296.3102,
-    79.0978,
-    14.9988
-   ],
-   "size": [
-    19.4552,
-    16.2931,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_112",
-   "name": "Tree_2_112",
-   "class": "tree",
-   "center": [
-    -303.4631,
-    60.794,
-    14.3272
-   ],
-   "size": [
-    20.4271,
-    18.6851,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_113",
-   "name": "Tree_2_113",
-   "class": "tree",
-   "center": [
-    -294.3421,
-    88.9072,
-    14.868
-   ],
-   "size": [
-    20.1753,
-    17.8713,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_114",
-   "name": "Tree_2_114",
-   "class": "tree",
-   "center": [
-    -289.1424,
-    100.1198,
-    15.3646
-   ],
-   "size": [
-    20.115,
-    20.3508,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_115",
-   "name": "Tree_2_115",
-   "class": "tree",
-   "center": [
-    -287.4309,
-    106.7908,
-    14.8897
-   ],
-   "size": [
-    18.5163,
-    14.6548,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_116",
-   "name": "Tree_2_116",
-   "class": "tree",
-   "center": [
-    -283.751,
-    118.7233,
-    15.7474
-   ],
-   "size": [
-    19.9619,
-    20.4305,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_117",
-   "name": "Tree_2_117",
-   "class": "tree",
-   "center": [
-    -280.3265,
-    128.6537,
-    15.4515
-   ],
-   "size": [
-    18.0461,
-    20.2384,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_118",
-   "name": "Tree_2_118",
-   "class": "tree",
-   "center": [
-    -277.9463,
-    136.6896,
-    15.8309
-   ],
-   "size": [
-    20.5028,
-    19.1017,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_119",
-   "name": "Tree_2_119",
-   "class": "tree",
-   "center": [
-    -266.5035,
-    175.2437,
-    16.8682
-   ],
-   "size": [
-    19.8747,
-    20.4618,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_120",
-   "name": "Tree_2_120",
-   "class": "tree",
-   "center": [
-    -274.0516,
-    147.1579,
-    16.4461
-   ],
-   "size": [
-    18.9689,
-    20.4838,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_121",
-   "name": "Tree_2_121",
-   "class": "tree",
-   "center": [
-    -250.0942,
-    233.9678,
-    17.0916
-   ],
-   "size": [
-    20.2456,
-    20.2451,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_122",
-   "name": "Tree_2_122",
-   "class": "tree",
-   "center": [
-    -257.9523,
-    201.6368,
-    17.6319
-   ],
-   "size": [
-    19.8757,
-    20.4615,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_123",
-   "name": "Tree_2_123",
-   "class": "tree",
-   "center": [
-    -259.9845,
-    193.9847,
-    17.3177
-   ],
-   "size": [
-    16.9015,
-    12.2237,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_124",
-   "name": "Tree_2_124",
-   "class": "tree",
-   "center": [
-    -262.7151,
-    186.1537,
-    17.1746
-   ],
-   "size": [
-    19.8747,
-    20.4618,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_125",
-   "name": "Tree_2_125",
-   "class": "tree",
-   "center": [
-    -254.8343,
-    212.1298,
-    18.5796
-   ],
-   "size": [
-    20.4269,
-    18.6843,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_126",
-   "name": "Tree_2_126",
-   "class": "tree",
-   "center": [
-    -251.349,
-    221.7114,
-    17.9542
-   ],
-   "size": [
-    19.5675,
-    16.5106,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_127",
-   "name": "Tree_2_127",
-   "class": "tree",
-   "center": [
-    -245.8031,
-    248.0659,
-    18.6248
-   ],
-   "size": [
-    19.6725,
-    16.7209,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_128",
-   "name": "Tree_2_128",
-   "class": "tree",
-   "center": [
-    -231.9797,
-    292.6312,
-    19.9732
-   ],
-   "size": [
-    18.8301,
-    20.4586,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_129",
-   "name": "Tree_2_129",
-   "class": "tree",
-   "center": [
-    -224.4808,
-    304.8868,
-    19.8675
-   ],
-   "size": [
-    18.6831,
-    20.4267,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_130",
-   "name": "Tree_2_130",
-   "class": "tree",
-   "center": [
-    -216.9596,
-    316.8572,
-    19.9144
-   ],
-   "size": [
-    17.6959,
-    20.1079,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_131",
-   "name": "Tree_2_131",
-   "class": "tree",
-   "center": [
-    -220.9233,
-    309.3108,
-    20.0936
-   ],
-   "size": [
-    20.5228,
-    19.4683,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_132",
-   "name": "Tree_2_132",
-   "class": "tree",
-   "center": [
-    -205.4598,
-    333.4083,
-    20.4859
-   ],
-   "size": [
-    20.4584,
-    18.8289,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_133",
-   "name": "Tree_2_133",
-   "class": "tree",
-   "center": [
-    -200.1565,
-    346.0898,
-    21.1348
-   ],
-   "size": [
-    20.5227,
-    19.4702,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_134",
-   "name": "Tree_2_134",
-   "class": "tree",
-   "center": [
-    -192.0962,
-    358.1,
-    21.0369
-   ],
-   "size": [
-    20.484,
-    18.97,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_135",
-   "name": "Tree_2_135",
-   "class": "tree",
-   "center": [
-    -181.285,
-    371.175,
-    21.4395
-   ],
-   "size": [
-    20.0413,
-    20.3938,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_136",
-   "name": "Tree_2_136",
-   "class": "tree",
-   "center": [
-    -187.1719,
-    365.2517,
-    20.9371
-   ],
-   "size": [
-    14.3984,
-    18.3569,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_137",
-   "name": "Tree_2_137",
-   "class": "tree",
-   "center": [
-    -202.9401,
-    338.6405,
-    20.5228
-   ],
-   "size": [
-    16.9265,
-    19.7718,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_138",
-   "name": "Tree_2_138",
-   "class": "tree",
-   "center": [
-    -134.4799,
-    -294.5721,
-    8.8245
-   ],
-   "size": [
-    20.1764,
-    17.8741,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_139",
-   "name": "Tree_2_139",
-   "class": "tree",
-   "center": [
-    -138.3316,
-    -282.684,
-    9.0511
-   ],
-   "size": [
-    16.0757,
-    19.3398,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_140",
-   "name": "Tree_2_140",
-   "class": "tree",
-   "center": [
-    -134.0548,
-    -296.0951,
-    8.8211
-   ],
-   "size": [
-    19.2321,
-    20.5159,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_141",
-   "name": "Tree_2_141",
-   "class": "tree",
-   "center": [
-    -137.9691,
-    -269.5967,
-    9.202
-   ],
-   "size": [
-    20.5049,
-    19.6832,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_142",
-   "name": "Tree_2_142",
-   "class": "tree",
-   "center": [
-    -119.7889,
-    -267.8521,
-    8.713
-   ],
-   "size": [
-    16.9026,
-    12.2252,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_143",
-   "name": "Tree_2_143",
-   "class": "tree",
-   "center": [
-    -108.8566,
-    -268.9103,
-    8.4246
-   ],
-   "size": [
-    20.5048,
-    19.6837,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_263",
-   "name": "Tree_2_263",
-   "class": "tree",
-   "center": [
-    -21.7824,
-    -276.7177,
-    7.8602
-   ],
-   "size": [
-    18.0268,
-    13.8813,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_264",
-   "name": "Tree_2_264",
-   "class": "tree",
-   "center": [
-    -13.9064,
-    -293.0798,
-    7.7374
-   ],
-   "size": [
-    19.7706,
-    16.9239,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_265",
-   "name": "Tree_2_265",
-   "class": "tree",
-   "center": [
-    -2.7603,
-    -280.1823,
-    7.8341
-   ],
-   "size": [
-    20.5224,
-    19.352,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_266",
-   "name": "Tree_2_266",
-   "class": "tree",
-   "center": [
-    3.0897,
-    -276.7635,
-    8.0428
-   ],
-   "size": [
-    19.7706,
-    16.9239,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_267",
-   "name": "Tree_2_267",
-   "class": "tree",
-   "center": [
-    22.6883,
-    -268.8541,
-    8.2169
-   ],
-   "size": [
-    14.6514,
-    18.5143,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_268",
-   "name": "Tree_2_268",
-   "class": "tree",
-   "center": [
-    34.7544,
-    -259.7804,
-    8.1885
-   ],
-   "size": [
-    16.0746,
-    19.3392,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_269",
-   "name": "Tree_2_269",
-   "class": "tree",
-   "center": [
-    49.2007,
-    -258.8644,
-    8.3043
-   ],
-   "size": [
-    20.2456,
-    20.2451,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_270",
-   "name": "Tree_2_270",
-   "class": "tree",
-   "center": [
-    60.5873,
-    -258.6391,
-    7.8421
-   ],
-   "size": [
-    12.2244,
-    16.9021,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_271",
-   "name": "Tree_2_271",
-   "class": "tree",
-   "center": [
-    62.9564,
-    -245.9608,
-    8.1697
-   ],
-   "size": [
-    20.5159,
-    19.2318,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_272",
-   "name": "Tree_2_272",
-   "class": "tree",
-   "center": [
-    71.1022,
-    -242.0645,
-    8.2457
-   ],
-   "size": [
-    14.6541,
-    18.5159,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_273",
-   "name": "Tree_2_273",
-   "class": "tree",
-   "center": [
-    80.9228,
-    -240.9903,
-    8.1212
-   ],
-   "size": [
-    20.484,
-    18.97,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_274",
-   "name": "Tree_2_274",
-   "class": "tree",
-   "center": [
-    74.6809,
-    -247.4138,
-    8.1168
-   ],
-   "size": [
-    16.5112,
-    19.5678,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_275",
-   "name": "Tree_2_275",
-   "class": "tree",
-   "center": [
-    122.8346,
-    -201.4615,
-    8.4854
-   ],
-   "size": [
-    20.5228,
-    19.4683,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_293",
-   "name": "Tree_2_293",
-   "class": "tree",
-   "center": [
-    67.4163,
-    221.1125,
-    16.0574
-   ],
-   "size": [
-    20.5168,
-    19.5805,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_294",
-   "name": "Tree_2_294",
-   "class": "tree",
-   "center": [
-    74.5554,
-    214.3441,
-    15.5413
-   ],
-   "size": [
-    13.8792,
-    18.0254,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_295",
-   "name": "Tree_2_295",
-   "class": "tree",
-   "center": [
-    78.1852,
-    204.831,
-    15.1321
-   ],
-   "size": [
-    20.1077,
-    17.6954,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_296",
-   "name": "Tree_2_296",
-   "class": "tree",
-   "center": [
-    86.4548,
-    196.1793,
-    14.3965
-   ],
-   "size": [
-    17.1032,
-    12.511,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_297",
-   "name": "Tree_2_297",
-   "class": "tree",
-   "center": [
-    92.7568,
-    189.1159,
-    14.264
-   ],
-   "size": [
-    12.2244,
-    16.9021,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_298",
-   "name": "Tree_2_298",
-   "class": "tree",
-   "center": [
-    100.1493,
-    178.0415,
-    14.3604
-   ],
-   "size": [
-    18.6672,
-    14.902,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_299",
-   "name": "Tree_2_299",
-   "class": "tree",
-   "center": [
-    107.4198,
-    170.922,
-    13.9212
-   ],
-   "size": [
-    15.386,
-    18.9538,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_313",
-   "name": "Tree_2_313",
-   "class": "tree",
-   "center": [
-    122.9795,
-    161.2255,
-    13.8838
-   ],
-   "size": [
-    17.4877,
-    13.0697,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_314",
-   "name": "Tree_2_314",
-   "class": "tree",
-   "center": [
-    127.1785,
-    150.7346,
-    13.7952
-   ],
-   "size": [
-    19.8651,
-    17.127,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_315",
-   "name": "Tree_2_315",
-   "class": "tree",
-   "center": [
-    131.9647,
-    145.7182,
-    13.3455
-   ],
-   "size": [
-    15.6207,
-    19.0883,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_316",
-   "name": "Tree_2_316",
-   "class": "tree",
-   "center": [
-    137.6423,
-    138.7895,
-    13.2149
-   ],
-   "size": [
-    19.9615,
-    20.4307,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_317",
-   "name": "Tree_2_317",
-   "class": "tree",
-   "center": [
-    141.8274,
-    131.7205,
-    13.1353
-   ],
-   "size": [
-    19.9619,
-    20.4305,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_318",
-   "name": "Tree_2_318",
-   "class": "tree",
-   "center": [
-    146.3825,
-    124.2854,
-    12.6683
-   ],
-   "size": [
-    12.2229,
-    16.901,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_319",
-   "name": "Tree_2_319",
-   "class": "tree",
-   "center": [
-    186.2791,
-    76.1239,
-    12.0843
-   ],
-   "size": [
-    20.295,
-    18.2143,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_320",
-   "name": "Tree_2_320",
-   "class": "tree",
-   "center": [
-    192.5055,
-    63.3661,
-    11.4576
-   ],
-   "size": [
-    20.2459,
-    20.2448,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_321",
-   "name": "Tree_2_321",
-   "class": "tree",
-   "center": [
-    197.5968,
-    56.3979,
-    11.5379
-   ],
-   "size": [
-    15.6219,
-    19.089,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_322",
-   "name": "Tree_2_322",
-   "class": "tree",
-   "center": [
-    204.0674,
-    50.0489,
-    11.3653
-   ],
-   "size": [
-    13.6133,
-    17.8514,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_323",
-   "name": "Tree_2_323",
-   "class": "tree",
-   "center": [
-    208.8388,
-    40.2188,
-    11.3155
-   ],
-   "size": [
-    18.0461,
-    20.2384,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_324",
-   "name": "Tree_2_324",
-   "class": "tree",
-   "center": [
-    215.3768,
-    31.0409,
-    10.74
-   ],
-   "size": [
-    19.3536,
-    20.5224,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_325",
-   "name": "Tree_2_325",
-   "class": "tree",
-   "center": [
-    220.2162,
-    24.7104,
-    10.7837
-   ],
-   "size": [
-    20.4618,
-    19.8745,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_326",
-   "name": "Tree_2_326",
-   "class": "tree",
-   "center": [
-    222.9289,
-    15.7632,
-    10.7293
-   ],
-   "size": [
-    20.3015,
-    20.1829,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_327",
-   "name": "Tree_2_327",
-   "class": "tree",
-   "center": [
-    229.5945,
-    9.5011,
-    10.4759
-   ],
-   "size": [
-    13.6161,
-    17.8533,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_328",
-   "name": "Tree_2_328",
-   "class": "tree",
-   "center": [
-    235.5358,
-    2.3809,
-    10.554
-   ],
-   "size": [
-    19.2315,
-    20.5158,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_329",
-   "name": "Tree_2_329",
-   "class": "tree",
-   "center": [
-    238.7785,
-    -5.3949,
-    10.1172
-   ],
-   "size": [
-    19.2153,
-    15.8476,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_330",
-   "name": "Tree_2_330",
-   "class": "tree",
-   "center": [
-    247.1877,
-    -15.7869,
-    9.7813
-   ],
-   "size": [
-    18.3762,
-    20.345,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_331",
-   "name": "Tree_2_331",
-   "class": "tree",
-   "center": [
-    253.4535,
-    -24.4858,
-    9.5643
-   ],
-   "size": [
-    20.4312,
-    19.9604,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_332",
-   "name": "Tree_2_332",
-   "class": "tree",
-   "center": [
-    258.7743,
-    -30.9126,
-    9.2579
-   ],
-   "size": [
-    17.1011,
-    12.508,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_333",
-   "name": "Tree_2_333",
-   "class": "tree",
-   "center": [
-    274.448,
-    -47.7141,
-    8.7832
-   ],
-   "size": [
-    20.1837,
-    20.3008,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_334",
-   "name": "Tree_2_334",
-   "class": "tree",
-   "center": [
-    266.839,
-    -39.7114,
-    9.0689
-   ],
-   "size": [
-    19.8646,
-    17.126,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_335",
-   "name": "Tree_2_335",
-   "class": "tree",
-   "center": [
-    176.6165,
-    -109.0853,
-    8.4197
-   ],
-   "size": [
-    20.2452,
-    20.2454,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_336",
-   "name": "Tree_2_336",
-   "class": "tree",
-   "center": [
-    185.1392,
-    -143.607,
-    7.773
-   ],
-   "size": [
-    19.672,
-    16.7198,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_337",
-   "name": "Tree_2_337",
-   "class": "tree",
-   "center": [
-    193.9102,
-    -123.0053,
-    8.0987
-   ],
-   "size": [
-    12.7953,
-    17.3001,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_338",
-   "name": "Tree_2_338",
-   "class": "tree",
-   "center": [
-    218.5661,
-    -120.2273,
-    8.1036
-   ],
-   "size": [
-    19.6851,
-    20.5046,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_339",
-   "name": "Tree_2_339",
-   "class": "tree",
-   "center": [
-    217.3442,
-    -97.7214,
-    9.1253
-   ],
-   "size": [
-    14.6528,
-    18.5151,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_340",
-   "name": "Tree_2_340",
-   "class": "tree",
-   "center": [
-    244.6648,
-    -101.5722,
-    8.1111
-   ],
-   "size": [
-    20.3452,
-    18.3766,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_341",
-   "name": "Tree_2_341",
-   "class": "tree",
-   "center": [
-    254.2116,
-    -92.8825,
-    8.2225
-   ],
-   "size": [
-    18.5147,
-    14.6521,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_342",
-   "name": "Tree_2_342",
-   "class": "tree",
-   "center": [
-    257.7681,
-    -75.7574,
-    8.6077
-   ],
-   "size": [
-    20.3889,
-    18.5325,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_343",
-   "name": "Tree_2_343",
-   "class": "tree",
-   "center": [
-    262.0614,
-    -67.4533,
-    8.7415
-   ],
-   "size": [
-    18.8301,
-    20.4586,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_350",
-   "name": "Tree_2_350",
-   "class": "tree",
-   "center": [
-    170.0115,
-    -151.6867,
-    8.0686
-   ],
-   "size": [
-    20.4618,
-    19.8745,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_351",
-   "name": "Tree_2_351",
-   "class": "tree",
-   "center": [
-    159.8697,
-    -167.5643,
-    8.0369
-   ],
-   "size": [
-    19.6834,
-    20.5048,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_352",
-   "name": "Tree_2_352",
-   "class": "tree",
-   "center": [
-    170.347,
-    -176.817,
-    7.8377
-   ],
-   "size": [
-    13.8792,
-    18.0254,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_353",
-   "name": "Tree_2_353",
-   "class": "tree",
-   "center": [
-    154.478,
-    -178.545,
-    8.1082
-   ],
-   "size": [
-    20.4863,
-    19.7826,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_354",
-   "name": "Tree_2_354",
-   "class": "tree",
-   "center": [
-    154.9379,
-    -193.6535,
-    7.7757
-   ],
-   "size": [
-    14.6528,
-    18.5151,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_355",
-   "name": "Tree_2_355",
-   "class": "tree",
-   "center": [
-    146.1437,
-    -202.1724,
-    7.9219
-   ],
-   "size": [
-    13.069,
-    17.4872,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_356",
-   "name": "Tree_2_356",
-   "class": "tree",
-   "center": [
-    135.0202,
-    -212.8759,
-    8.2923
-   ],
-   "size": [
-    17.8519,
-    13.614,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_357",
-   "name": "Tree_2_357",
-   "class": "tree",
-   "center": [
-    122.5269,
-    -220.0704,
-    8.251
-   ],
-   "size": [
-    19.3401,
-    16.0763,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_358",
-   "name": "Tree_2_358",
-   "class": "tree",
-   "center": [
-    101.9748,
-    -198.2728,
-    8.7247
-   ],
-   "size": [
-    19.0887,
-    15.6213,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_359",
-   "name": "Tree_2_359",
-   "class": "tree",
-   "center": [
-    114.1234,
-    -156.585,
-    9.0381
-   ],
-   "size": [
-    17.3192,
-    19.951,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_360",
-   "name": "Tree_2_360",
-   "class": "tree",
-   "center": [
-    76.1878,
-    -203.3437,
-    9.1556
-   ],
-   "size": [
-    19.9615,
-    20.4307,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_361",
-   "name": "Tree_2_361",
-   "class": "tree",
-   "center": [
-    81.3889,
-    -211.0848,
-    8.6456
-   ],
-   "size": [
-    14.9,
-    18.666,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_362",
-   "name": "Tree_2_362",
-   "class": "tree",
-   "center": [
-    70.1794,
-    -211.621,
-    9.0374
-   ],
-   "size": [
-    16.9276,
-    19.7724,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_363",
-   "name": "Tree_2_363",
-   "class": "tree",
-   "center": [
-    58.1405,
-    -211.3086,
-    9.4034
-   ],
-   "size": [
-    17.5108,
-    20.0328,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_364",
-   "name": "Tree_2_364",
-   "class": "tree",
-   "center": [
-    51.9762,
-    -212.5655,
-    9.3729
-   ],
-   "size": [
-    12.7953,
-    17.3001,
-    11.3704
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_365",
-   "name": "Tree_2_365",
-   "class": "tree",
-   "center": [
-    57.956,
-    -197.8741,
-    9.4117
-   ],
-   "size": [
-    12.5103,
-    17.1027,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_366",
-   "name": "Tree_2_366",
-   "class": "tree",
-   "center": [
-    41.8231,
-    -194.77,
-    9.4779
-   ],
-   "size": [
-    17.693,
-    20.1068,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_367",
-   "name": "Tree_2_367",
-   "class": "tree",
-   "center": [
-    48.1278,
-    -201.841,
-    9.4781
-   ],
-   "size": [
-    18.9535,
-    15.3854,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_368",
-   "name": "Tree_2_368",
-   "class": "tree",
-   "center": [
-    26.5432,
-    -193.4475,
-    10.0977
-   ],
-   "size": [
-    18.6839,
-    20.4269,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_369",
-   "name": "Tree_2_369",
-   "class": "tree",
-   "center": [
-    18.3246,
-    -190.9977,
-    10.1319
-   ],
-   "size": [
-    20.5169,
-    19.5793,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_370",
-   "name": "Tree_2_370",
-   "class": "tree",
-   "center": [
-    13.2855,
-    -190.2764,
-    10.2025
-   ],
-   "size": [
-    16.5123,
-    19.5683,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_371",
-   "name": "Tree_2_371",
-   "class": "tree",
-   "center": [
-    -6.6351,
-    -175.0738,
-    9.9793
-   ],
-   "size": [
-    19.9512,
-    17.3197,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_372",
-   "name": "Tree_2_372",
-   "class": "tree",
-   "center": [
-    -17.6864,
-    -172.2553,
-    9.8714
-   ],
-   "size": [
-    20.5046,
-    19.6848,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_373",
-   "name": "Tree_2_373",
-   "class": "tree",
-   "center": [
-    -23.6912,
-    -190.3032,
-    9.8863
-   ],
-   "size": [
-    19.6834,
-    20.5048,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_374",
-   "name": "Tree_2_374",
-   "class": "tree",
-   "center": [
-    -37.3018,
-    -198.6228,
-    9.6343
-   ],
-   "size": [
-    14.6528,
-    18.5151,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_375",
-   "name": "Tree_2_375",
-   "class": "tree",
-   "center": [
-    -45.7159,
-    -209.8377,
-    8.8714
-   ],
-   "size": [
-    20.5028,
-    19.1017,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_376",
-   "name": "Tree_2_376",
-   "class": "tree",
-   "center": [
-    -57.0427,
-    -220.8222,
-    8.6522
-   ],
-   "size": [
-    20.2452,
-    20.2454,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_377",
-   "name": "Tree_2_377",
-   "class": "tree",
-   "center": [
-    -64.152,
-    -228.0245,
-    8.5589
-   ],
-   "size": [
-    20.1757,
-    17.8722,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_378",
-   "name": "Tree_2_378",
-   "class": "tree",
-   "center": [
-    -68.1637,
-    -233.7869,
-    8.5477
-   ],
-   "size": [
-    11.9349,
-    16.6963,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_379",
-   "name": "Tree_2_379",
-   "class": "tree",
-   "center": [
-    -53.6617,
-    -247.0212,
-    8.3226
-   ],
-   "size": [
-    20.1162,
-    20.3501,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_380",
-   "name": "Tree_2_380",
-   "class": "tree",
-   "center": [
-    -36.1344,
-    -241.1871,
-    8.3944
-   ],
-   "size": [
-    20.0325,
-    17.5103,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_381",
-   "name": "Tree_2_381",
-   "class": "tree",
-   "center": [
-    -34.1876,
-    -222.422,
-    8.8336
-   ],
-   "size": [
-    16.7225,
-    19.6733,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_382",
-   "name": "Tree_2_382",
-   "class": "tree",
-   "center": [
-    -17.7508,
-    -222.8336,
-    9.0237
-   ],
-   "size": [
-    19.7819,
-    20.4865,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_383",
-   "name": "Tree_2_383",
-   "class": "tree",
-   "center": [
-    -8.8466,
-    -233.3555,
-    8.774
-   ],
-   "size": [
-    19.9521,
-    17.3218,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_384",
-   "name": "Tree_2_384",
-   "class": "tree",
-   "center": [
-    -0.8778,
-    -247.3826,
-    8.588
-   ],
-   "size": [
-    18.5329,
-    20.3891,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_385",
-   "name": "Tree_2_385",
-   "class": "tree",
-   "center": [
-    6.3001,
-    -254.719,
-    8.7
-   ],
-   "size": [
-    20.0413,
-    20.3938,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_386",
-   "name": "Tree_2_386",
-   "class": "tree",
-   "center": [
-    -4.514,
-    -213.9633,
-    9.4019
-   ],
-   "size": [
-    20.3939,
-    20.0411,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_387",
-   "name": "Tree_2_387",
-   "class": "tree",
-   "center": [
-    -9.4729,
-    -203.1073,
-    9.7169
-   ],
-   "size": [
-    17.4897,
-    13.0726,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_388",
-   "name": "Tree_2_388",
-   "class": "tree",
-   "center": [
-    9.4885,
-    -200.8509,
-    9.88
-   ],
-   "size": [
-    18.3753,
-    20.3448,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_389",
-   "name": "Tree_2_389",
-   "class": "tree",
-   "center": [
-    19.4584,
-    -210.6001,
-    9.4866
-   ],
-   "size": [
-    20.4837,
-    18.9686,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_390",
-   "name": "Tree_2_390",
-   "class": "tree",
-   "center": [
-    34.5043,
-    -227.7948,
-    8.9776
-   ],
-   "size": [
-    20.2947,
-    18.2135,
-    11.3705
-   ]
-  },
-  {
-   "path": "/root/Props/Trees/Tree_2_391",
-   "name": "Tree_2_391",
-   "class": "tree",
-   "center": [
-    34.3844,
-    -235.3036,
-    8.7779
-   ],
-   "size": [
-    19.3523,
-    20.5224,
     11.3705
    ]
   },
@@ -5809,153 +3229,183 @@
    ]
   },
   {
-   "path": "/root/Props/Trees/Tree_2_443",
-   "name": "Tree_2_443",
-   "class": "tree",
+   "path": "/root/Props/fence001",
+   "name": "fence001",
+   "class": "fence",
    "center": [
-    4.0594,
-    -183.1437,
-    10.3387
+    -50.1365,
+    -108.0165,
+    6.1392
    ],
    "size": [
-    13.8076,
-    10.3205,
-    11.3705
+    0.0698,
+    1.3171,
+    0.7141
    ]
   },
   {
-   "path": "/root/Props/Trees/Tree_2_078",
-   "name": "Tree_2_078",
-   "class": "tree",
+   "path": "/root/Props/fence002",
+   "name": "fence002",
+   "class": "fence",
    "center": [
-    155.1611,
-    -30.7865,
-    9.5132
+    -50.1365,
+    -107.0165,
+    6.1392
    ],
    "size": [
-    20.115,
-    20.3508,
-    11.3705
+    0.0698,
+    1.3171,
+    0.7141
    ]
   },
   {
-   "path": "/root/Props/Trees/Tree_2_276",
-   "name": "Tree_2_276",
-   "class": "tree",
+   "path": "/root/Props/fence003",
+   "name": "fence003",
+   "class": "fence",
    "center": [
-    122.5825,
-    -239.8717,
-    7.9156
+    -50.1365,
+    -106.0165,
+    6.1392
    ],
    "size": [
-    18.5163,
-    14.6548,
-    11.3705
+    0.0698,
+    1.3171,
+    0.7141
    ]
   },
   {
-   "path": "/root/Props/socle_01",
-   "name": "socle_01",
-   "class": null,
+   "path": "/root/Props/fence004",
+   "name": "fence004",
+   "class": "fence",
    "center": [
-    -70.9883,
-    -8.3933,
-    18.9337
+    -50.1365,
+    -105.0165,
+    6.1392
    ],
    "size": [
-    2.5378,
-    2.5378,
-    25.4408
+    0.0698,
+    1.3171,
+    0.7141
    ]
   },
   {
-   "path": "/root/Props/tas_montoldre",
-   "name": "tas_montoldre",
-   "class": null,
+   "path": "/root/Props/fence005",
+   "name": "fence005",
+   "class": "fence",
    "center": [
-    32.7945,
-    91.1627,
-    8.9631
+    -50.1365,
+    -104.0165,
+    6.1392
    ],
    "size": [
-    59.6693,
-    57.9389,
-    2.7409
+    0.0698,
+    1.3171,
+    0.7141
    ]
   },
   {
-   "path": "/root/Props/tas_solo",
-   "name": "tas_solo",
-   "class": null,
+   "path": "/root/Props/fence006",
+   "name": "fence006",
+   "class": "fence",
    "center": [
-    37.8415,
-    53.5419,
-    7.8625
+    -50.1365,
+    -103.0165,
+    6.1392
    ],
    "size": [
-    11.6196,
-    7.7092,
-    1.9809
+    0.0698,
+    1.3171,
+    0.7141
    ]
   },
   {
-   "path": "/root/Props/fosse_montoldre_01",
-   "name": "fosse_montoldre_01",
-   "class": null,
+   "path": "/root/Props/landmarks/D10",
+   "name": "D10",
+   "class": "landmark_d10",
    "center": [
-    -14.1184,
-    71.0758,
-    7.5812
+    -35.4963,
+    -109.495,
+    5.7685
    ],
    "size": [
-    42.4325,
-    36.0529,
-    2.6323
+    0.3124,
+    0.3467,
+    0.2645
    ]
   },
   {
-   "path": "/root/Props/roumbaleurs",
-   "name": "roumbaleurs",
-   "class": null,
+   "path": "/root/Props/landmarks/D12",
+   "name": "D12",
+   "class": "landmark_d12",
    "center": [
-    45.3704,
-    54.597,
-    8.2923
+    -29.609,
+    -106.182,
+    5.7743
    ],
    "size": [
-    28.0677,
-    17.6179,
-    2.878
+    0.4117,
+    0.42,
+    0.345
    ]
   },
   {
-   "path": "/root/Props/pneus",
-   "name": "pneus",
-   "class": null,
+   "path": "/root/Props/landmarks/D20",
+   "name": "D20",
+   "class": "landmark_d20",
    "center": [
-    43.5804,
-    59.4607,
-    7.4863
+    -49.3777,
+    -113.025,
+    5.9183
    ],
    "size": [
-    24.9201,
-    9.9388,
-    1.3375
+    0.3773,
+    0.3773,
+    0.3773
    ]
   },
   {
-   "path": "/root/Props/pneu_montoldre_tas",
-   "name": "pneu_montoldre_tas",
-   "class": null,
+   "path": "/root/Props/landmarks/D4",
+   "name": "D4",
+   "class": "landmark_d4",
    "center": [
-    25.2486,
-    80.9686,
-    7.4609
+    -40.5321,
+    -114.2757,
+    5.7018
    ],
    "size": [
-    0.7816,
-    0.7864,
-    0.2521
+    0.3672,
+    0.4218,
+    0.3472
+   ]
+  },
+  {
+   "path": "/root/Props/landmarks/D6",
+   "name": "D6",
+   "class": "landmark_d6",
+   "center": [
+    -44.9359,
+    -114.5091,
+    5.8177
+   ],
+   "size": [
+    0.3126,
+    0.3126,
+    0.2387
+   ]
+  },
+  {
+   "path": "/root/Props/landmarks/D8",
+   "name": "D8",
+   "class": "landmark_d8",
+   "center": [
+    -53.6284,
+    -110.3065,
+    5.8456
+   ],
+   "size": [
+    0.3282,
+    0.2887,
+    0.2422
    ]
   }
  ]

@@ -1,0 +1,55 @@
+# ninsar_perception object_detector on the Isaac Sim tour bag: per-frame objects from cloud_in.
+# Output format and parameters: docs/OBJECT_DETECTOR.md. Input contract: docs/CLOUD_IN_SPEC.md.
+object_detector:
+  ros__parameters:
+    input_topic: cloud_in
+    max_range: 10.0               # m, sensor frame; cloud_in keeps farther points for free-space carving
+    min_score: 0.0                # drop points whose class score is lower (useful with confidence bins)
+    ignore_classes: [ground, unknown]
+    # Classes to detect, as named in cloud_in's categories; [""] = all but ignore_classes.
+    # person is mapped but not detected: walkers move, so their clusters are not landmarks.
+    classes: [tree, grapevine, lemon, cabbage, fence, building, obstacle,
+              landmark_d4, landmark_d6, landmark_d8, landmark_d10, landmark_d12, landmark_d20]
+    gravity_align: true           # yaw boxes upright in world, levelled with cloud_in's pose
+    publish_clusters: true        # ~/clusters debug cloud (built only while someone subscribes)
+    marker_line_width: 0.03
+
+    # Defaults for every class; keep cluster_tolerance >= 2 * voxel_size.
+    voxel_size: 0.05              # m; <= 0 disables downsampling
+    cluster_tolerance: 0.2        # m
+    min_cluster_size: 20          # points after downsampling
+    max_cluster_size: 100000      # larger clusters are dropped, not split
+    max_dimension: 0.0            # m; drop boxes with a longer side; <= 0 disables
+
+    # Per-class overrides (any of the five keys above). Starting values, to tune on the bag.
+    # Isaac asset sizes (config/isaac_assets.json): lemon and grapevine are whole plants (~1.5 x 1.8 x 2.2 m,
+    # gaps ~0.4 m along the row, so the default 0.2 m tolerance), cabbage ~0.5 m, fence segments ~1 m.
+    per_class:
+      tree:
+        cluster_tolerance: 0.3
+      cabbage:
+        cluster_tolerance: 0.1
+        min_cluster_size: 10
+      fence:
+        cluster_tolerance: 0.3
+      building:
+        cluster_tolerance: 0.3
+      # Landmark dice are 0.25-0.42 m, smaller than a cabbage: the same small-object settings.
+      landmark_d4:
+        cluster_tolerance: 0.1
+        min_cluster_size: 10
+      landmark_d6:
+        cluster_tolerance: 0.1
+        min_cluster_size: 10
+      landmark_d8:
+        cluster_tolerance: 0.1
+        min_cluster_size: 10
+      landmark_d10:
+        cluster_tolerance: 0.1
+        min_cluster_size: 10
+      landmark_d12:
+        cluster_tolerance: 0.1
+        min_cluster_size: 10
+      landmark_d20:
+        cluster_tolerance: 0.1
+        min_cluster_size: 10

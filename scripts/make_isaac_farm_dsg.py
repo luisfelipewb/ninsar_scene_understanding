@@ -4,7 +4,7 @@
 Input is the JSON written by ninsar-isaac-sim's tools/scan_isaac_assets.py (labelled prims and their
 world boxes). Same layers and edge conventions as make_farm_dsg.py, minus
 the navigation partition:
-  1  DETECTIONS  crops, buildings, obstacles (tree, fence, obstacle, unlabelled prop)
+  1  DETECTIONS  crops, buildings, obstacles (tree, fence, obstacle, unlabelled prop), landmarks
   2  ROWS        found from the plant positions, one crop per row
   3  PARCELS     one per crop class: the rows' extent plus a headland
   4  FARM        root: parent of parcels, buildings, and obstacles outside any parcel
@@ -36,12 +36,14 @@ from make_farm_dsg import (DETECTIONS, FARM, PARCELS, ROWS, FarmGraph, box_gap, 
 
 CROPS = ("cabbage", "grapevine", "lemon")
 OBSTACLES = ("tree", "fence", "obstacle", "prop")  # "prop": a prop with no label in the scene
-LABELS = dict(enumerate(CROPS + ("building",) + OBSTACLES))
+LANDMARKS = tuple(f"landmark_d{n}" for n in (4, 6, 8, 10, 12, 20))  # the dice markers under /root/Props/landmarks
+LABELS = dict(enumerate(CROPS + ("building",) + OBSTACLES + LANDMARKS))
 LABEL_IDS = {label_name: label for label, label_name in LABELS.items()}
 COLORS = {
     "cabbage": (60, 180, 75), "grapevine": (145, 30, 180), "lemon": (255, 225, 25),
     "building": (170, 60, 40), "tree": (0, 100, 0), "fence": (245, 130, 48),
     "obstacle": (230, 25, 75), "prop": (0, 130, 200), "parcel": (70, 150, 220), "farm": (0, 0, 0),
+    **{landmark: (240, 50, 230) for landmark in LANDMARKS},
 }
 
 ROW_GAP = 1.0      # plants further apart than this across the row heading are in different rows [m]
@@ -115,6 +117,9 @@ def build(doc):
     by_class = defaultdict(list)
     for a in doc["assets"]:
         by_class[a["class"] or "prop"].append(a)
+    unknown = sorted(set(by_class) - set(LABEL_IDS))
+    if unknown:
+        print(f"warning: skipping classes with no label: {unknown}", file=sys.stderr)
 
     def detection(prefix, a, cls, **meta):
         return f.add(DETECTIONS, prefix, a["name"], a["center"], COLORS[cls], a["size"], LABEL_IDS[cls],
@@ -170,11 +175,11 @@ def build(doc):
     buildings = [detection("B", a, "building") for a in by_class["building"]]
     farm_children += buildings
 
-    # --- obstacles belong to the parcel they stand in, otherwise to the farm
+    # --- obstacles and landmarks belong to the parcel they stand in, otherwise to the farm
     obstacles, in_parcel = [], []
-    for cls in OBSTACLES:
+    for cls in OBSTACLES + LANDMARKS:
         for a in by_class[cls]:
-            o = detection("o", a, cls)
+            o = detection("o" if cls in OBSTACLES else "l", a, cls)
             obstacles.append(o)
             inside = [p for p, frame, lo, hi in parcels if frame.inside(a["center"], lo, hi)]
             if inside:
@@ -193,7 +198,7 @@ def build(doc):
     for parcel, o in in_parcel:
         f.link(parcel, o, "contains")
 
-    # --- "near": obstacles next to a crop or a building
+    # --- "near": obstacles and landmarks next to a crop or a building
     for o in obstacles:
         oa = f.G.get_node(o).attributes
         for d in crops + buildings:
@@ -241,10 +246,10 @@ def report(G):
     for node_name in ("lemon", "grapevine1", "BuddhaStatue", "barriere140"):
         print("  " + lineage(G, find(G, DETECTIONS, node_name)))
 
-    print("\n== obstacles near crops / buildings")
+    print("\n== obstacles and landmarks near crops / buildings")
     near = defaultdict(set)
     for o in G.get_layer(DETECTIONS).nodes:
-        if o.id.category == "o":
+        if o.id.category in ("o", "l"):
             for n in neighbours(G, o.id, "near"):
                 near[G.get_node(n).attributes.name].add(o.attributes.name)
     for target, names in sorted(near.items()):

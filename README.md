@@ -11,7 +11,7 @@ setup lives here.
 | `scripts/` | offline tools, run with the venv's python: `make_farm_dsg.py`, `make_isaac_farm_dsg.py`, `view_map.py`, `farm_geojson.py` (farm GeoJSON validate/tree), `geojson_to_dsg.py` (farm GeoJSON → scene graph), `farm_dsg.py` (scene graph spec helpers, `verify`) |
 | `config/` | node parameters (`isaac_voxeland.yaml`, `voxeland_server.yaml`), scene graph viz configs, `isaac_assets.json` (input of `make_isaac_farm_dsg.py`), `farm_schema.yaml` (farm GeoJSON catalog) |
 | `rviz/` | rviz config for the Voxeland launch |
-| `docs/` | [HYDRA_GUIDE.md](docs/HYDRA_GUIDE.md), [VOXELAND_GUIDE.md](docs/VOXELAND_GUIDE.md), [CLOUD_IN_SPEC.md](docs/CLOUD_IN_SPEC.md), [FARM_DSG_SPEC.md](docs/FARM_DSG_SPEC.md), [FARM_GEOJSON_SPEC.md](docs/FARM_GEOJSON_SPEC.md), [FARM_EDITOR.md](docs/FARM_EDITOR.md), [diagrams/ninsar_overview.drawio](docs/diagrams/ninsar_overview.drawio) (overview diagrams, draw.io) |
+| `docs/` | [HYDRA_GUIDE.md](docs/HYDRA_GUIDE.md), [VOXELAND_GUIDE.md](docs/VOXELAND_GUIDE.md), [CLOUD_IN_SPEC.md](docs/CLOUD_IN_SPEC.md), [OBJECT_DETECTOR.md](docs/OBJECT_DETECTOR.md), [FARM_DSG_SPEC.md](docs/FARM_DSG_SPEC.md), [FARM_GEOJSON_SPEC.md](docs/FARM_GEOJSON_SPEC.md), [FARM_EDITOR.md](docs/FARM_EDITOR.md), [diagrams/ninsar_overview.drawio](docs/diagrams/ninsar_overview.drawio) (overview diagrams, draw.io) |
 | `patches/` | the only change still needed in upstream code ([README](patches/README.md)) |
 | `test/` | unit tests (`colcon test --packages-select ninsar_mapping`) |
 
@@ -20,7 +20,7 @@ Generated files (DSG JSON, map exports) go to `~/data/ninsar/`, never into git.
 # Running Voxeland on the Isaac Sim "tour" bag
 
 Semantic 3D mapping from a pre-recorded Isaac Sim bag: RGB-D and per-pixel semantic labels go
-in, and a class-annotated voxel map comes out. No object detector is involved: the labels come
+in, and a class-annotated voxel map comes out. No segmentation model is involved: the labels come
 straight from the bag's `semantic_segmentation` topic.
 
 ```
@@ -28,7 +28,8 @@ bag ── rgb, depth, camera_info ──► depth_image_proc/point_cloud_xyzrgb
 bag ── semantic_segmentation, semantic_labels ──┐                                │
 TF  ── world → output_frame ────────────────────┴──► semantic_cloud_adapter ◄────┘
                                                         │ cloud_in (SemanticPointCloud)
-                                                        ▼
+                                                        ├──────────► object_detector (ninsar_perception)
+                                                        ▼              per-frame objects: detections, markers
                                                   voxeland_server
 ```
 
@@ -38,7 +39,7 @@ input directly, following [docs/CLOUD_IN_SPEC.md](docs/CLOUD_IN_SPEC.md).
 ## Prerequisites
 
 - ROS 2 **Jazzy** with `depth_image_proc` (`ros-jazzy-depth-image-proc`)
-- The bag: `~/workspaces/ninsar-isaac-sim/data/tour/` (mcap)
+- A bag: `~/data/ninsar/bags/` (mcap), e.g. `short_tour_trimmed/` (people and landmarks) or `tour/`
 - The scene graph: `~/data/ninsar/isaac_farm_dsg.json` (`scripts/make_isaac_farm_dsg.py`)
 - `src/voxeland` with [`patches/voxeland_modehas.patch`](patches/README.md) applied (recommended; without it the server log is flooded)
 - `.venv` at the workspace root, needed only for the offline scripts (`open3d`). See below.
@@ -83,8 +84,8 @@ source ~/workspaces/ninsar-semantic-segmentation/install/setup.bash
 ros2 launch ninsar_mapping isaac_voxeland.launch.xml
 
 # 2 — the bag, started last
-cd ~/workspaces/ninsar-isaac-sim/data
-ros2 bag play tour/
+cd ~/data/ninsar/bags
+ros2 bag play short_tour_trimmed/
 ```
 
 | launch arg | default | |
@@ -96,6 +97,7 @@ ros2 bag play tour/
 | `show_scene_graph` | `true` | static scene graph on `/hydra_dsg_visualizer/graph`, frame `world`, shown in rviz as "Scene Graph" |
 | `scene_graph` | `~/data/ninsar/isaac_farm_dsg.json` | from `scripts/make_isaac_farm_dsg.py` |
 | `scene_graph_viz_config` | `config/isaac_farm_viz.yaml` (installed share) | hides the FARM root layer |
+| `detector` | `true` | per-frame objects from `cloud_in` (`ninsar_perception/object_detector`), shown in rviz as "Detections" |
 
 A missing scene graph file stops only the visualizer node, not the mapping.
 
@@ -128,6 +130,18 @@ ros2 param set /voxel_query query.dimensions "[0.0, 0.0, 0.0]"   # whole map
 ros2 service call /voxel_query/query std_srvs/srv/Trigger
 ```
 
+## Per-frame objects
+
+`object_detector` (C++/PCL, package `src/ninsar_perception`) clusters each `cloud_in` frame per
+class, skipping ground, and publishes the objects in the camera frame. `/object_detector/detections`
+(`vision_msgs/Detection3DArray`) is the landmark list: class, score, centroid with covariance,
+and a gravity-aligned yaw box. RViz shows `/object_detector/markers` as "Detections". Parameters are in
+`config/isaac_object_detector.yaml`. See [OBJECT_DETECTOR.md](docs/OBJECT_DETECTOR.md).
+
+```bash
+ros2 topic echo --once /object_detector/detections
+```
+
 ## Gotchas
 
 - **Start order.** `/tf_static` is published once at t=0. Start the launch before
@@ -139,9 +153,11 @@ ros2 service call /voxel_query/query std_srvs/srv/Trigger
 - **Categories are fixed per run.** The server reads the category list from the first
   cloud only. Changing `categories` in `config/isaac_voxeland.yaml` needs a server restart.
 - **Label ids are mapped by name.** The adapter reads id → class from the `semantic_labels`
-  JSON of the same stamp. The tour bag's ids are stable (0 BACKGROUND, 1 UNLABELLED,
-  2 obstacle, 3 ground, 4 fence, 5 building, 6 tree, 7 grapevine, 8 lemon, 9 cabbage), and
-  that table is also the `label_names` fallback.
+  JSON of the same stamp. Ids are stable within a bag but differ between bags: `tour` has
+  2 obstacle, 3 ground, …, 9 cabbage; `short_tour` has 2 obstacle, 3 cabbage, 4 fence, 5 ground,
+  6–10 and 16 the landmarks, 15 person. The `label_names` fallback is the `short_tour` table.
+- **A class not in `categories` becomes `unknown`.** Its voxels then show the camera's last
+  RGB instead of a class colour, so a new class in the scene needs adding to `categories`.
 - **Ray origin.** The server casts rays from the `output_frame` origin. `zed_x_front` is
   the ZED body frame, not the left optical centre: the left camera sits at
   (0.015, 0.060, 0.015) m in it, so rays start about 6 cm off. That's negligible at 0.10 m
@@ -156,7 +172,7 @@ ros2 service call /voxel_query/query std_srvs/srv/Trigger
 
 | Parameter | Current | Notes |
 |---|---|---|
-| `categories` | ground, tree, grapevine, lemon, cabbage, fence, building, obstacle | `unknown` is appended last; the order defines the class indices and colours |
+| `categories` | ground, tree, grapevine, lemon, cabbage, fence, building, obstacle, person, landmark_d4, _d6, _d8, _d10, _d12, _d20 | `unknown` is appended last; the order defines the class indices and colours |
 | `min_range` / `max_range` | 0.1 / 10 m | adapter; far points are kept for carving unless `drop_far_points` |
 | `pixel_stride` | 1 | subsample the image grid to speed things up |
 | `confidence_topic` | `""` | per-pixel confidence (32FC1) for model output; see the spec |

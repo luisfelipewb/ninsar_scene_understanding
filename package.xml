@@ -22,6 +22,7 @@
   <exec_depend>python3-numpy</exec_depend>
   <exec_depend>depth_image_proc</exec_depend>
   <exec_depend>voxeland</exec_depend>
+  <exec_depend>ninsar_perception</exec_depend>
   <exec_depend>hydra_visualizer</exec_depend>
   <exec_depend>rviz2</exec_depend>
 

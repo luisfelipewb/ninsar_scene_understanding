@@ -12,6 +12,8 @@
 	<!-- scripts/make_isaac_farm_dsg.py output, in the bag's "world" frame -->
 	<arg name="scene_graph" default="$(env HOME)/data/ninsar/isaac_farm_dsg.json" />
 	<arg name="scene_graph_viz_config" default="$(find-pkg-share ninsar_mapping)/config/isaac_farm_viz.yaml" />
+	<!-- per-frame objects from cloud_in: /object_detector/{detections,markers,clusters} (docs/OBJECT_DETECTOR.md) -->
+	<arg name="detector" default="true" />
 
 	<!-- rgb + depth -> organized XYZRGB cloud in the optical frame (the Isaac images are rectified) -->
 	<node pkg="depth_image_proc" exec="point_cloud_xyzrgb_node" name="point_cloud_xyzrgb" output="screen">
@@ -34,6 +36,11 @@
 	<!-- Voxeland mapping server, integrating cloud_in into the fixed frame of the bag -->
 	<node pkg="voxeland" exec="voxeland_server_node" name="voxeland_server" output="screen">
 		<param from="$(find-pkg-share ninsar_mapping)/config/voxeland_server.yaml" />
+	</node>
+
+	<!-- cloud_in -> per-class clusters and yaw boxes, in the cloud's frame (ninsar_perception, C++/PCL) -->
+	<node if="$(var detector)" pkg="ninsar_perception" exec="object_detector" name="object_detector" output="screen">
+		<param from="$(find-pkg-share ninsar_mapping)/config/isaac_object_detector.yaml" />
 	</node>
 
 	<!-- Scene graph markers on /hydra_dsg_visualizer/graph (transient local). Same node as hydra_visualizer's

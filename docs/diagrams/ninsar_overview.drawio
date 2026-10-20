@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="p0" name="0 Big picture">
-        <mxGraphModel dx="1995" dy="999" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+        <mxGraphModel dx="1771" dy="906" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -213,7 +213,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="p1" name="1 Farm editor">
-        <mxGraphModel dx="1995" dy="999" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+        <mxGraphModel dx="1638" dy="725" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -347,7 +347,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="p2" name="2 GeoJSON → DSG">
-        <mxGraphModel dx="1995" dy="999" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+        <mxGraphModel dx="1603" dy="709" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -572,7 +572,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="p3" name="3 Isaac Sim">
-        <mxGraphModel dx="1995" dy="999" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+        <mxGraphModel dx="1603" dy="896" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -743,7 +743,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="p4" name="4 Perception front end">
-        <mxGraphModel dx="1995" dy="999" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+        <mxGraphModel dx="1570" dy="877" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -1265,6 +1265,177 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="p8" name="8 Repositories">
+        <mxGraphModel dx="1674" dy="856" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="p8_t1" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=26;fontStyle=1;whiteSpace=wrap;" value="Repositories and workspaces" vertex="1">
+                    <mxGeometry height="44" width="880" x="40" y="15" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_t2" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=13;fontColor=#666666;whiteSpace=wrap;" value="Where the NINSAR code lives on this machine, what each repo owns, and how they connect" vertex="1">
+                    <mxGeometry height="26" width="880" x="40" y="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_lg0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;spacing=2;" value="our code" vertex="1">
+                    <mxGeometry height="28" width="82" x="940" y="22" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_lg1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;spacing=2;" value="Isaac Sim" vertex="1">
+                    <mxGeometry height="28" width="82" x="1028" y="22" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_lg2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;spacing=2;" value="upstream / external" vertex="1">
+                    <mxGeometry height="28" width="82" x="1116" y="22" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_lg3" parent="1" style="shape=note;size=14;whiteSpace=wrap;html=1;fontSize=12;spacing=6;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;spacing=2;" value="file" vertex="1">
+                    <mxGeometry height="28" width="82" x="1204" y="22" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_lg4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;spacing=2;" value="ROS 2 data" vertex="1">
+                    <mxGeometry height="28" width="82" x="1292" y="22" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_laneA" parent="1" style="swimlane;rounded=1;arcSize=3;startSize=28;fontSize=14;fontStyle=1;html=1;whiteSpace=wrap;fillColor=#eeeeee;strokeColor=#bbbbbb;swimlaneFillColor=#fbfbfb;collapsible=0;container=1;" value="~/workspaces/ninsar-isaac-sim" vertex="1">
+                    <mxGeometry height="570" width="330" x="30" y="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_a0" parent="p8_laneA" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontColor=#666666;whiteSpace=wrap;" value="own git repo (local, no commits yet) · Isaac Python, not ROS" vertex="1">
+                    <mxGeometry height="30" width="290" x="20" y="32" as="geometry"/>
+                </mxCell>
+                <UserObject label="&lt;b&gt;run_scene.py → p.3&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;assemble stage from a run config YAML&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;fly the sensor rig, publish to ROS 2&lt;/font&gt;" link="data:page/id,p3" id="p8_a1">
+                    <mxCell parent="p8_laneA" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1">
+                        <mxGeometry height="70" width="290" x="20" y="70" as="geometry"/>
+                    </mxCell>
+                </UserObject>
+                <mxCell id="p8_a2" parent="p8_laneA" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;rigsim/&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;scene_config · trajectory · waypoint_config · terrain_height&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="55" width="290" x="20" y="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_a3" parent="p8_laneA" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;tools/&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;pxr: bake_heightmap, get_cabbage_positions,&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;rows_to_lanes, scan_isaac_assets, …&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;rclpy: bag_to_waypoints, seg_label_colorizer&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="90" width="290" x="20" y="215" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_a4" parent="p8_laneA" style="shape=note;size=14;whiteSpace=wrap;html=1;fontSize=12;spacing=6;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;b&gt;config/*.yaml&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;montoldre, montoldre_v4(_small), v5, empty · waypoints/&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="55" width="290" x="20" y="315" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_a5" parent="p8_laneA" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#f5f5f5;strokeColor=#666666;" value="&lt;b&gt;Isaac Sim 5.1 (~/isaacsim)&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;python.sh interpreter · ROS 2 bridge&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="50" width="290" x="20" y="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_a6" parent="p8_laneA" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;ROS 2 topics&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;RGB · depth · label image + labels JSON&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Ouster cloud · TF · /clock&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;→ ninsar_mapping, live or via rosbag&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="80" width="290" x="20" y="460" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_laneB" parent="1" style="swimlane;rounded=1;arcSize=3;startSize=28;fontSize=14;fontStyle=1;html=1;whiteSpace=wrap;fillColor=#eeeeee;strokeColor=#bbbbbb;swimlaneFillColor=#fbfbfb;collapsible=0;container=1;" value="~/workspaces/ninsar-semantic-segmentation · colcon workspace, ROS 2 Jazzy" vertex="1">
+                    <mxGeometry height="570" width="820" x="390" y="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_b0" parent="p8_laneB" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontColor=#666666;whiteSpace=wrap;" value="the workspace folder is not a git repo: each src/ folder is its own repo. Upstream clones stay at their base commits; our changes go in ninsar_mapping." vertex="1">
+                    <mxGeometry height="30" width="780" x="20" y="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_b1" parent="p8_laneB" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;" value="&lt;b&gt;ninsar_mapping (ament_python)&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;github.com/luisfelipewb/ninsar_mapping&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&lt;b&gt;launch/ · config/ · rviz/&lt;/b&gt;: isaac_voxeland.launch, node params&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&lt;b&gt;ninsar_mapping/&lt;/b&gt; nodes: semantic_cloud_adapter, voxel_query,&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;voxel_store, tf_to_pose_cov&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&lt;b&gt;scripts/&lt;/b&gt; offline (.venv): farm_editor → p.1, geojson_to_dsg → p.2,&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;farm_dsg, make_isaac_farm_dsg, view_map&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&lt;b&gt;docs/&lt;/b&gt;: guides, specs, these diagrams&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&lt;b&gt;patches/&lt;/b&gt;: voxeland_modehas.patch&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="230" width="360" x="20" y="70" as="geometry"/>
+                </mxCell>
+                <UserObject label="&lt;b&gt;ninsar_perception (ament_cmake, C++ / PCL) → p.4&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;own git repo (local, no commits yet)&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;object_detector: cloud_in (SemanticPointCloud) →&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;Detection3DArray + markers, sensor frame&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;clustering lib + gtests&lt;/font&gt;" link="data:page/id,p4" id="p8_b2">
+                    <mxCell parent="p8_laneB" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;" vertex="1">
+                        <mxGeometry height="130" width="340" x="460" y="70" as="geometry"/>
+                    </mxCell>
+                </UserObject>
+                <mxCell id="p8_b3" parent="p8_laneB" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontColor=#666666;whiteSpace=wrap;" value="ninsar_perception has no launch or config of its own: ninsar_mapping starts it (isaac_voxeland.launch.xml, config/isaac_object_detector.yaml) and holds its docs (OBJECT_DETECTOR.md, CLOUD_IN_SPEC.md)." vertex="1">
+                    <mxGeometry height="70" width="340" x="460" y="215" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_gM" parent="p8_laneB" style="swimlane;rounded=1;arcSize=4;startSize=24;fontSize=12;fontStyle=1;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#999999;swimlaneFillColor=#ffffff;collapsible=0;container=1;dashed=1;" value="MAPIRlab" vertex="1">
+                    <mxGeometry height="220" width="250" x="20" y="330" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_m1" parent="p8_gM" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#f5f5f5;strokeColor=#666666;" value="&lt;b&gt;voxeland&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;voxeland_server_node · voxeland_msgs&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;patched from ninsar_mapping/patches&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="70" width="220" x="15" y="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_m2" parent="p8_gM" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#f5f5f5;strokeColor=#666666;" value="&lt;b&gt;voxeland_robot_perception&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;unused (replaced by semantic_cloud_adapter)&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="45" width="220" x="15" y="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_m3" parent="p8_gM" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#f5f5f5;strokeColor=#666666;" value="&lt;b&gt;segmentation_msgs&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;SemanticPointCloud&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="35" width="220" x="15" y="175" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_gS" parent="p8_laneB" style="swimlane;rounded=1;arcSize=4;startSize=24;fontSize=12;fontStyle=1;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#999999;swimlaneFillColor=#ffffff;collapsible=0;container=1;dashed=1;" value="MIT-SPARK" vertex="1">
+                    <mxGeometry height="220" width="510" x="290" y="330" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_s1" parent="p8_gS" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#f5f5f5;strokeColor=#666666;" value="&lt;b&gt;hydra · hydra_ros&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;scene graph construction, RViz visualizer&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="70" width="235" x="15" y="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_s2" parent="p8_gS" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#f5f5f5;strokeColor=#666666;" value="&lt;b&gt;spark_dsg&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;scene graph data structure + JSON I/O&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="70" width="235" x="260" y="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_s3" parent="p8_gS" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#f5f5f5;strokeColor=#666666;" value="&lt;b&gt;semantic_inference&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;segmentation models + ROS nodes&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="90" width="235" x="15" y="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_s4" parent="p8_gS" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#f5f5f5;strokeColor=#666666;" value="&lt;b&gt;Hydra dependencies&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;kimera_pgmo · kimera_rpgo · teaser_plusplus&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;pose_graph_tools · config_utilities&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;spatial_hash · ianvs&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="90" width="235" x="260" y="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_laneC" parent="1" style="swimlane;rounded=1;arcSize=3;startSize=28;fontSize=14;fontStyle=1;html=1;whiteSpace=wrap;fillColor=#eeeeee;strokeColor=#bbbbbb;swimlaneFillColor=#fbfbfb;collapsible=0;container=1;" value="Real robots" vertex="1">
+                    <mxGeometry height="570" width="330" x="1240" y="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_c1" parent="p8_laneC" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#f5f5f5;strokeColor=#666666;" value="&lt;b&gt;NINSAR robots&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;recorded rosbags (ROS 1 / ROS 2)&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="55" width="290" x="20" y="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_c2" parent="p8_laneC" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;spacing=6;fillColor=#dae8fc;strokeColor=#6c8ebf;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;" value="&lt;b&gt;~/workspaces/ninsar-bag-fix&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;separate colcon workspace&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&lt;b&gt;ninsar_bag_fix&lt;/b&gt;: repair recorded bags (frame ids,&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;CameraInfo, static TF, topics, ROS 1 → 2)&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&lt;b&gt;ninsar_lidar_calib&lt;/b&gt;: base_link → lidar extrinsic&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&lt;b&gt;ninsar_tf_tools&lt;/b&gt;: live-tunable TF publisher&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="160" width="290" x="20" y="165" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_d1" parent="1" style="shape=note;size=14;whiteSpace=wrap;html=1;fontSize=12;spacing=6;fillColor=#fff2cc;strokeColor=#d6b656;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;" value="&lt;b&gt;~/data/ninsar/   (not in git)&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&lt;b&gt;bags/&lt;/b&gt;: Isaac and robot bags (short_tour_trimmed, …)  ·  &lt;b&gt;assets/&lt;/b&gt;: Montoldre USD scenes, sensor_rig.usd, heightmap, read by run_scene.py&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;&lt;b&gt;farms/&lt;/b&gt;: GeoJSON from the farm editor  ·  &lt;b&gt;*_dsg.json&lt;/b&gt;, PLY map exports: written by ninsar_mapping scripts and save_map&lt;/font&gt;" vertex="1">
+                    <mxGeometry height="75" width="1540" x="30" y="700" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_f1" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=10;fontColor=#666666;whiteSpace=wrap;" value="Also on this machine, not shown as repos: ROS 2 Jazzy (/opt/ros/jazzy), the Isaac Sim install (~/isaacsim), the workspace .venv for offline scripts. Upstream SHAs are not pinned yet (vcstool .repos deferred)." vertex="1">
+                    <mxGeometry height="30" width="1540" x="30" y="790" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_e1" edge="1" parent="1" source="p8_a5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="p8_a6" value="ROS 2 bridge">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_e2" edge="1" parent="1" source="p8_a6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" target="p8_b1" value="">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="375" y="595"/>
+                            <mxPoint x="375" y="280"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="p8_e3" edge="1" parent="1" source="p8_a6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.107;entryY=0;" target="p8_d1" value="ros2 bag record">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_e4" edge="1" parent="1" source="p8_b1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=1;exitY=0.25;entryX=0;entryY=0.5;" target="p8_b2" value="launches +&lt;br&gt;configures">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_e5" edge="1" parent="1" source="p8_b1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.347;exitY=1;entryX=0.5;entryY=0;" target="p8_m1" value="launches the server">
+                    <mxGeometry x="-0.55" relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_e6" edge="1" parent="1" source="p8_b1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.95;exitY=1;entryX=0.5;entryY=0;" target="p8_s2" value="DSG JSON (scripts)">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="752" y="410"/>
+                            <mxPoint x="1057" y="410"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="p8_e7" edge="1" parent="1" source="p8_c1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="p8_c2" value="raw bags">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="p8_e8" edge="1" parent="1" source="p8_c2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.893;entryY=0;" target="p8_d1" value="fixed bags → bags/">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="p9" name="9 Repositories (simple)">
+        <mxGraphModel dx="1835" dy="812" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="520" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="p9_t1" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=26;fontStyle=1;whiteSpace=wrap;" value="Repositories at a glance" vertex="1"><mxGeometry x="40" y="15" width="640" height="44" as="geometry"/></mxCell>
+                <UserObject label="Details on p.8" link="data:page/id,p8" id="p9_t2"><mxCell parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=13;fontColor=#666666;whiteSpace=wrap;" vertex="1"><mxGeometry x="40" y="55" width="640" height="26" as="geometry"/></mxCell></UserObject>
+                <mxCell id="p9_lg0" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=14;spacing=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;spacing=2;" value="our code" vertex="1"><mxGeometry x="700" y="22" width="82" height="28" as="geometry"/></mxCell>
+                <mxCell id="p9_lg1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=14;spacing=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;spacing=2;" value="Isaac Sim" vertex="1"><mxGeometry x="788" y="22" width="82" height="28" as="geometry"/></mxCell>
+                <mxCell id="p9_lg2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=14;spacing=6;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;spacing=2;" value="upstream" vertex="1"><mxGeometry x="876" y="22" width="82" height="28" as="geometry"/></mxCell>
+                <mxCell id="p9_isaac" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=14;spacing=6;fillColor=#d5e8d4;strokeColor=#82b366;" value='&lt;b&gt;ninsar-isaac-sim&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:11px"&gt;simulated farm + sensor rig&lt;/font&gt;' vertex="1"><mxGeometry x="40" y="160" width="280" height="90" as="geometry"/></mxCell>
+                <mxCell id="p9_bagfix" parent="1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=14;spacing=6;fillColor=#dae8fc;strokeColor=#6c8ebf;" value='&lt;b&gt;ninsar-bag-fix&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:11px"&gt;cleans up real robot bags&lt;/font&gt;' vertex="1"><mxGeometry x="40" y="340" width="280" height="90" as="geometry"/></mxCell>
+                <mxCell id="p9_ws" parent="1" style="swimlane;rounded=1;arcSize=3;startSize=28;fontSize=14;fontStyle=1;html=1;whiteSpace=wrap;fillColor=#eeeeee;strokeColor=#bbbbbb;swimlaneFillColor=#fbfbfb;collapsible=0;container=1;" value="ninsar-semantic-segmentation (ROS 2 workspace)" vertex="1"><mxGeometry x="400" y="110" width="560" height="360" as="geometry"/></mxCell>
+                <mxCell id="p9_map" parent="p9_ws" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=14;spacing=6;fillColor=#dae8fc;strokeColor=#6c8ebf;" value='&lt;b&gt;ninsar_mapping&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:11px"&gt;launch, config, nodes, tools, docs&lt;/font&gt;' vertex="1"><mxGeometry x="30" y="60" width="240" height="110" as="geometry"/></mxCell>
+                <mxCell id="p9_perc" parent="p9_ws" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=14;spacing=6;fillColor=#dae8fc;strokeColor=#6c8ebf;" value='&lt;b&gt;ninsar_perception&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:11px"&gt;3D object detection&lt;/font&gt;' vertex="1"><mxGeometry x="290" y="60" width="240" height="110" as="geometry"/></mxCell>
+                <mxCell id="p9_up" parent="p9_ws" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=14;spacing=6;fillColor=#f5f5f5;strokeColor=#666666;" value='&lt;b&gt;Upstream&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:11px"&gt;Voxeland · Hydra · spark_dsg&lt;/font&gt;' vertex="1"><mxGeometry x="30" y="230" width="500" height="90" as="geometry"/></mxCell>
+                <mxCell id="p9_e1" edge="1" parent="1" source="p9_isaac" target="p9_map" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.32;" value="sensor data"><mxGeometry relative="1" as="geometry"/></mxCell>
+                <mxCell id="p9_e2" edge="1" parent="1" source="p9_bagfix" target="p9_map" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.75;" value="robot bags"><mxGeometry relative="1" as="geometry"/></mxCell>
+                <mxCell id="p9_e3" edge="1" parent="1" source="p9_map" target="p9_perc" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" value="launches"><mxGeometry relative="1" as="geometry"/></mxCell>
+                <mxCell id="p9_e4" edge="1" parent="1" source="p9_map" target="p9_up" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=11;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.24;entryY=0;" value="uses"><mxGeometry relative="1" as="geometry"/></mxCell>
             </root>
         </mxGraphModel>
     </diagram>

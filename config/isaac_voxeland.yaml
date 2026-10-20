@@ -10,9 +10,13 @@ semantic_cloud_adapter:
 
     # Classes mapped into the voxel map, in this order; "unknown" is appended last.
     # Fixed for the whole run: the server reads the category list from the first cloud only.
-    categories: [ground, tree, grapevine, lemon, cabbage, fence, building, obstacle]
-    # Fallback id -> class table (index = id) until the JSON arrives. The tour bag's ids are stable.
-    label_names: [BACKGROUND, UNLABELLED, obstacle, ground, fence, building, tree, grapevine, lemon, cabbage]
+    # A class missing here reaches the server as "unknown" and is drawn in camera RGB.
+    categories: [ground, tree, grapevine, lemon, cabbage, fence, building, obstacle,
+                 person, landmark_d4, landmark_d6, landmark_d8, landmark_d10, landmark_d12, landmark_d20]
+    # Fallback id -> class table (index = id) until the JSON arrives: the short_tour bag's ids,
+    # stable within that bag. Other bags number their classes differently; the JSON wins.
+    label_names: [BACKGROUND, UNLABELLED, obstacle, cabbage, fence, ground, landmark_d8, landmark_d4,
+                  landmark_d12, landmark_d10, landmark_d20, building, lemon, tree, grapevine, person, landmark_d6]
 
     world_frame: world
     output_frame: zed_x_front     # ZED body frame (FLU); "" keeps the optical frame of the cloud

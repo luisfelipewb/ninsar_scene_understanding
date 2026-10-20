@@ -334,9 +334,13 @@ appears in the output because output only includes occupied cells.
 | 1…N−2 | `color_palette[i % 22]` in [semantics.cpp](../../voxeland/voxeland/voxeland_map/src/semantics.cpp) |
 | N−1 (`unknown`) | the voxel's own RGB (`RGBSemantics`) or grey (`Semantics`) |
 
-With our `categories` (`ground, tree, grapevine, lemon, cabbage, fence, building, obstacle`, then `unknown`):
+With our `categories` (`ground, tree, grapevine, lemon, cabbage, fence, building, obstacle, person,
+landmark_d4, landmark_d6, landmark_d8, landmark_d10, landmark_d12, landmark_d20`, then `unknown`):
 ground `#bcbcbc` · tree `#9DBBE3` · grapevine `#BFE3DF` · lemon `#B59CD9` ·
-cabbage `#FFF5CC` · fence `#FFD9BD` · building `#EE9D94` · obstacle `#F7ADCF` · unknown → camera RGB.
+cabbage `#FFF5CC` · fence `#FFD9BD` · building `#EE9D94` · obstacle `#F7ADCF` ·
+person `#e6194B` · landmark_d4 `#3cb44b` · landmark_d6 `#ffe119` · landmark_d8 `#4363d8` ·
+landmark_d10 `#f58231` · landmark_d12 `#911eb4` · landmark_d20 `#42d4f4` · unknown → camera RGB.
+A class missing from `categories` falls into `unknown`, so it shows in camera RGB.
 
 ### 5.5 Outputs
 

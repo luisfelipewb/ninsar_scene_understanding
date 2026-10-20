@@ -30,6 +30,10 @@ launch:
   - arg:
       name: voxel_query
       default: "true"
+  # per-frame objects from cloud_in: /object_detector/{detections,markers,clusters} (docs/OBJECT_DETECTOR.md)
+  - arg:
+      name: detector
+      default: "true"
 
   # rgb + depth -> organized XYZRGB cloud in the optical frame (the Isaac images are rectified)
   - node:
@@ -75,6 +79,16 @@ launch:
       output: screen
       param:
         - from: "$(find-pkg-share ninsar_mapping)/config/voxel_query.yaml"
+
+  # cloud_in -> per-class clusters and yaw boxes, in the cloud's frame (ninsar_perception, C++/PCL)
+  - node:
+      if: "$(var detector)"
+      pkg: ninsar_perception
+      exec: object_detector
+      name: object_detector
+      output: screen
+      param:
+        - from: "$(find-pkg-share ninsar_mapping)/config/isaac_object_detector.yaml"
 
   # Scene graph markers on /hydra_dsg_visualizer/graph (transient local). Same node as hydra_visualizer's
   # static_visualizer.launch.yaml, but without its on_exit shutdown: a missing graph file stops only this node.
