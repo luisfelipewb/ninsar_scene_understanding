@@ -1,0 +1,108 @@
+# The sensor rig in an empty built-in scene, flying the 2 x 2 m square.
+# run_scene.py reads this and authors the whole stage through the Python API.
+#
+#   ./python.sh run_scene.py config/empty.yaml
+#
+# Every key is shown with its default. Relative paths resolve against the
+# project directory (the one holding run_scene.py), never the shell's cwd.
+
+scene:
+  # The environment to drop the rig into: props, lights, ground, nothing else.
+  # null builds an empty one -- a dome light, a sun and a ground plane -- which
+  # is enough to see the rig fly and to get TF on the wire.
+  usd: null
+  # Root of everything the rig hangs off. Created if the scene lacks it, and
+  # made the stage's default prim. Its name is the ROS fixed frame.
+  world_prim: /World
+  fps: 60.0
+  # HDRI for the dome light, e.g. an asset under
+  # omniverse://<server>/NVIDIA/Assets/Skies/... (copy the path from the
+  # Content browser), or a local .hdr/.exr resolved like scene.usd above.
+  # null keeps the flat-color dome the empty scene starts with.
+  skybox: null
+  skybox_intensity: 1000.0
+
+# The free-flying frame. Everything under it comes along for the ride, which is
+# why the trajectory moves this and nothing else. translate/rotate are where it
+# starts, and where it stays when there are no waypoints.
+base_link:
+  name: base_link
+  translate: [0.0, 0.0, 0.0]
+  rotate: [0.0, 0.0, 0.0]      # roll, pitch, yaw in degrees
+
+rig:
+  usd: assets/sensor_rig.usd
+  # Prim name under base_link. The asset's own root lands beneath it, so the
+  # sensors end up at <world>/<base_link>/<name>/<the asset's default prim>/...
+  name: sensor_rig
+  # payload defers loading until the stage asks for it, which keeps a heavy rig
+  # out of the way of scene-only work; reference always composes it.
+  load_as: payload
+  # Where the rig sits relative to base_link: 1 m forward, 1.5 m up, pitched
+  # 20 degrees down to look ahead of the vehicle.
+  translate: [0.0, 0.0, 1.0]
+  rotate: [0.0, 20.0, 0.0]     # roll, pitch, yaw in degrees
+
+ros:
+  # The graph run_scene.py authors. The rig asset brings its own graphs for the
+  # clock, the cameras, the lidar and its internal static TFs; this one only
+  # adds the two transforms that the rig cannot know about itself.
+  graph_prim: /World/Graphs/ROS_TF
+  # world -> base_link, republished every tick because base_link moves.
+  dynamic_topic: /tf
+  # base_link -> rig, latched once because that offset never changes.
+  static_topic: /tf_static
+  # null leaves the bridge on its own default (ROS_DOMAIN_ID, else 0).
+  domain_id: null
+
+# Animated people, walked by omni.anim.people while the timeline plays. Each
+# lands at <world>/Characters/<name> with semantic class "person". The
+# characters stream from the Isaac assets server on first use, so a run with
+# walkers needs the network (or a local mirror) the first time.
+people:
+  # Baked heightmap, as trajectory.terrain: keeps every walker's feet on the
+  # ground, with translate's z as a clearance above it. null = flat ground;
+  # walkers then stay at their starting height whatever GoTo says.
+  terrain: null
+  loop: false                  # walk back to the start and repeat, forever
+  # null (the default) or empty for none; one is given here as an example.
+  # Commands are omni.anim.people's, without the name:
+  #   GoTo x y z [x y z ...] yaw    walk through the points in straight lines,
+  #                                 then turn to yaw (degrees, or _ to keep the
+  #                                 heading); z is ignored, see terrain above
+  #   Idle seconds                  stand still
+  #   LookAround seconds            stand and look around
+  # Run in order; a walker stands idle once its list is done.
+  walkers:
+    - name: walker_01
+      # A folder of the Isaac People library -- F_Business_02, F_Medical_01,
+      # M_Medical_01, female_adult_police_02, male_adult_police_04, the
+      # original_* ones, ... -- or a character .usd, local or a URI. In Isaac
+      # Sim 5.1 male_adult_construction_03 stands still; its
+      # original_male_adult_construction_03 twin walks.
+      asset: F_Business_02
+      translate: [5.0, -3.0, 0.0]
+      yaw: 90.0                # degrees about +z
+      commands:
+        - GoTo 5 4 0 _
+        - LookAround 2
+        - GoTo 5 -3 0 90
+
+# How base_link moves. Kept last, and `waypoints` last within it, because an
+# inline waypoint list can run to hundreds of rows.
+trajectory:
+  # Pace for waypoints without a `t`: each segment takes whichever is slower,
+  # covering its distance at `speed` or its rotation at `yaw_rate`. Waypoints
+  # that carry `t` replay on their own clock and ignore both.
+  speed: 0.5                   # m/s
+  yaw_rate: 30.0               # deg/s
+  # Baked heightmap (tools/bake_heightmap.py). When set, every z along the
+  # trajectory becomes a clearance above the ground under it. null = absolute z.
+  terrain: null
+  loop: false                  # repeat until interrupted
+  realtime: false              # pace to the wall clock, dropping frames if rendering is slow
+  settle: 0.0                  # seconds slept after each frame so DDS can drain
+  # A waypoint YAML (see config/waypoints/square.yaml for the format), or an
+  # inline list of waypoints in the same format. null parks the rig at
+  # base_link.translate and plays until interrupted. --waypoints overrides.
+  waypoints: config/waypoints/square.yaml

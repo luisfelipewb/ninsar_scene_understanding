@@ -1,0 +1,6 @@
+# Large binaries live outside git: USD scenes and models, baked heightmaps (bags are in ~/data/ninsar/bags)
+assets/
+*.usda
+
+__pycache__/
+*.pyc

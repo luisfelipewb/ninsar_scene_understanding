@@ -1,0 +1,27 @@
+# Waypoints for base_link, the free-flying frame the rig rides on. A run config
+# points at this file through trajectory.waypoints (or inlines the same list).
+#
+# Positions are metres in world space, angles are degrees (roll/pitch/yaw about
+# x/y/z). The rig sits at a fixed offset above base_link, so z = 0 is a sensible
+# cruising height. Repeating a position with a new yaw turns in place.
+#
+# Every field defaults to 0.0, so a waypoint only has to name what it changes.
+# A six-element list [x, y, z, roll, pitch, yaw] is accepted as a shorthand.
+#
+# Segment durations come from trajectory.speed and trajectory.yaw_rate in the
+# run config, not from this file: each segment takes whichever is slower,
+# covering the distance or the rotation.
+#
+# A waypoint may instead carry `t`, the time in seconds it should be reached at,
+# in which case every waypoint must and the path replays on its own clock --
+# speed and yaw_rate no longer apply. That is what tools/bag_to_waypoints.py
+# writes, so a path recovered from a rosbag keeps its real pauses and
+# accelerations. Times must increase; the first one is the origin.
+
+# A 2 x 2 m square, pausing at each corner to turn in place.
+waypoints:
+  - {x: -43.0, y: -105.0, yaw: 0.0}
+  - {x: -19.0, y: -125.0, yaw: 0.0}
+  - {x: 9.0, y: -61.0, yaw: 0.0}
+  - {x: -60.0, y: -133.0, yaw: 0.0}
+  

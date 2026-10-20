@@ -1,0 +1,63 @@
+# The compact Montoldre V4 scene (lemons, grapevines, fences, Buddha, D6 and the
+# cabbage patch close together), with the sensor rig touring all of them. Same
+# rig and mounting as montoldre_v4.yaml; see empty.yaml for what every key
+# means. The scene is sublayered, never written to.
+#
+#   ./python.sh run_scene.py config/montoldre_v4_small.yaml --headless
+#
+# Relative paths resolve against the project directory, never the shell's cwd.
+
+scene:
+  usd: ~/data/ninsar/assets/Montoldre_V4_small.usd
+  world_prim: /world
+  fps: 60.0
+  skybox: https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/NVIDIA/Assets/Skies/Clear/qwantani_4k.hdr
+  skybox_intensity: 1000.0
+
+base_link:
+  name: base_link
+  # Parked east of lemon5, where the tour starts.
+  translate: [-40.005, -123.829, 5.2]
+  rotate: [0.0, 0.0, 90.0]     # roll, pitch, yaw in degrees
+
+rig:
+  usd: ~/data/ninsar/assets/zed_x_rig.usd
+  name: sensor_rig
+  load_as: payload
+  translate: [0.0, 0.0, 1.5]
+  rotate: [0.0, 30.0, 0.0]     # roll, pitch, yaw in degrees
+
+ros:
+  graph_prim: /world/Graphs/ROS_TF
+  dynamic_topic: /tf
+  static_topic: /tf_static
+  domain_id: null
+
+trajectory:
+  speed: 1.0                   # m/s; the tour carries no times
+  yaw_rate: 30.0               # deg/s
+  # The tour is written at z 0, so the terrain turns that into a clearance
+  # above the ground.
+  terrain: ~/data/ninsar/assets/montoldre_heightmap.npz
+  loop: false
+  realtime: false
+  settle: 0.0
+  waypoints: config/waypoints/v4_small_tour.yaml
+
+# Two walkers pacing back and forth between the Apple_0* prims, which are only
+# markers on the ground. Both lines stay clear of the props, and both cross the
+# tour. Every walker is labelled class "person" by run_scene.py.
+people:
+  terrain: ~/data/ninsar/assets/montoldre_heightmap.npz
+  loop: true                   # back to the start and again, forever
+  walkers:
+    - name: walker_01          # Apple_01 <-> Apple_02, 26 m across the field
+      asset: F_Business_02
+      translate: [-36.359, -101.294, 0.0]
+      yaw: -145.9
+      commands: [GoTo -58.051 -115.969 0 _, Idle 2]
+    - name: walker_02          # Apple_03 <-> Apple_04, 10 m past the Buddha
+      asset: original_male_adult_construction_03
+      translate: [-36.737, -116.026, 0.0]
+      yaw: 123.5
+      commands: [GoTo -42.480 -107.343 0 _, Idle 2]

@@ -1,0 +1,72 @@
+# The Montoldre field with the cabbage parcels, with the sensor rig dropped in
+# and flown over parcel 01. Same rig and mounting as empty.yaml; see that file
+# for what every key means. The scene is sublayered, never written to.
+#
+#   ./python.sh run_scene.py config/montoldre.yaml --headless
+#
+#   # write the assembled stage (with the path baked in) for scrubbing in the GUI
+#   ./python.sh run_scene.py config/montoldre.yaml --headless --build-only \
+#       --save-stage assets/montoldre_cabbages_rig.usda
+#
+# Relative paths resolve against the project directory, never the shell's cwd.
+
+scene:
+  usd: assets/Montoldre_V4.usdc
+  # The scene's own root is /root (ground, buildings, props, the cabbage
+  # parcels). /world sits beside it and is what the trajectory drives, so the
+  # published fixed frame is "world".
+  world_prim: /world
+  fps: 60.0
+  # Layered over the scene's own lighting. No Nucleus server here, so fetched
+  # straight from NVIDIA's CDN (24 MB, cached by Kit after the first load).
+  # Other clear skies in the same folder: qwantani_4k,
+  # syferfontein_18d_clear_4k, evening_road_01_4k (low sun).
+  skybox: https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/5.1/NVIDIA/Assets/Skies/Clear/qwantani_4k.hdr
+  skybox_intensity: 1000.0
+
+base_link:
+  name: base_link
+  # Parked at the first cabbage of parcel 01 until the trajectory moves it.
+  translate: [-50.0, -50.0, 9]
+  rotate: [0.0, 0.0, 0.0]      # roll, pitch, yaw in degrees
+
+rig:
+  usd: assets/zed_x_rig.usd
+  name: sensor_rig
+  load_as: payload
+  translate: [0.0, 0.0, 1.5]
+  rotate: [0.0, 30.0, 0.0]     # roll, pitch, yaw in degrees
+
+ros:
+  graph_prim: /world/Graphs/ROS_TF
+  dynamic_topic: /tf
+  static_topic: /tf_static
+  domain_id: null
+
+trajectory:
+  speed: 1.0                   # m/s; the cabbage path carries no times
+  yaw_rate: 30.0               # deg/s
+  # The cabbage path already carries the ground height at every cabbage as its
+  # z, so the terrain stays off here -- switching it on would add the ground
+  # twice. Set it to assets/montoldre_heightmap.npz for a path written in flat
+  # z (a recentred rosbag, say) to hold that z as a clearance above the ground.
+  terrain: assets/montoldre_heightmap.npz
+  loop: false
+  realtime: false
+  settle: 0.0
+  # Lawnmower path over parcel 01, from tools/cabbages_to_waypoints.py.
+  waypoints: config/waypoints/trial.yaml
+
+people:
+  terrain: assets/montoldre_heightmap.npz
+  loop: true
+  walkers:
+    - name: walker_01
+      asset: F_Business_02
+      translate: [-57.5, -125.0, 0.0]
+      commands: [GoTo -57.5 -133.0 0 _, Idle 2]
+    # - name: walker_02
+    #   asset: original_male_adult_construction_03
+    #   translate: [-35.0, -160.0, 0.0]
+    #   yaw: 180.0
+    #   commands: [GoTo -50 2 0 _, LookAround 3]
