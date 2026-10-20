@@ -1,0 +1,24 @@
+diff --git a/python/CMakeLists.txt b/python/CMakeLists.txt
+index f5bea26..0690e09 100644
+--- a/python/CMakeLists.txt
++++ b/python/CMakeLists.txt
+@@ -20,4 +20,18 @@ pybind11_add_module(
+ target_link_libraries(_dsg_bindings PRIVATE spark_dsg)
+ target_include_directories(_dsg_bindings PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/bindings/include)
+ 
+-install(TARGETS _dsg_bindings DESTINATION ${PROJECT_NAME})
++if(DEFINED SKBUILD AND "${SKBUILD}")
++  # pip / scikit-build-core: python/spark_dsg is packaged by default, next to the bindings
++  install(TARGETS _dsg_bindings DESTINATION ${PROJECT_NAME})
++else()
++  # plain CMake install (e.g. colcon): install the whole module where PYTHONPATH finds it
++  set(SPARK_DSG_PYTHON_DIR
++      lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages/${PROJECT_NAME})
++  install(TARGETS _dsg_bindings DESTINATION ${SPARK_DSG_PYTHON_DIR})
++  install(
++    DIRECTORY spark_dsg/
++    DESTINATION ${SPARK_DSG_PYTHON_DIR}
++    FILES_MATCHING
++    PATTERN "*.py"
++  )
++endif()

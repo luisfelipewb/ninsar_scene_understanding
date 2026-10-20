@@ -1,0 +1,4 @@
+# <checkout under ros/src/upstream>  <patch file in ros/patches>
+# Applied in order by apply.sh. Keep ros/patches/README.md in sync.
+voxeland  voxeland_modehas.patch
+spark_dsg spark_dsg_python_install.patch

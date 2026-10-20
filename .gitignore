@@ -1,6 +1,33 @@
+# colcon: the workspace is ros/. The root entries catch a build started from the wrong folder.
+/ros/build/
+/ros/install/
+/ros/log/
+/build/
+/install/
+/log/
+
+# upstream sources, imported with vcs from ros/upstream.repos
+/ros/src/upstream/*
+!/ros/src/upstream/README.md
+
+# data/ is local only; its README says what goes where
+/data/*
+!/data/README.md
+
+# python
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# C++ tooling
+.cache/
+compile_commands.json
+
+# editors
 *.bak
 *.autosave
 *.tmp
+
+# lidar calibration run artefacts
+detections.jsonl
+*.jsonl.params.yaml

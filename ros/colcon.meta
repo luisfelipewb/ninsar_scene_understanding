@@ -1,0 +1,7 @@
+{
+  "names": {
+    "spark_dsg": {
+      "cmake-args": ["-DSPARK_DSG_BUILD_PYTHON=ON"]
+    }
+  }
+}

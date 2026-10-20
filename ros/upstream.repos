@@ -1,0 +1,59 @@
+# Upstream sources, pinned. Import from ros/:
+#   vcs import src/upstream < upstream.repos && ./patches/apply.sh
+# When bumping a pin, check ros/patches/README.md: a patch's base SHA must match its pin.
+repositories:
+  # semantic voxel mapping (MAPIRlab)
+  voxeland:
+    type: git
+    url: https://github.com/MAPIRlab/Voxeland.git
+    version: 389e3ec27b8b49caf252948939366381cad0b48c
+  segmentation_msgs:
+    type: git
+    url: https://github.com/MAPIRlab/segmentation_msgs.git
+    version: 7489edb3377d168b026af1dd0170a062d5e0c6fc
+  # 3D scene graphs (MIT-SPARK)
+  hydra:
+    type: git
+    url: https://github.com/MIT-SPARK/Hydra.git
+    version: 2e58a35baea629eee8838409771876acff015daf
+  hydra_ros:
+    type: git
+    url: https://github.com/MIT-SPARK/Hydra-ROS.git
+    version: 8f3b7e369e2bda49d24eba889a5bd0dfc5903a62
+  spark_dsg:
+    type: git
+    url: https://github.com/MIT-SPARK/Spark-DSG.git
+    version: 3c40997e4ae739c56ed3cdd6ef5e882d403d8b64
+  semantic_inference:
+    type: git
+    url: https://github.com/MIT-SPARK/semantic_inference.git
+    version: 23c59882a079b9ae5166a8e03b6f37e620394366
+  # Hydra dependencies
+  kimera_pgmo:
+    type: git
+    url: https://github.com/MIT-SPARK/Kimera-PGMO.git
+    version: a7d9789ed8d638476fed627d1ab9f62be7b959ae
+  kimera_rpgo:
+    type: git
+    url: https://github.com/MIT-SPARK/Kimera-RPGO.git
+    version: f1fee0900ef6825bf76304685668235cf5dd008d
+  teaser_plusplus:
+    type: git
+    url: https://github.com/MIT-SPARK/TEASER-plusplus.git
+    version: 52a9c52ee7d4c838c5e8a75458c33178be5bfb70
+  pose_graph_tools:
+    type: git
+    url: https://github.com/MIT-SPARK/pose_graph_tools.git
+    version: 965dfe864487be9040195c598fd89718563c348c
+  config_utilities:
+    type: git
+    url: https://github.com/MIT-SPARK/config_utilities.git
+    version: 1df5f6b5444f8823232cfdb1cef69c2bd41ada96
+  spatial_hash:
+    type: git
+    url: https://github.com/MIT-SPARK/Spatial-Hash.git
+    version: 8045892f34978d78870d806a50f8e5aefdbe52fc
+  ianvs:
+    type: git
+    url: https://github.com/MIT-SPARK/Ianvs.git
+    version: 36f09956de88b44a579abe17bbfdcd0cc74eb929
