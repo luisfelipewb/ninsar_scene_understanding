@@ -29,7 +29,7 @@ Both go through `DynamicSceneGraph::save()/load()`.
 ## How the pipeline runs
 
 `hydra_ros/app/hydra_node.cpp` → `HydraRosPipeline`
-([hydra_ros_pipeline.cpp](../../hydra_ros/hydra_ros/src/hydra_ros_pipeline.cpp)) wires
+([hydra_ros_pipeline.cpp](../../ros/src/upstream/hydra_ros/hydra_ros/src/hydra_ros_pipeline.cpp)) wires
 up these modules. Each one runs in its own thread and they talk through queues:
 
 ```
@@ -59,10 +59,10 @@ matches scene-graph descriptors and sends loop closures to the backend.
 
 Everything is configured through `config_utilities`: YAML files and inline YAML are
 merged on the command line (see `--config-utilities-file` in
-[hydra.launch.yaml](../../hydra_ros/hydra_ros/launch/hydra.launch.yaml)), and
+[hydra.launch.yaml](../../ros/src/upstream/hydra_ros/hydra_ros/launch/hydra.launch.yaml)), and
 factory `type:` keys choose implementations at runtime.
 
-## Packages in `src/`
+## Packages in `ros/src/upstream/`
 
 | Package | Role |
 |---------|------|
@@ -83,19 +83,19 @@ factory `type:` keys choose implementations at runtime.
 ## How hydra_visualizer works
 
 `hydra_visualizer_node`
-([visualizer_node.cpp](../../hydra_ros/hydra_visualizer/src/visualizer_node.cpp)):
+([visualizer_node.cpp](../../ros/src/upstream/hydra_ros/hydra_visualizer/src/visualizer_node.cpp)):
 
 1. **Graph source** (`graph: {type: ...}`), a `GraphWrapper`:
    - `GraphFromRos`: subscribes to `DsgUpdate` (live Hydra; `streaming_visualizer.launch.yaml`)
    - `GraphFromZmq`: receives the graph over ZMQ (`streaming_visualizer.launch.yaml use_zmq:=true`)
    - `GraphFromFile`: loads a saved file (`static_visualizer.launch.yaml`)
 2. **SceneGraphRenderer** draws each layer using
-   [visualizer_config.yaml](../../hydra_ros/hydra_visualizer/config/visualizer_config.yaml):
+   [visualizer_config.yaml](../../ros/src/upstream/hydra_ros/hydra_visualizer/config/visualizer_config.yaml):
    z-offset per layer (`layer_z_step × z_offset_scale`), node color adapters
    (`LabelColorAdapter`, `ParentColorAdapter`, `IdColorAdapter`, ...), text adapters
    (`IdTextAdapter` by default, `LabelTextAdapter`), bounding boxes, and intra- and
    interlayer edges. Everything goes out as one `MarkerArray` on `~/graph`.
-3. **Plugins** ([visualizer_plugins.yaml](../../hydra_ros/hydra_visualizer/config/visualizer_plugins.yaml))
+3. **Plugins** ([visualizer_plugins.yaml](../../ros/src/upstream/hydra_ros/hydra_visualizer/config/visualizer_plugins.yaml))
    publish extras on their own topics: `~/mesh` (MeshPlugin), `~/places_basis_points`,
    `~/agent_poses`, `~/static_objects`/`~/dynamic_objects` (Khronos).
 4. Renderer settings are exposed to the config GUI (`start_config_gui:=true`) and can
@@ -103,17 +103,17 @@ factory `type:` keys choose implementations at runtime.
 
 ## Visualize a hand-built scene graph (no data, no pipeline)
 
-Needs the spark_dsg Python bindings in `.venv` (`.venv/bin/pip install ./src/spark_dsg`).
+The spark_dsg Python bindings come from the colcon build ([setup/ros.md](../setup/ros.md)).
 
 ```bash
-cd ~/workspaces/ninsar-semantic-segmentation
-source /opt/ros/jazzy/setup.bash && source install/setup.bash
+cd ~/workspaces/ninsar-scene-understanding            # the repo root
+source ros/install/setup.bash
 
-# 1. build a toy graph: 2 rooms, 18 places, 7 labeled objects with bounding boxes
-.venv/bin/python tools/make_toy_dsg.py -o toy_dsg.json
+# 1. build a graph, e.g. the synthetic farm (see "Example: a farm scene graph" below)
+ros2 run ninsar_farm make_farm_dsg -q -o $PWD/data/dsg/farm_dsg.json
 
 # 2. render it
-ros2 launch hydra_visualizer static_visualizer.launch.yaml scene_graph:=$PWD/toy_dsg.json
+ros2 launch hydra_visualizer static_visualizer.launch.yaml scene_graph:=$PWD/data/dsg/farm_dsg.json
 #    add start_config_gui:=false to skip the reconfigure GUI
 
 # 3. after regenerating or hand-editing the JSON, reload without restarting
@@ -122,9 +122,8 @@ ros2 service call /hydra_dsg_visualizer/graph/reload std_srvs/srv/Empty
 ros2 topic pub --once /hydra_dsg_visualizer/graph/load std_msgs/msg/String "{data: $PWD/other.json}"
 ```
 
-`scene_graph:=` must be an absolute path. To make your own scene, edit `SCENE` and
-the label dicts in [make_toy_dsg.py](tools/make_toy_dsg.py), or build the graph from
-any source (e.g. a model's detections) using the same calls:
+`scene_graph:=` must be an absolute path. To make your own scene, build the graph from
+any source (e.g. a model's detections) with calls like these:
 
 ```python
 import numpy as np, spark_dsg as dsg
@@ -145,37 +144,34 @@ Notes:
   above objects. Set `renderer: {collapse_layers: true}` to flatten them.
 - Room text shows ids (`R(0)`) because layer 4 uses the default `IdTextAdapter`. Add
   `adapter: {type: LabelTextAdapter}` under `layers: 4: text:` to show room names.
-- For a quick look outside ROS: `.venv/bin/spark-dsg visualize toy_dsg.json`
+- For a quick look outside ROS, `python3 -m spark_dsg visualize data/dsg/farm_dsg.json`
   opens a browser viewer at http://localhost:8080 (`--port` to change it). It needs
-  the `viz` extra; see [Installing](#installing) below.
+  the `viz` extra, which isn't part of this setup; see [Installing](#installing) below.
 - Graphs saved by a real Hydra run open the same way.
 
 ## spark_dsg Python API
 
-Everything below was tried against the spark_dsg 1.1.3 built from `src/spark_dsg`.
+Everything below was tried against the spark_dsg 1.1.3 built from `ros/src/upstream/spark_dsg`.
 The Python bindings wrap the same C++ types that Hydra and the visualizer use, so
 anything you build in Python loads unchanged in `hydra_visualizer`.
 
 ### Installing
 
-```bash
-.venv/bin/pip install './src/spark_dsg[viz]'
-```
+colcon builds the bindings with the rest of the workspace: `ros/colcon.meta` turns on
+`SPARK_DSG_BUILD_PYTHON` for spark_dsg, and `ros/patches/spark_dsg_python_install.patch`
+installs the pybind11 module `_dsg_bindings` and the `spark_dsg` Python package into
+`ros/install/spark_dsg/lib/python3.12/site-packages`, which `source ros/install/setup.bash` puts on
+`PYTHONPATH` ([why](../../ros/patches/README.md)). The same build serves Hydra's C++, so
+Python and C++ always agree on the file format. The core dependencies (`click numpy shapely zmq`)
+are apt packages.
 
-- `./src/spark_dsg` is a local project directory, not a PyPI name. pip reads its
-  `pyproject.toml`, and the build backend (`scikit-build-core`) runs CMake with
-  `SPARK_DSG_BUILD_PYTHON=ON` to compile the pybind11 module `_dsg_bindings`. The result
-  is installed as a wheel with the C++ linked in statically, independent of the colcon
-  build.
-- `[viz]` selects an *optional dependency group* declared in `pyproject.toml`
-  (`[project.optional-dependencies] viz = ["trimesh", "viser"]`). Without it you get
-  only the core dependencies (`click numpy shapely zmq`). The quotes stop zsh from
-  treating `[...]` as a glob.
-- If spark_dsg is already installed, `.venv/bin/pip install trimesh viser` does the
-  same thing without rebuilding. Both are already in this `.venv`.
-- Optional extras that are not in any group: `networkx` (for `spark_dsg.networkx`)
-  and `torch` + `torch_geometric` (for `G.to_torch()`). Without networkx the conversion
-  only warns and returns `None`.
+Optional extras aren't installed, because they're pip-only:
+
+- `viz` (`trimesh`, `viser`) for `spark_dsg visualize`. RViz with `hydra_visualizer` covers the
+  same need.
+- `torch` + `torch_geometric` for `G.to_torch()`.
+- `networkx` (for `spark_dsg.networkx`) is on apt as `python3-networkx`. Without it the
+  conversion only warns and returns `None`.
 
 ### Data model
 
@@ -332,7 +328,7 @@ Helpers:
 
 `hydra_visualizer` draws a layer **only if the renderer config lists it**. A layer
 that isn't listed gets `visualize: false`, so it stays hidden. The stock
-[visualizer_config.yaml](../../hydra_ros/hydra_visualizer/config/visualizer_config.yaml)
+[visualizer_config.yaml](../../ros/src/upstream/hydra_ros/hydra_visualizer/config/visualizer_config.yaml)
 only covers layers 2–4 and partitions of layers 2–3, so a new layer id (or Hydra's
 own layer 5) needs its own config file:
 
@@ -361,21 +357,21 @@ The file replaces the default config, so copy over any stock layers you still wa
 Interlayer edges are drawn for any pair of visible layers, including edges that skip
 layers. The full set of per-layer options (edges, text, bounding boxes, boundaries,
 color adapters) is in
-[layer_info.h](../../hydra_ros/hydra_visualizer/include/hydra_visualizer/layer_info.h).
+[layer_info.h](../../ros/src/upstream/hydra_ros/hydra_visualizer/include/hydra_visualizer/layer_info.h).
 You can tune them live with the config GUI.
 
 ## Example: a farm scene graph
 
-[make_farm_dsg.py](../scripts/make_farm_dsg.py) builds an agriculture graph that uses the
+[make_farm_dsg.py](../../ros/src/ninsar_farm/ninsar_farm/make_farm_dsg.py) builds an agriculture graph that uses the
 connection model: hierarchy edges, edges that skip layers, spatial edges, and a
-navigation partition. [farm_viz.yaml](../config/farm_viz.yaml) is the matching renderer
+navigation partition. [farm_viz.yaml](../../ros/src/ninsar_bringup/config/farm_viz.yaml) is the matching renderer
 config.
 
 ```bash
-.venv/bin/python src/ninsar_mapping/scripts/make_farm_dsg.py   # -> ~/data/ninsar/farm_dsg.json, then queries the saved file
+ros2 run ninsar_farm make_farm_dsg     # -> data/dsg/farm_dsg.json, then queries the saved file
 ros2 launch hydra_visualizer static_visualizer.launch.yaml \
-  scene_graph:=$HOME/data/ninsar/farm_dsg.json \
-  visualizer_config_path:=$(ros2 pkg prefix --share ninsar_mapping)/config/farm_viz.yaml
+  scene_graph:=$PWD/data/dsg/farm_dsg.json \
+  visualizer_config_path:=$(ros2 pkg prefix --share ninsar_bringup)/config/farm_viz.yaml
 ```
 
 | Layer | Content | Parent |

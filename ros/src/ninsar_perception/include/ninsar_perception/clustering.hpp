@@ -3,7 +3,7 @@
 //
 // Pure functions on message structs and PCL clouds, no ROS graph (covered by
 // test/test_clustering.cpp). The node is src/object_detector_node.cpp; the input contract is
-// ninsar_mapping/docs/CLOUD_IN_SPEC.md and the output format ninsar_mapping/docs/OBJECT_DETECTOR.md.
+// docs/specs/CLOUD_IN_SPEC.md and the output format docs/specs/OBJECT_DETECTOR.md.
 #pragma once
 
 #include <cstdint>

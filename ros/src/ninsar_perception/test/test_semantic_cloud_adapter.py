@@ -1,4 +1,4 @@
-"""Checks the cloud_in contract (docs/CLOUD_IN_SPEC.md) on the adapter's encoding functions."""
+"""Checks the cloud_in contract (docs/specs/CLOUD_IN_SPEC.md) on the adapter's encoding functions."""
 
 import json
 

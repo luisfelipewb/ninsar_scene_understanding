@@ -1,10 +1,10 @@
 # Voxeland guide
 
-How the Voxeland code in this workspace works: what each package does, how data
+How the Voxeland code in this repo works: what each package does, how data
 flows from the bag to the voxel map, and how the server uses Bonxai underneath.
 
-For build and run steps, see [the package README](../README.md). This guide covers the
-code. `src/semantic_octomap` is a separate mapper and is out of scope here.
+For build and run steps, see [setup/ros.md](../setup/ros.md) and
+[run_isaac_bag.md](run_isaac_bag.md). This guide covers the code.
 
 ---
 
@@ -23,7 +23,7 @@ Voxeland is a **semantic voxel mapper**. It does two jobs:
 Our pipeline has three nodes. Only the last one is Voxeland:
 
 ```
- bag / sensors                  depth_image_proc            ninsar_mapping                 voxeland (C++)
+ bag / sensors                  depth_image_proc            ninsar_perception              voxeland (C++)
  ─────────────                  (C++)                       semantic_cloud_adapter         ("server")
  RGB image      ─┐
  depth image    ─┼─ approx. ──► back-project depth ──┐
@@ -36,7 +36,7 @@ Our pipeline has three nodes. Only the last one is Voxeland:
 ```
 
 The only link to the server is the `segmentation_msgs/SemanticPointCloud` message on
-`/cloud_in`. Its exact contract is in [CLOUD_IN_SPEC.md](CLOUD_IN_SPEC.md). Upstream ships
+`/cloud_in`. Its exact contract is in [CLOUD_IN_SPEC.md](../specs/CLOUD_IN_SPEC.md). Upstream ships
 its own frontend for that message (`voxeland_robot_perception`, §2.4). We don't run it:
 it is built around a Detectron2 instance-segmentation service and the COCO classes.
 
@@ -44,18 +44,19 @@ it is built around a Detectron2 instance-segmentation service and the COCO class
 
 ## 2. What's where
 
-### 2.1 Workspace root (`~/workspaces/ninsar-semantic-segmentation`)
+### 2.1 In this repo
 
 | Path | What it is |
 |---|---|
-| `src/voxeland/` | Clone of `MAPIRlab/Voxeland` (branch `humble`; only `ninsar_mapping/patches/voxeland_modehas.patch` applied). Holds the packages below. |
-| `src/segmentation_msgs/` | Message package shared by Voxeland and the perception node (`SemanticPointCloud`, `InstanceSemanticMap`, …). |
-| `src/ninsar_mapping/` | Our package: launch, config, nodes, `scripts/view_map.py` (Open3D viewer for the exported `voxeland_pointcloud.ply`), these docs. Its README covers building and running on the Isaac Sim "tour" bag. |
-| `.venv/` | Python venv (with system site-packages) that adds `open3d` and `scikit-learn`, for the offline scripts. It has `COLCON_IGNORE`. |
-| `build/`, `install/`, `log/` | colcon output. |
-| `~/data/ninsar/` | Generated files, outside the workspace: map exports from earlier runs (`voxeland_pointcloud.ply`, `semantic_voxeland_pointcloud.ply`, ~170 MB ASCII PLY each), scene graph JSON. |
+| `ros/src/upstream/voxeland/` | Clone of `MAPIRlab/Voxeland` (branch `humble`, pinned in `ros/upstream.repos`; only `ros/patches/voxeland_modehas.patch` applied). Holds the packages below. |
+| `ros/src/upstream/segmentation_msgs/` | Message package shared by Voxeland and the perception node (`SemanticPointCloud`, `InstanceSemanticMap`, …). |
+| `ros/src/ninsar_perception/` | Our perception front end: `semantic_cloud_adapter` (§4.2), which feeds the server, and `object_detector`. |
+| `ros/src/ninsar_mapping/` | Our mapping package: the server config (`config/voxeland_server.yaml`) and `voxel_query` (§5.6). |
+| `ros/src/ninsar_bringup/` | The launch file, rviz config and Isaac-specific parameters. |
+| `ros/build/`, `ros/install/`, `ros/log/` | colcon output. |
+| `data/maps/` | Map exports (`voxeland_pointcloud.ply`, ~170 MB ASCII PLY each). Scene graph JSON is in `data/dsg/`. |
 
-### 2.2 `src/voxeland/` (the Voxeland repo root)
+### 2.2 `ros/src/upstream/voxeland/` (the Voxeland repo root)
 
 | Path | Package | Built? | Role |
 |---|---|---|---|
@@ -120,16 +121,17 @@ Things to know if you ever use it:
 - Its `topic` mode is broken: it subscribes to an `Image` but reads `.instances`.
 - It packs points as `[forward, left, up]`, so `camera_frame_id` must be an x-forward
   frame at the optical centre.
-- It imports `open3d` and `scikit-learn`, which is why the workspace `.venv` exists.
+- It imports `open3d` and `scikit-learn`, which aren't on apt for Ubuntu 24.04. It's a git
+  submodule of Voxeland that `vcs import` doesn't check out, so it isn't built here.
 
-Earlier we ran it with a local `label_image` mode. That edit is archived in
-`patches/archive/voxeland_robot_perception.patch`.
+Earlier we ran it with a local `label_image` mode; `semantic_cloud_adapter` replaced that
+edit, which isn't kept.
 
 ---
 
 ## 3. Input data (what goes in)
 
-[isaac_voxeland.launch.xml](../launch/isaac_voxeland.launch.xml) wires up these inputs
+[isaac_voxeland.launch.xml](../../ros/src/ninsar_bringup/launch/isaac_voxeland.launch.xml) wires up these inputs
 (camera namespace `/sensor_rig/front_camera`):
 
 | Topic | Type | Used by | For |
@@ -157,8 +159,8 @@ header. Being organized is what lets the adapter attach labels by pixel index.
 
 ### 4.2 semantic_cloud_adapter
 
-File: [semantic_cloud_adapter.py](../ninsar_mapping/semantic_cloud_adapter.py), parameters in
-[config/isaac_voxeland.yaml](../config/isaac_voxeland.yaml).
+File: [semantic_cloud_adapter.py](../../ros/src/ninsar_perception/ninsar_perception/semantic_cloud_adapter.py), parameters in
+[config/isaac/semantic_cloud_adapter.yaml](../../ros/src/ninsar_bringup/config/isaac/semantic_cloud_adapter.yaml) in `ninsar_bringup`.
 
 1. **Sync** `points` with `semantic_segmentation` (small queues: while a frame is being
    processed, newer frames are dropped instead of queued).
@@ -179,7 +181,7 @@ File: [semantic_cloud_adapter.py](../ninsar_mapping/semantic_cloud_adapter.py), 
 
 ### 4.3 What reaches the server
 
-See [CLOUD_IN_SPEC.md](CLOUD_IN_SPEC.md) for every field: how the server uses it, the
+See [CLOUD_IN_SPEC.md](../specs/CLOUD_IN_SPEC.md) for every field: how the server uses it, the
 constraints that fail silently, and how model uncertainty can be carried. Two things matter
 most. The **`rgb` and `instance_id` fields decide the server mode** (§5.2), and the server
 only reads them, and `categories`, from the **first** message it receives.
@@ -188,8 +190,8 @@ only reads them, and `categories`, from the **first** message it receives.
 
 ## 5. The server (`voxeland_server_node`)
 
-Files: [voxeland_server.hpp](../../voxeland/voxeland/voxeland/include/voxeland_server.hpp),
-[voxeland_server.cpp](../../voxeland/voxeland/voxeland/src/voxeland_server.cpp)
+Files: [voxeland_server.hpp](../../ros/src/upstream/voxeland/voxeland/voxeland/include/voxeland_server.hpp),
+[voxeland_server.cpp](../../ros/src/upstream/voxeland/voxeland/voxeland/src/voxeland_server.cpp)
 
 It is an `rclcpp` component (`voxeland_server::VoxelandServer`) that is also
 built as the executable `voxeland_server_node`. Our launch file names it
@@ -228,7 +230,7 @@ takes the sensor pose **only** from `cloud->pose`. The launch file sets
 
 ### 5.2 DataMode: one cell type per map, fixed at the first message
 
-[data_modes.hpp](../../voxeland/voxeland/voxeland_map/include/voxeland_map/data_modes.hpp) defines bit-flags:
+[data_modes.hpp](../../ros/src/upstream/voxeland/voxeland/voxeland_map/include/voxeland_map/data_modes.hpp) defines bit-flags:
 
 ```
 Empty = 0, RGB = 1<<1, Semantics = 1<<2, SemanticsInstances = Semantics | 1<<3
@@ -256,7 +258,7 @@ The mode chooses the voxel payload type (`DataT`):
 
 `DataMode` is a runtime value, but cell types are template parameters. The
 `AUTO_TEMPLATE(mode, expr)` macros in
-[cell_types.hpp](../../voxeland/voxeland/voxeland_map/include/voxeland_map/cell_types.hpp)
+[cell_types.hpp](../../ros/src/upstream/voxeland/voxeland/voxeland_map/include/voxeland_map/cell_types.hpp)
 bridge the two. Each expands to a `switch` that calls a templated lambda with
 the right `DataT`, which is why the server code is full of `AUTO_TEMPLATE(currentMode, …<DataT>…)`.
 
@@ -288,8 +290,8 @@ so it gets slower as the run goes on, independent of the cloud size.
 
 ### 5.4 Semantic fusion in a voxel
 
-[cell_types/Semantics.hpp](../../voxeland/voxeland/voxeland_map/include/voxeland_map/cell_types/Semantics.hpp),
-[RGBSemantics.hpp](../../voxeland/voxeland/voxeland_map/include/voxeland_map/cell_types/RGBSemantics.hpp)
+[cell_types/Semantics.hpp](../../ros/src/upstream/voxeland/voxeland/voxeland_map/include/voxeland_map/cell_types/Semantics.hpp),
+[RGBSemantics.hpp](../../ros/src/upstream/voxeland/voxeland/voxeland_map/include/voxeland_map/cell_types/RGBSemantics.hpp)
 
 ```cpp
 struct Semantics    { std::vector<double> alphasDirichlet; ... };   // one alpha per category
@@ -323,7 +325,7 @@ appears in the output because output only includes occupied cells.
   normalized.
 - **Uncertainty** = `expected_shannon_entropy(alphas)` = ψ(A) − (1/A)·Σ αᵢ·ψ(αᵢ),
   where A = Σ αᵢ over the non-zero αᵢ and ψ is the digamma function
-  ([dirichlet.hpp](../../voxeland/voxeland/voxeland_map/include/voxeland_map/dirichlet.hpp)).
+  ([dirichlet.hpp](../../ros/src/upstream/voxeland/voxeland/voxeland_map/include/voxeland_map/dirichlet.hpp)).
   A low value means confident.
 
 **Colour** (`toColor()`, used both for the topic and for the PLY):
@@ -331,7 +333,7 @@ appears in the output because output only includes occupied cells.
 | argmax index | Colour |
 |---|---|
 | 0 | grey `#bcbcbc`, because `indexToHexColor(0)` is hard-wired to grey |
-| 1…N−2 | `color_palette[i % 22]` in [semantics.cpp](../../voxeland/voxeland/voxeland_map/src/semantics.cpp) |
+| 1…N−2 | `color_palette[i % 22]` in [semantics.cpp](../../ros/src/upstream/voxeland/voxeland/voxeland_map/src/semantics.cpp) |
 | N−1 (`unknown`) | the voxel's own RGB (`RGBSemantics`) or grey (`Semantics`) |
 
 With our `categories` (`ground, tree, grapevine, lemon, cabbage, fence, building, obstacle, person,
@@ -376,7 +378,7 @@ consumes these files.
 
 ### 5.6 Querying the map (`voxel_query`)
 
-`ninsar_mapping/voxel_query.py` answers "which voxels are in this box, and of
+`voxel_query` (`ros/src/ninsar_mapping/ninsar_mapping/voxel_query.py`) answers "which voxels are in this box, and of
 which classes" and returns each voxel's **full class distribution**. It doesn't
 modify Voxeland: it only uses the two outputs above. Bonxai has no box or label
 queries (only point lookup and a full scan, §6.1), and the published cloud carries
@@ -393,7 +395,7 @@ no distributions, so each query has two steps:
    voxel centres only, in chunks of `fetch_chunk`, so the server can insert clouds
    between calls. Then it filters by `min_prob`.
 
-The query is set as parameters (`config/voxel_query.yaml`). The service
+The query is set as parameters (`ninsar_mapping` `config/voxel_query.yaml`). The service
 (`std_srvs/Trigger`) runs it and returns a summary:
 
 ```bash
@@ -405,7 +407,7 @@ ros2 service call /voxel_query/query std_srvs/srv/Trigger
 ```
 
 The box uses the format of spark_dsg's `BoundingBox`: centre, full side lengths,
-and a yaw about z. The RAABB boxes from `scripts/make_isaac_farm_dsg.py` can be
+and a yaw about z. The RAABB boxes from `ninsar_farm`'s `make_isaac_farm_dsg` can be
 copied as they are.
 
 | Kind | Name | Notes |
@@ -450,7 +452,7 @@ classes like `ground` it makes little sense, so we keep it off.
 
 ## 6. How Voxeland uses Bonxai
 
-Bonxai ([bonxai.hpp](../../voxeland/voxeland/bonxai_core/include/bonxai/bonxai.hpp))
+Bonxai ([bonxai.hpp](../../ros/src/upstream/voxeland/voxeland/bonxai_core/include/bonxai/bonxai.hpp))
 is a header-only sparse voxel grid, similar to a simplified OpenVDB. Voxeland
 vendors it and puts its own probabilistic layer on top. Bonxai itself stores
 cells and knows nothing about occupancy or semantics.
@@ -478,8 +480,8 @@ root_map : unordered_map<CoordT, InnerGrid>        hash map, unbounded, sparse
 
 ### 6.2 Voxeland's layer: `ProbabilisticMapT<DataT>`
 
-[probabilistic_map.hpp](../../voxeland/voxeland/voxeland_map/include/voxeland_map/probabilistic_map.hpp),
-[probabilistic_map_templated.hpp](../../voxeland/voxeland/voxeland_map/include/voxeland_map/probabilistic_map_templated.hpp)
+[probabilistic_map.hpp](../../ros/src/upstream/voxeland/voxeland/voxeland_map/include/voxeland_map/probabilistic_map.hpp),
+[probabilistic_map_templated.hpp](../../ros/src/upstream/voxeland/voxeland/voxeland_map/include/voxeland_map/probabilistic_map_templated.hpp)
 
 The server holds a `std::unique_ptr<Bonxai::ProbabilisticMap>`, a
 non-templated base class. The actual object is a `ProbabilisticMapT<DataT>`
@@ -532,7 +534,7 @@ The key details:
 
 ### 6.4 `SemanticMap`: global state beside the grid
 
-[semantics.hpp](../../voxeland/voxeland/voxeland_map/include/voxeland_map/semantics.hpp) is a **process-wide singleton**.
+[semantics.hpp](../../ros/src/upstream/voxeland/voxeland/voxeland_map/include/voxeland_map/semantics.hpp) is a **process-wide singleton**.
 Cell `update()` functions have no other way to reach per-frame context, so they
 go through it. It holds:
 
@@ -550,12 +552,12 @@ go through it. It holds:
 
 | You want to… | Look at |
 |---|---|
-| Change classes or their order | `categories` in `config/isaac_voxeland.yaml`. The order sets the colours (§5.4). Keep it fixed during a run. |
+| Change classes or their order | `categories` in `ninsar_bringup` `config/isaac/semantic_cloud_adapter.yaml`. The order sets the colours (§5.4). Keep it fixed during a run. |
 | Map new Isaac label ids | Nothing, as long as the `semantic_labels` JSON names them. `label_names` is only the fallback table. |
 | Use another camera or dataset | The `camera` launch arg, the remaps of `point_cloud_xyzrgb_node`, and the adapter topics. Any organized XYZRGB cloud + label image works. |
 | Change the frame points are sent in | The `output_frame` launch arg. |
-| Feed model output with confidence | `confidence_topic` / `confidence_bins` (see [CLOUD_IN_SPEC.md](CLOUD_IN_SPEC.md)). |
-| Tune the occupancy model | The `sensor_model.*` params in `config/voxeland_server.yaml`. Note that `onParameter` is a no-op, so changes need a restart. |
+| Feed model output with confidence | `confidence_topic` / `confidence_bins` (see [CLOUD_IN_SPEC.md](../specs/CLOUD_IN_SPEC.md)). |
+| Tune the occupancy model | The `sensor_model.*` params in `ninsar_mapping` `config/voxeland_server.yaml`. Note that `onParameter` is a no-op, so changes need a restart. |
 | Change how evidence is weighted | `Semantics::UpdateProbabilities` (per point) and the scores in the adapter's instance tables (1.0 / 0.05). |
 | Change the export format | The `toPLY` / `getHeaderPLY` functions of the cell type, and `VoxelandServer::mapToPLY`. |
 | Change the colour scheme | `SemanticMap::color_palette` / `indexToHexColor`, and `toColor()` of the cell type. |
@@ -569,8 +571,8 @@ go through it. It holds:
 - `/voxeland_server/reset` is broken (§5.1).
 - `modeHas()` tests "any bit", so every semantic mode also counts as instance mode.
   In our mode this only causes log spam and empty instance JSON files on `save_map`.
-  It is fixed by `patches/voxeland_modehas.patch` (see `patches/README.md`).
+  It is fixed by `ros/patches/voxeland_modehas.patch` (see [ros/patches/README.md](../../ros/patches/README.md)).
 - `publishAll` re-sends the whole map on every frame (§5.3).
 - `rgb` per voxel is the **last** colour written, not an average.
-- Upstream code carries only the `modeHas()` patch. Everything else lives in
-  `ninsar_mapping`.
+- Upstream Voxeland carries only the `modeHas()` patch. Everything else lives in our
+  packages (`ninsar_perception`, `ninsar_mapping`, `ninsar_bringup`).

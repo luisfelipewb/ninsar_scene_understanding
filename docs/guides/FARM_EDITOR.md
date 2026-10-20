@@ -1,8 +1,8 @@
 # Farm editor
 
 Draft v0, 2026-10-07. This is the specification and implementation plan for a local web
-tool that writes the farm GeoJSON ([FARM_GEOJSON_SPEC.md](FARM_GEOJSON_SPEC.md)). The DSG
-importer reads that file ([FARM_DSG_SPEC.md](FARM_DSG_SPEC.md)).
+tool that writes the farm GeoJSON ([FARM_GEOJSON_SPEC.md](../specs/FARM_GEOJSON_SPEC.md)). The DSG
+importer reads that file ([FARM_DSG_SPEC.md](../specs/FARM_DSG_SPEC.md)).
 
 ## 1. Purpose
 
@@ -21,8 +21,8 @@ of rows and plants precisely. This editor:
 ## 2. Running
 
 ```bash
-.venv/bin/python src/ninsar_mapping/scripts/farm_editor/serve.py ~/data/ninsar/farms/montoldre.geojson \
-    [--imagery ~/data/ninsar/imagery] [--port 8765] [--host 127.0.0.1] [--no-browser]
+ros2 run ninsar_farm farm_editor data/farms/montoldre.geojson \
+    [--imagery data/farms/imagery] [--port 8765] [--host 127.0.0.1] [--no-browser]
 ```
 
 - The server creates the file when it is missing and opens the browser at
@@ -34,10 +34,10 @@ of rows and plants precisely. This editor:
 ## 3. Components
 
 ```
-src/ninsar_mapping/
+ros/src/ninsar_farm/
   config/farm_schema.yaml       catalog: layers, categories, kinds, attributes, colors, presets
-  scripts/farm_geojson.py       shared library (editor + importer) and CLI
-  scripts/farm_editor/
+  ninsar_farm/farm_geojson.py   shared library (editor + importer) and CLI
+  ninsar_farm/editor/
     serve.py                    Flask app + CLI
     static/index.html, style.css
     static/js/api.js            fetch wrappers for §6
@@ -57,7 +57,8 @@ src/ninsar_mapping/
 
 - No JS build step: the editor is vanilla ES modules. The vendor files are committed so
   the editor works offline.
-- Python dependencies are already in `.venv`: flask, shapely, numpy, PyYAML.
+- Python dependencies are apt packages, declared in `ninsar_farm`'s `package.xml`: flask,
+  shapely, numpy, PyYAML.
 
 ### 3.1 Schema catalog (`config/farm_schema.yaml`)
 
@@ -77,7 +78,7 @@ means editing this file only. Each entry `(layer, category, kind)` has:
 The `crops` list (the crop classes) is also defined here. Rows and crop objects take
 their `kind` from it.
 
-### 3.2 Shared library (`scripts/farm_geojson.py`)
+### 3.2 Shared library (`ninsar_farm/farm_geojson.py`)
 
 | Function                                             | Purpose                                                    |
 |------------------------------------------------------|------------------------------------------------------------|
@@ -269,11 +270,11 @@ The server scans `--imagery DIR` for two forms of imagery.
 | 3 | Guided workflow, validation UI | step panel, issue list with zoom-to, outlines, derived tree                           | every rule in GeoJSON spec §5 shows up in the UI on a crafted bad file |
 | 4 | Generators                 | rows, plants, posts, with preview and replace                                             | a 40-row parcel with plants in under a minute of user time |
 | 5 | Precision and imagery      | local overlays, typed coordinates, offset row, measure, cut hole, undo/redo, autosave     | an `enu` overlay rendered from the farm lines up with its features; typed x/y match `farm_geojson.Frame` |
-| 6 | Importer                   | `scripts/geojson_to_dsg.py` and `scripts/farm_dsg.py` on top of `farm_geojson.check()` / `FarmIndex` | `mini_farm.geojson` builds a graph that passes `farm_dsg.py verify`; `test_geojson_to_dsg.py` passes |
+| 6 | Importer                   | `ninsar_farm/geojson_to_dsg.py` and `ninsar_farm/farm_dsg.py` on top of `farm_geojson.check()` / `FarmIndex` | `mini_farm.geojson` builds a graph that passes `farm_dsg.py verify`; `test_geojson_to_dsg.py` passes |
 
 ## 9. Verification
 
-- `.venv/bin/python -m pytest src/ninsar_mapping/test/test_farm_geojson.py`:
+- `colcon test --packages-select ninsar_farm` (from `ros/`), which runs `test/test_farm_geojson.py`:
   - ENU round trip below 1 mm.
   - Each rule G1–G16 fires on a crafted bad feature and stays quiet on `mini_farm.geojson`.
   - Row generator: spacing, headland and count on a rectangular parcel; heading on a
@@ -284,7 +285,7 @@ The server scans `--imagery DIR` for two forms of imagery.
   2. Draw the boundary, two parcels, generated rows and plants, a building footprint, a
      no-entry zone, a road, and an irrigation sector linked to a valve.
   3. Validate shows 0 errors. Save, reload, and get the same collection.
-  4. Run `farm_geojson.py validate` and `farm_geojson.py tree` on the saved file.
+  4. Run `ros2 run ninsar_farm farm_geojson validate` and `... farm_geojson tree` on the saved file.
 - The precision check against the Isaac scene is future feature F1 (§10).
 
 ## 10. Future features
@@ -300,7 +301,7 @@ Goal: measure how precisely a farm described in the editor matches a known scene
 2. Load the render with `--imagery`, draw the parcels over the cabbage, grapevine and
    lemon blocks, and generate rows and plants.
 3. Compare the generated plant positions in ENU with the crop centers in
-   `config/isaac_assets.json` (nearest neighbour). Target: mean error below 0.2 m.
+   `ninsar_farm` `config/isaac_assets.json` (nearest neighbour). Target: mean error below 0.2 m.
 
 Everything the editor needs is in place: `enu` overlays, typed x/y, Measure and the
 generators. Only the render tool and the comparison script are missing.

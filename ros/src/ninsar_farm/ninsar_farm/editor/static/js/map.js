@@ -307,7 +307,7 @@ export function nearestEdge(f, latlng) {
 }
 export const getMap = () => map;
 
-// --- local imagery (docs/FARM_EDITOR.md §7) ---------------------------------------------------
+// --- local imagery (docs/guides/FARM_EDITOR.md §7) ---------------------------------------------------
 
 export function addImagery(list) {
   const errors = [];

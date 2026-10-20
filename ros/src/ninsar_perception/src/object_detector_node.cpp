@@ -8,8 +8,8 @@
 //
 // Everything is published in the cloud's frame and stamp (a measurement, not a world estimate).
 // Boxes are levelled with the sensor orientation carried in cloud_in's pose, so no TF is needed.
-// Input contract: ninsar_mapping/docs/CLOUD_IN_SPEC.md. Output format and parameters:
-// ninsar_mapping/docs/OBJECT_DETECTOR.md.
+// Input contract: docs/specs/CLOUD_IN_SPEC.md. Output format and parameters:
+// docs/specs/OBJECT_DETECTOR.md.
 
 #include <algorithm>
 #include <chrono>

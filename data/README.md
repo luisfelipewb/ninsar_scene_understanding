@@ -21,7 +21,7 @@ data/
 | folder | written by | read by |
 |---|---|---|
 | `bags/isaac/` | `ros2 bag record` while Isaac Sim plays a scene | `ros2 launch ninsar_bringup isaac_voxeland.launch.xml` + `ros2 bag play` |
-| `bags/robot/raw/` | the robots | `ros2 run ninsar_bag_fix bagfix run` |
+| `bags/robot/raw/` | the robots | `bagfix run` (ninsar_bag_fix) |
 | `bags/robot/fixed/` | `bagfix run` (`output.root` in its configs) | the launch files, `ninsar_lidar_calib`, `bag_to_waypoints` |
 | `assets/` | downloaded, or authored in Isaac Sim | `sim/isaac` (scenes, heightmaps, asset scan) |
 | `farms/` | `ros2 run ninsar_farm farm_editor` | `geojson_to_dsg` |
@@ -32,6 +32,6 @@ data/
 
 | what | where |
 |---|---|
-| Isaac tour bag (`bags/isaac/short_tour_trimmed/`) | TODO: add the download link |
+| Isaac tour bag (`bags/isaac/short_tour/`) | TODO: add the download link |
 | Robot recordings (`bags/robot/raw/`) | TODO: add the download link |
 | Isaac assets (`assets/`) | TODO: add the download link (~55 GB) |

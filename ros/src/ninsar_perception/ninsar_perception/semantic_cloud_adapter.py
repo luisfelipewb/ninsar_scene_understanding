@@ -3,7 +3,7 @@
 Feeds the Voxeland server (cloud_in, segmentation_msgs/SemanticPointCloud) from an
 organized RGB point cloud plus a per-pixel semantic label image.
 
-Pipeline (see docs/CLOUD_IN_SPEC.md for the exact contract with the server):
+Pipeline (see docs/specs/CLOUD_IN_SPEC.md for the exact contract with the server):
 
   rgb + depth + camera_info -> depth_image_proc/point_cloud_xyzrgb_node -> points (organized)
   points + label image (+ optional confidence image) + labels JSON + TF -> this node -> cloud_in
@@ -100,7 +100,7 @@ def confidence_table(categories, n_bins):
 
 
 def check_table(table, categories):
-    """Raise ValueError if the table breaks the server contract (docs/CLOUD_IN_SPEC.md)."""
+    """Raise ValueError if the table breaks the server contract (docs/specs/CLOUD_IN_SPEC.md)."""
     cats = server_categories(categories)
     if len(set(cats)) != len(cats):
         raise ValueError(f"duplicate categories: {cats}")

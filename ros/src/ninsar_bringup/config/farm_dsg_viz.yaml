@@ -1,4 +1,4 @@
-# hydra_visualizer renderer config for farm scene graphs that follow docs/FARM_DSG_SPEC.md
+# hydra_visualizer renderer config for farm scene graphs that follow docs/specs/FARM_DSG_SPEC.md
 # (ninsar_farm/geojson_to_dsg.py):
 #   ros2 launch hydra_visualizer static_visualizer.launch.yaml \
 #     scene_graph:=$PWD/data/dsg/mini_farm_dsg.json \

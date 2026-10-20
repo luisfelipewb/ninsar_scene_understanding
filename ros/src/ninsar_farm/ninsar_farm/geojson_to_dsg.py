@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Build the farm scene graph (docs/FARM_DSG_SPEC.md) from a farm GeoJSON prior
-(docs/FARM_GEOJSON_SPEC.md), as written by the farm editor.
+"""Build the farm scene graph (docs/specs/FARM_DSG_SPEC.md) from a farm GeoJSON prior
+(docs/specs/FARM_GEOJSON_SPEC.md), as written by the farm editor.
 
 The file is validated first (farm_geojson.check); a file with errors is refused. Tree
 parents, overlay membership, ordering and measures come from farm_geojson.FarmIndex; this

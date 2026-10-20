@@ -1,4 +1,4 @@
-// Fetch wrappers for the server API (docs/FARM_EDITOR.md §6).
+// Fetch wrappers for the server API (docs/guides/FARM_EDITOR.md §6).
 
 async function call(method, url, body) {
   const r = await fetch(url, {

@@ -1,12 +1,12 @@
 # Farm scene graph specification
 
 Draft v0.1 (`spec_version` "0.1"), 2026-10-07. Structure of the farm scene graph
-(`spark_dsg::DynamicSceneGraph`) built by `scripts/geojson_to_dsg.py` from a GeoJSON prior,
-and by `scripts/make_farm_dsg.py` and `scripts/make_isaac_farm_dsg.py` (see Appendix B).
-`scripts/farm_dsg.py` holds the layers, the query helpers (§8) and a checker for the rules
+(`spark_dsg::DynamicSceneGraph`) built by `ninsar_farm/geojson_to_dsg.py` from a GeoJSON prior,
+and by `ninsar_farm/make_farm_dsg.py` and `ninsar_farm/make_isaac_farm_dsg.py` (see Appendix B).
+`ninsar_farm/farm_dsg.py` holds the layers, the query helpers (§8) and a checker for the rules
 of this spec (`farm_dsg.py verify GRAPH.json`). The input file format is
 [FARM_GEOJSON_SPEC.md](FARM_GEOJSON_SPEC.md); the tool that writes it is
-[FARM_EDITOR.md](FARM_EDITOR.md).
+[FARM_EDITOR.md](../guides/FARM_EDITOR.md).
 
 ## 1. Scope
 
@@ -109,8 +109,8 @@ excludes waypoints in a `no_entry` area, and planners may add a cost for waypoin
 ### 5.1 OBJECTS (layer 1)
 
 `semantic_label` gives the class through the layer's labelspace. Label ids are defined
-in `config/farm_schema.yaml` (`label_ids`), not in this spec. Classes shared with the
-perception labels (`config/isaac_voxeland.yaml`) keep the perception id; ids are never
+in `ninsar_farm`'s `config/farm_schema.yaml` (`label_ids`), not in this spec. Classes shared with the
+perception labels (`ninsar_bringup`'s `config/isaac/semantic_cloud_adapter.yaml`) keep the perception id; ids are never
 renumbered or reused.
 
 | Category      | Prefix | Classes                                                          | Tree parent         | Notes                                    |
@@ -262,7 +262,7 @@ An `entrance` is also blocked by a `water_body` area or a `no_entry` overlay it 
 Routing skips blocked edges and `no_entry` waypoints (§4) by default.
 
 Thresholds are builder parameters, stored in the graph metadata as `thresholds`. Defaults
-are in `config/farm_schema.yaml`:
+are in `ninsar_farm`'s `config/farm_schema.yaml`:
 
 | Threshold         | Default | Used by                                         |
 |-------------------|---------|-------------------------------------------------|
@@ -279,7 +279,7 @@ are in `config/farm_schema.yaml`:
 
 ### Query conventions
 
-`scripts/farm_dsg.py` implements these (`parent`, `lineage`, `overlays`, `members`,
+`ninsar_farm/farm_dsg.py` implements these (`parent`, `lineage`, `overlays`, `members`,
 `route`).
 
 - `parent(n)`: the `contains` neighbour of `n` in a higher layer.

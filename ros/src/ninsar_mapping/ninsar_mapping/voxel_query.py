@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Queries the live Voxeland map by box and class, and publishes the matching voxels with their full
-class distribution. Voxeland itself is not modified (see docs/VOXELAND_GUIDE.md, "Querying the map").
+class distribution. Voxeland itself is not modified (see docs/guides/VOXELAND_GUIDE.md, "Querying the map").
 
 Two steps per query:
 

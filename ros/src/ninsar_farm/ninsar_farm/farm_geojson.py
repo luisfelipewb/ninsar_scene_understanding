@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Farm GeoJSON profile (docs/FARM_GEOJSON_SPEC.md): load/save, ids, the local ENU frame,
+"""Farm GeoJSON profile (docs/specs/FARM_GEOJSON_SPEC.md): load/save, ids, the local ENU frame,
 derived structure (§6), validation (§5) and the row/plant/post generators.
 
 Shared by the farm editor (ninsar_farm/editor/serve.py) and the DSG importer. All geometry

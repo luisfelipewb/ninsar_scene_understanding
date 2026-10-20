@@ -1,5 +1,5 @@
 # semantic_cloud_adapter for the Isaac Sim tour bag (front ZED camera).
-# Contract with the Voxeland server: docs/CLOUD_IN_SPEC.md
+# Contract with the Voxeland server: docs/specs/CLOUD_IN_SPEC.md
 semantic_cloud_adapter:
   ros__parameters:
     points_topic: /sensor_rig/front_camera/points          # depth_image_proc output (organized)

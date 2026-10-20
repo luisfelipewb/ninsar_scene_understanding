@@ -8,7 +8,7 @@ RGBSemantics::toColor and SemanticMap::indexToHexColor in voxeland_map. So the s
 top class of every voxel, and full distributions are fetched only for the voxels a query selects.
 
 Boxes follow spark_dsg's BoundingBox (dimensions, world_P_center, world_R_center): AABB is R = I,
-the RAABB of scripts/make_isaac_farm_dsg.py is a yaw rotation, and any rotation (OBB) works.
+the RAABB of ninsar_farm's make_isaac_farm_dsg.py is a yaw rotation, and any rotation (OBB) works.
 """
 
 import re

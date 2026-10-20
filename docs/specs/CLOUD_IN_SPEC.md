@@ -1,7 +1,7 @@
 # Voxeland `cloud_in` input specification
 
 What `voxeland_server` actually reads from its input, and how
-[`semantic_cloud_adapter`](../ninsar_mapping/semantic_cloud_adapter.py) produces it.
+[`semantic_cloud_adapter`](../../ros/src/ninsar_perception/ninsar_perception/semantic_cloud_adapter.py) produces it.
 Traced through upstream `voxeland_server.cpp::insertCloudCallback`, `semantics_ros_wrapper.hpp`,
 `voxeland_map/semantics.{hpp,cpp}`, `cell_types/{Semantics,RGBSemantics}.hpp` and
 `probabilistic_map_templated.hpp` (MAPIRlab/Voxeland `389e3ec`).

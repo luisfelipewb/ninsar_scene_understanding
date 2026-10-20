@@ -7,7 +7,7 @@ each other class are clustered, and every cluster becomes one detection. The det
 
 ```
 cloud_in (SemanticPointCloud, zed_x_front + pose in world)
-  │  decode instances[] → class + score per point          (docs/CLOUD_IN_SPEC.md)
+  │  decode instances[] → class + score per point          (docs/specs/CLOUD_IN_SPEC.md)
   │  drop ground / unknown / non-finite / beyond max_range
   │  rotate by the pose's orientation → level frame (z = world up, origin = sensor)
   ▼
@@ -19,21 +19,21 @@ back to the sensor frame → ~/detections   vision_msgs/Detection3DArray
 ```
 
 The node is C++ on PCL 1.14. There are no maintained PCL Python bindings for Python 3.12 / Jazzy,
-which is why it lives in its own `ament_cmake` package, `src/ninsar_perception`. Its pure code
+which is why it lives in its own `ament_cmake` package, `ros/src/ninsar_perception`. Its pure code
 (`clustering.{hpp,cpp}`) has gtests. It needs no TF: it levels the points with the orientation
 carried in `cloud_in.pose`.
 
 ## Running
 
 `isaac_voxeland.launch.{xml,yaml}` starts it by default (`detector:=false` to skip it), with
-`config/isaac_object_detector.yaml`. RViz shows the boxes as "Detections". "Clusters" is
+`ninsar_bringup`'s `config/isaac/object_detector.yaml`. RViz shows the boxes as "Detections". "Clusters" is
 disabled by default; enable it to see the clustered points coloured by cluster.
 
 Standalone:
 
 ```bash
 ros2 run ninsar_perception object_detector --ros-args \
-    --params-file $(ros2 pkg prefix ninsar_mapping)/share/ninsar_mapping/config/isaac_object_detector.yaml
+    --params-file $(ros2 pkg prefix --share ninsar_bringup)/config/isaac/object_detector.yaml
 ```
 
 ## Output
@@ -107,7 +107,7 @@ Every 10 s the node logs frames, published, ms per frame (mean, max) and detecti
 
 ## On the tour bag (2026-10-15)
 
-These come from the full bag played at 3×, with `config/isaac_object_detector.yaml` (676 frames,
+These come from the full bag played at 3×, with `ninsar_bringup`'s `config/isaac/object_detector.yaml` (676 frames,
 all processed). Each frame took 22–81 ms on average and at most 138 ms, against a frame period
 of about 175 ms.
 

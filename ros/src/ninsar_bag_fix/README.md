@@ -4,7 +4,7 @@ Config-driven repair of rosbags recorded on the NINSAR robots. A YAML file per
 robot declares an ordered pipeline of fixes; bags live wherever they were
 recorded and the repaired copy lands under `data/bags/robot/fixed/` in the repo.
 
-Replaces the three hardcoded scripts now kept in [legacy/](../../legacy/).
+Replaces three earlier hardcoded scripts (not kept).
 
 ## Install
 

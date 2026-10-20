@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Farm editor: a local web UI that writes the farm GeoJSON (docs/FARM_EDITOR.md).
+"""Farm editor: a local web UI that writes the farm GeoJSON (docs/guides/FARM_EDITOR.md).
 
 The browser does the drawing; this server holds the working file and runs the shared
 library (ninsar_farm/farm_geojson.py) for validation, derived values and the generators.
@@ -25,7 +25,7 @@ CORNERS = ("topleft", "topright", "bottomleft")
 
 
 def scan_imagery(root):
-    """Overlays in `root` (docs/FARM_EDITOR.md §7): images with a JSON sidecar, and XYZ tile dirs.
+    """Overlays in `root` (docs/guides/FARM_EDITOR.md §7): images with a JSON sidecar, and XYZ tile dirs.
 
     Image corners are returned as [lat, lon]; `enu` sidecars are converted with their origin.
     Entries that cannot be read are returned with an `error` so the UI can say why.
@@ -161,7 +161,7 @@ def create_app(path, imagery=None, schema=None):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("file", help="farm GeoJSON to edit (created on first save)")
-    ap.add_argument("--imagery", help="directory with local overlays (docs/FARM_EDITOR.md §7)")
+    ap.add_argument("--imagery", help="directory with local overlays (docs/guides/FARM_EDITOR.md §7)")
     ap.add_argument("--host", default="127.0.0.1", help="0.0.0.0 to allow other devices")
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--no-browser", action="store_true")

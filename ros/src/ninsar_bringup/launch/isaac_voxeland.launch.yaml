@@ -1,6 +1,6 @@
 # Voxeland on the Isaac Sim tour bag, without voxeland_robot_perception:
 # rgb + depth -> depth_image_proc (organized cloud) -> semantic_cloud_adapter (labels, frame,
-# SemanticPointCloud) -> voxeland_server. The cloud_in contract is in docs/CLOUD_IN_SPEC.md.
+# SemanticPointCloud) -> voxeland_server. The cloud_in contract is in docs/specs/CLOUD_IN_SPEC.md.
 # Works from any directory; save_map writes the PLY into the cwd.
 launch:
   - arg:
@@ -30,11 +30,11 @@ launch:
   - arg:
       name: scene_graph_viz_config
       default: "$(find-pkg-share ninsar_bringup)/config/isaac_farm_viz.yaml"
-  # box/class queries on the map: /voxel_query/query (docs/VOXELAND_GUIDE.md, "Querying the map")
+  # box/class queries on the map: /voxel_query/query (docs/guides/VOXELAND_GUIDE.md, "Querying the map")
   - arg:
       name: voxel_query
       default: "true"
-  # per-frame objects from cloud_in: /object_detector/{detections,markers,clusters} (docs/OBJECT_DETECTOR.md)
+  # per-frame objects from cloud_in: /object_detector/{detections,markers,clusters} (docs/specs/OBJECT_DETECTOR.md)
   - arg:
       name: detector
       default: "true"

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Farm scene graph (docs/FARM_DSG_SPEC.md) as code: layers, the graph builder, the query
+"""Farm scene graph (docs/specs/FARM_DSG_SPEC.md) as code: layers, the graph builder, the query
 helpers of spec §8 and a checker for the spec rules.
 
 spark_dsg makes every higher-layer neighbour a parent, so a node in an overlay has more than

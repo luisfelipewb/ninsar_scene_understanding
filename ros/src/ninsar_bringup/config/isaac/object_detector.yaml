@@ -1,5 +1,5 @@
 # ninsar_perception object_detector on the Isaac Sim tour bag: per-frame objects from cloud_in.
-# Output format and parameters: docs/OBJECT_DETECTOR.md. Input contract: docs/CLOUD_IN_SPEC.md.
+# Output format and parameters: docs/specs/OBJECT_DETECTOR.md. Input contract: docs/specs/CLOUD_IN_SPEC.md.
 object_detector:
   ros__parameters:
     input_topic: cloud_in

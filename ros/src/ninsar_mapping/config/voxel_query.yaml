@@ -1,4 +1,4 @@
-# voxel_query: box/class queries on the live Voxeland map (docs/VOXELAND_GUIDE.md, "Querying the map").
+# voxel_query: box/class queries on the live Voxeland map (docs/guides/VOXELAND_GUIDE.md, "Querying the map").
 # Set query.* with `ros2 param set`, then call /voxel_query/query (std_srvs/Trigger).
 voxel_query:
   ros__parameters:

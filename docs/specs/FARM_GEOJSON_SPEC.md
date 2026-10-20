@@ -1,7 +1,7 @@
 # Farm GeoJSON profile
 
 Draft v0, 2026-10-07. This is the file format for the prior description of a farm.
-`scripts/farm_editor/` writes it, and the GeoJSON importer reads it to build the graph
+`ninsar_farm`'s editor writes it, and the GeoJSON importer reads it to build the graph
 described in [FARM_DSG_SPEC.md](FARM_DSG_SPEC.md).
 
 ## 1. Scope
@@ -117,7 +117,7 @@ and object.
 ## 5. Validation rules
 
 The importer refuses a file with an **error** and imports a file with **warnings**. The
-editor checks the same rules with the same code (`scripts/farm_geojson.py`).
+editor checks the same rules with the same code (`ninsar_farm/farm_geojson.py`).
 
 Structure:
 
@@ -166,7 +166,7 @@ Navigation:
 
 These are importer parameters and are stored in the graph metadata `thresholds`. The
 importer's navigation and spatial thresholds are listed in DSG §8. All defaults are in
-`config/farm_schema.yaml`.
+`ninsar_farm`'s `config/farm_schema.yaml`.
 
 ## 6. Derived on import
 

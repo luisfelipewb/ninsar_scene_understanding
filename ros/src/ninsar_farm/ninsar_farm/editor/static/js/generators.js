@@ -1,4 +1,4 @@
-// Generator dialogs (docs/FARM_EDITOR.md §5): rows in a parcel, plants and posts along rows.
+// Generator dialogs (docs/guides/FARM_EDITOR.md §5): rows in a parcel, plants and posts along rows.
 // The server computes a preview on every parameter change; Apply commits it with new ids.
 import { api } from './api.js';
 import { h } from './dom.js';

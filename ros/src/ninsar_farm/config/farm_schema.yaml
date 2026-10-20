@@ -1,4 +1,4 @@
-# Farm GeoJSON catalog (docs/FARM_GEOJSON_SPEC.md §4). Single source for the farm editor
+# Farm GeoJSON catalog (docs/specs/FARM_GEOJSON_SPEC.md §4). Single source for the farm editor
 # UI, the validator and the DSG importer (ninsar_farm/farm_geojson.py).
 #
 # types[]: one entry per (layer, category); `kinds` lists the classes, or `crops` for the
@@ -327,7 +327,7 @@ types:
     attributes:
       - {name: width_m, type: float, unit: m}
 
-# --- editor workflow (docs/FARM_EDITOR.md §4.1) ---------------------------------------
+# --- editor workflow (docs/guides/FARM_EDITOR.md §4.1) ---------------------------------------
 # Buttons pick a type by layer/category; `kind` fixes the class, otherwise the editor shows
 # a class chooser next to the button. `geometry` picks one of the type's geometries,
 # `props` are preset values, `continue` keeps drawing after each shape, `single` allows
