@@ -10,7 +10,7 @@
 robot: pom_4x4
 
 output:
-  root: output       # relative paths are resolved against the workspace root
+  root: ../data/bags/robot/fixed   # relative to the colcon workspace (ros/): the repo's data/ folder
   suffix: _fixed     # output goes to <root>/<session name><suffix>/bag/
   storage: mcap
   # max_bagfile_size: 0   # bytes per split file; unset = split like the source

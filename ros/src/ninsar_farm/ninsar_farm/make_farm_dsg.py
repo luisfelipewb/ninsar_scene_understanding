@@ -18,9 +18,9 @@ Spatial edges carry weight = planar distance [m]. A lane segment passing over an
 obstacle is kept but marked {"blocked": true}, so route queries can avoid it.
 
 Usage:
-  ros2 run ninsar_farm make_farm_dsg     # -> ~/data/ninsar/farm_dsg.json
+  ros2 run ninsar_farm make_farm_dsg     # -> data/dsg/farm_dsg.json
   ros2 launch hydra_visualizer static_visualizer.launch.yaml \
-    scene_graph:=$HOME/data/ninsar/farm_dsg.json \
+    scene_graph:=$PWD/data/dsg/farm_dsg.json \
     visualizer_config_path:=$(ros2 pkg prefix --share ninsar_bringup)/config/farm_viz.yaml
 """
 import argparse
@@ -31,6 +31,8 @@ from collections import Counter, defaultdict
 
 import numpy as np
 import spark_dsg as dsg
+
+from ninsar_farm.paths import data_dir
 
 DETECTIONS, ROWS, PARCELS, FARM = 1, 2, 3, 4
 NAV = "n"  # partition of DETECTIONS
@@ -358,7 +360,7 @@ def report(G):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("-o", "--output", default=os.path.expanduser("~/data/ninsar/farm_dsg.json"), help=".json (readable) or any other extension (binary)")
+    ap.add_argument("-o", "--output", default=str(data_dir() / "dsg" / "farm_dsg.json"), help=".json (readable) or any other extension (binary)")
     ap.add_argument("-q", "--quiet", action="store_true", help="skip the query report")
     args = ap.parse_args()
 

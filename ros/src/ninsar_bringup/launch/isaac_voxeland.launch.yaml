@@ -19,10 +19,14 @@ launch:
   - arg:
       name: show_scene_graph
       default: "true"
-  # scripts/make_isaac_farm_dsg.py output, in the bag's "world" frame
+  # the repo's data/ folder: five levels above this package's share dir (ros/install/ninsar_bringup/share/ninsar_bringup)
+  - arg:
+      name: data_dir
+      default: "$(find-pkg-share ninsar_bringup)/../../../../../data"
+  # ros2 run ninsar_farm make_isaac_farm_dsg output, in the bag's "world" frame
   - arg:
       name: scene_graph
-      default: "$(env HOME)/data/ninsar/isaac_farm_dsg.json"
+      default: "$(var data_dir)/dsg/isaac_farm_dsg.json"
   - arg:
       name: scene_graph_viz_config
       default: "$(find-pkg-share ninsar_bringup)/config/isaac_farm_viz.yaml"

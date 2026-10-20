@@ -69,7 +69,7 @@ putting anything back (its `edit:` block is commented out), so a fixed bag has
 supplies. Two things have to line up or the tree still looks broken:
 
 ```bash
-ros2 bag play output/<session>_fixed/bag --clock       # note --clock
+ros2 bag play data/bags/robot/fixed/<session>_fixed/bag --clock       # note --clock
 ros2 launch ninsar_tf_tools tf_publisher.launch.py static_tf:=true use_sim_time:=true
 ```
 

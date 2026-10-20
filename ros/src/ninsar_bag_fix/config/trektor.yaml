@@ -21,7 +21,7 @@ convert:
   cache: true
 
 output:
-  root: output
+  root: ../data/bags/robot/fixed   # relative to the colcon workspace (ros/): the repo's data/ folder
   suffix: _fixed     # output goes to <root>/<session name><suffix>/bag/
   storage: mcap
 

@@ -2,7 +2,7 @@
 
 Config-driven repair of rosbags recorded on the NINSAR robots. A YAML file per
 robot declares an ordered pipeline of fixes; bags live wherever they were
-recorded and the repaired copy lands under `output/` in this workspace.
+recorded and the repaired copy lands under `data/bags/robot/fixed/` in the repo.
 
 Replaces the three hardcoded scripts now kept in [legacy/](../../legacy/).
 
@@ -43,7 +43,7 @@ Point at the session folder; the `bag/` sub-folder is found automatically (the
 mirrors the input, so the naming is never ambiguous:
 
 ```
-output/2026-07-09-16-39-34_fixed/bag/bag_0.mcap
+data/bags/robot/fixed/2026-07-09-16-39-34_fixed/bag/bag_0.mcap
 ```
 
 Splitting is inherited from the source unless `output.max_bagfile_size` says
@@ -59,7 +59,7 @@ bagfix inspect /data/2026-07-09-16-39-34
 # see what would change, without writing anything
 bagfix run config/pom_4x4.yaml /data/2026-07-09-16-39-34 --dry-run
 
-# write output/2026-07-09-16-39-34_fixed/bag/
+# write data/bags/robot/fixed/2026-07-09-16-39-34_fixed/bag/
 bagfix run config/pom_4x4.yaml /data/2026-07-09-16-39-34
 
 # one-off override without editing the config
@@ -78,8 +78,8 @@ so tuning the config does not reconvert:
 
 ```bash
 bagfix run config/trektor.yaml /data/test_acqui
-#   /data/test_acqui/{bag/,}*.bag  ->  output/test_acqui_ros2/bag/   (cached)
-#                                  ->  output/test_acqui_fixed/bag/
+#   /data/test_acqui/{bag/,}*.bag  ->  data/bags/robot/fixed/test_acqui_ros2/bag/   (cached)
+#                                  ->  data/bags/robot/fixed/test_acqui_fixed/bag/
 ```
 
 ## Configs
@@ -89,7 +89,7 @@ One config per robot ([config/pom_4x4.yaml](config/pom_4x4.yaml),
 
 ```yaml
 robot: pom_4x4
-output: {root: output, suffix: _fixed, storage: mcap}   # -> <root>/<session>_fixed/bag
+output: {root: ../data/bags/robot/fixed, suffix: _fixed, storage: mcap}   # -> <root>/<session>_fixed/bag
 convert: {from: ros1, cache: true}    # ROS 1 sources only
 
 pipeline:

@@ -16,9 +16,9 @@ detections keep the scan's axis-aligned boxes.
 Usage:
   ~/isaacsim/python.sh ~/workspaces/ninsar-isaac-sim/tools/scan_isaac_assets.py \
     --out ros/src/ninsar_farm/config/isaac_assets.json   # from the repo root
-  ros2 run ninsar_farm make_isaac_farm_dsg   # -> ~/data/ninsar/isaac_farm_dsg.json
+  ros2 run ninsar_farm make_isaac_farm_dsg   # -> data/dsg/isaac_farm_dsg.json
   ros2 launch hydra_visualizer static_visualizer.launch.yaml \
-    scene_graph:=$HOME/data/ninsar/isaac_farm_dsg.json \
+    scene_graph:=$PWD/data/dsg/isaac_farm_dsg.json \
     visualizer_config_path:=$(ros2 pkg prefix --share ninsar_bringup)/config/isaac_farm_viz.yaml
 """
 import argparse
@@ -30,6 +30,8 @@ from collections import Counter, defaultdict
 import numpy as np
 import spark_dsg as dsg
 from ament_index_python.packages import get_package_share_directory
+
+from ninsar_farm.paths import data_dir
 
 from ninsar_farm.make_farm_dsg import (DETECTIONS, FARM, PARCELS, ROWS, FarmGraph, box_gap, find,
                            lineage, name, neighbours, relation)
@@ -262,7 +264,7 @@ def main():
     ap.add_argument("assets", nargs="?",
                     default=os.path.join(get_package_share_directory("ninsar_farm"), "config", "isaac_assets.json"),
                     help="scan_isaac_assets.py output (default: ninsar_farm's config/isaac_assets.json)")
-    ap.add_argument("-o", "--output", default=os.path.expanduser("~/data/ninsar/isaac_farm_dsg.json"), help=".json (readable) or any other extension (binary)")
+    ap.add_argument("-o", "--output", default=str(data_dir() / "dsg" / "isaac_farm_dsg.json"), help=".json (readable) or any other extension (binary)")
     ap.add_argument("-q", "--quiet", action="store_true", help="skip the report")
     args = ap.parse_args()
 

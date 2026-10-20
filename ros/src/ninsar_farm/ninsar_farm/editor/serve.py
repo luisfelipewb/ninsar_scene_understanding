@@ -5,7 +5,7 @@ The browser does the drawing; this server holds the working file and runs the sh
 library (ninsar_farm/farm_geojson.py) for validation, derived values and the generators.
 
 Usage:
-  ros2 run ninsar_farm farm_editor ~/data/ninsar/farms/montoldre.geojson \
+  ros2 run ninsar_farm farm_editor data/farms/montoldre.geojson \
       [--imagery DIR] [--port 8765] [--host 127.0.0.1] [--no-browser]
 """
 import argparse

@@ -8,9 +8,9 @@ script turns them into nodes and edges and derives the navigation waypoints.
 
 Usage:
   ros2 run ninsar_farm geojson_to_dsg FILE.geojson [-o OUT] [--set KEY=VALUE ...]
-      # -> ~/data/ninsar/<site>_dsg.json; exit 1 if the file is refused or the graph breaks a spec rule
+      # -> data/dsg/<site>_dsg.json; exit 1 if the file is refused or the graph breaks a spec rule
   ros2 launch hydra_visualizer static_visualizer.launch.yaml \
-    scene_graph:=$HOME/data/ninsar/<site>_dsg.json \
+    scene_graph:=$PWD/data/dsg/<site>_dsg.json \
     visualizer_config_path:=$(ros2 pkg prefix --share ninsar_bringup)/config/farm_dsg_viz.yaml
 """
 import argparse
@@ -27,6 +27,7 @@ from shapely.geometry import LineString, Point, box
 
 from ninsar_farm import farm_dsg as fd
 from ninsar_farm import farm_geojson as fg
+from ninsar_farm.paths import data_dir
 
 ROW_OBJECTS = {"crop", "row_support"}
 BLOCKER_CATEGORIES = {"obstacle", "movable", "vegetation", "structure", "equipment"}
@@ -540,7 +541,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("file", help="farm GeoJSON file")
     ap.add_argument("-o", "--output", help="graph file: .json (readable) or any other extension (binary); "
-                                           "default ~/data/ninsar/<site>_dsg.json")
+                                           "default data/dsg/<site>_dsg.json")
     ap.add_argument("--set", action="append", default=[], metavar="KEY=VALUE",
                     help="override a threshold of config/farm_schema.yaml, e.g. --set near_m=0.5")
     ap.add_argument("-q", "--quiet", action="store_true", help="skip the report")
@@ -557,7 +558,7 @@ def main(argv=None):
     for i in issues:
         print(f"{i.level:7s} {i.rule:6s} {i.id or '-':8s} {i.message}")
     stem = fc.get("site") or os.path.splitext(os.path.basename(args.file))[0]
-    output = args.output or os.path.expanduser(f"~/data/ninsar/{stem}_dsg.json")
+    output = args.output or str(data_dir() / "dsg" / f"{stem}_dsg.json")
     os.makedirs(os.path.dirname(os.path.abspath(output)), exist_ok=True)
     G.save(output, include_mesh=False)
     G = dsg.DynamicSceneGraph.load(output)  # check and report on the saved file, proving it round-trips
