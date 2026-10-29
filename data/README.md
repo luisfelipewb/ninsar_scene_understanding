@@ -38,8 +38,12 @@ data/
 
 ## Getting the data
 
-| what | where |
+The Isaac Sim tour is on [Nextcloud](https://nextcloud.inrae.fr/f/257895007), laid out like this
+folder. Download it and merge it into `data/` with the paths unchanged, so the tools find it
+without extra arguments:
+
+| path | what |
 |---|---|
-| Isaac tour bag (`bags/isaac/short_tour/`) | TODO: add the download link |
-| Robot recordings (`bags/robot/raw/`) | TODO: add the download link |
-| Isaac assets (`assets/`) | TODO: add the download link (~55 GB) |
+| `bags/isaac/short_tour/` | the tour bag (mcap), played in [run_isaac_bag.md](../docs/guides/run_isaac_bag.md) |
+| `dsg/isaac_farm_dsg.json` | its scene graph, the default `scene_graph` of `isaac_voxeland.launch` |
+
